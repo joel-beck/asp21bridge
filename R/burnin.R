@@ -1,6 +1,3 @@
-### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
-### deletes first 'num_burn' elements of numeric vector or matrix           ####
-
 burn_element <- function(samples, num_burn) {
   if (is.matrix(samples)) {
     samples[(num_burn + 1):nrow(samples), , drop = FALSE]
@@ -14,8 +11,7 @@ burn_element <- function(samples, num_burn) {
   }
 }
 
-### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
-### deletes first 'num_burn' elements of numeric vector, matrix or list     ####
+#' @export
 
 burnin <- function(samples, num_burn) {
   if (is.matrix(samples) || is.vector(samples, mode = "numeric")) {

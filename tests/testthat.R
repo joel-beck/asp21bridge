@@ -1,4 +1,4 @@
 library(testthat)
-library(lslm)
+library(lslmbRidge)
 
-test_check("lslm")
+test_check("lslmbRidge")
