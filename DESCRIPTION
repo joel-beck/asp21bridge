@@ -1,8 +1,8 @@
 Package: lslmbRidge
 Title: Gaussian Location-Scale Regression Models
 Version: 0.0.0.9000
-Authors@R: 
-    c(person(given = "Joel",
+Authors@R: c(
+      person(given = "Joel",
              family = "Beck",
              role = c("aut", "cre"),
              email = "joel.beck@stud.uni-goettingen.de"),
@@ -17,7 +17,8 @@ Authors@R:
       person(given = "Hannes",
              family = "Riebl",
              role = "aut",
-             email = "hriebl@uni-goettingen.de"))
+             email = "hriebl@uni-goettingen.de")
+             )
 Description: The Gaussian location-scale regression model is a multi-predictor
     model with explanatory variables for the mean (= location) and the standard
     deviation (= scale) of a response variable. This package implements maximum
