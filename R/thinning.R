@@ -32,7 +32,6 @@ thin_element <- function(samples, freq) {
 #' Same data type as the provided input, i.e. a numeric vector, matrix or list
 #' of matrices with thinned out elements.
 #'
-#' @examples
 #' @export
 
 thinning <- function(samples, freq) {
