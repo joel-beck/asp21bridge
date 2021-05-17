@@ -1,13 +1,42 @@
-Package: lslm
+Package: lslmbRidge
 Title: Gaussian Location-Scale Regression Models
 Version: 0.0.0.9000
-Authors@R: as.person("Hannes Riebl <hriebl@uni-goettingen.de> [aut, cre]")
+Authors@R: 
+    c(person(given = "Joel",
+             family = "Beck",
+             role = c("aut", "cre"),
+             email = "joel.beck@stud.uni-goettingen.de"),
+      person(given = "Nicolai",
+             family = "Bäuerle",
+             role = c("aut", "cre"),
+             email = "nicolai.baeuerle@stud.uni-goettingen.de"),
+      person(given = "Dominik",
+             family = "Strache",
+             role = c("aut", "cre"),
+             email = "dominik.strache@stud.uni-goettingen.de"),
+      person(given = "Hannes",
+             family = "Riebl",
+             role = "aut",
+             email = "hriebl@uni-goettingen.de"))
 Description: The Gaussian location-scale regression model is a multi-predictor
     model with explanatory variables for the mean (= location) and the standard
     deviation (= scale) of a response variable. This package implements maximum
     likelihood and Markov chain Monte Carlo (MCMC) inference, a parametric
     bootstrap algorithm, and diagnostic plots for the model.
-Imports: generics
+Imports: 
+    dplyr,
+    forcats,
+    generics,
+    ggplot2,
+    ggridges,
+    latex2exp,
+    magrittr,
+    mvtnorm,
+    patchwork,
+    purrr,
+    rlang,
+    stringr,
+    tidyr
 Suggests: testthat
 License: MIT + file LICENSE
 Encoding: UTF-8
