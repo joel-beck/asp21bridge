@@ -214,18 +214,33 @@ simulate.lslm <- function(object, nsim = 1, seed = NULL, ...) {
 
 summary.lslm <- function(object,
                          digits = max(3, getOption("digits") - 3),
-                         type = c("ml", "boot", "mcmc"),
+                         type = c("ml", "boot", "mcmc", "mcmc_ridge"),
                          ...) {
-  type <- match.arg(type)
+
+  type <- rlang::arg_match(type)
 
   if (type != "ml") {
-    coefmat <- function(m, predictor) {
-      coefmat_samples(m, type, predictor)
+
+    if (type == "mcmc_ridge") {
+      coefmat <- function(m, predictor) {
+        coefmat_samples(m, type, predictor)
+      }
+
+      if (is.null(object[[type]][[1]]$location) || is.null(object[[type]][[1]]$scale)) {
+        stop("Model does not include samples, run gibbs_sampler() first")
+      }
+
+    } else {
+      coefmat <- function(m, predictor) {
+        coefmat_samples(m, type, predictor)
+      }
+
+      if (is.null(object[[type]]$location) || is.null(object[[type]]$scale)) {
+        stop("Model does not include samples, run boot() or mcmc() first")
+      }
     }
 
-    if (is.null(object[[type]]$location) || is.null(object[[type]]$scale)) {
-      stop("Model does not include samples, run boot() or mcmc() first")
-    }
+
   }
 
   cat(

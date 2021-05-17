@@ -108,7 +108,12 @@ coefmat <- function(m, predictor) {
 #' @importFrom stats quantile
 
 coefmat_samples <- function(m, type, predictor) {
-  samples <- m[[type]][[predictor]]
+
+  if (type == "mcmc_ridge") {
+    samples <- m[[type]][[1]][[predictor]]
+  } else {
+    samples <- m[[type]][[predictor]]
+  }
 
   coefmat <- apply(samples, 2, function(x) {
     c(Mean = mean(x), quantile(x, c(0.025, 0.5, 0.975)))
