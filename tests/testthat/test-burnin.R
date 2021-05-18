@@ -48,3 +48,21 @@ test_that("burnin works for lists", {
   expect_type(burned, "list")
 })
 
+test_that("burnin handles edge cases correctly", {
+  burned_1 <- samples$location %>% burnin(num_burn = 0)
+  burned_2 <- samples$location %>% burnin(num_burn = 49)
+
+  expect_equal(samples$location, burned_1)
+  expect_equal(samples$location[50,, drop = FALSE], burned_2)
+})
+
+test_that("burnin gives helpful error messages", {
+  expect_error(samples$location %>% burnin(num_burn = -1),
+               regexp = "'num_burn' must be a nonnegative integer!")
+  expect_error(samples$location %>% burnin(num_burn = 0.5),
+               regexp = "'num_burn' must be a nonnegative integer!")
+  expect_error(samples$location %>% burnin(num_burn = 50),
+               regexp = "'num_burn' must be less than the number of samples!"
+  )
+})
+

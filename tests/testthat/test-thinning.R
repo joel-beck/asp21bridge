@@ -57,6 +57,8 @@ test_that("thinning handles edge cases correctly", {
 })
 
 test_that("thinning gives helpful error messages", {
+  expect_error(samples$location %>% thinning(freq = 0),
+               regexp = "'freq' must be a positive integer!")
   expect_error(samples$location %>% thinning(freq = -1),
                regexp = "'freq' must be a positive integer!")
   expect_error(samples$location %>% thinning(freq = 0.5),
