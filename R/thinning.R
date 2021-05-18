@@ -24,12 +24,13 @@ thin_element <- function(samples, freq) {
 
 
 
-#' @title Remove samples of a Markov Chain by a constant frequency `freq`
+#' @title Remove samples of a Markov Chain by a constant frequency
 #'
 #' @description
 #' `thinning()` takes a numeric vector, matrix or list of matrices as input and
 #' returns a modified copy of the input object with only a fraction of the
 #' original entries.
+#'
 #' The function is primarily used in the context of Markov-Chain Monte-Carlo
 #' sampling to obtain uncorrelated samples of the posterior distribution.
 #'
@@ -43,6 +44,34 @@ thin_element <- function(samples, freq) {
 #' @returns
 #' Same data type as the provided input, i.e. a numeric vector, matrix or list
 #' of matrices with thinned out elements.
+#'
+#' @examples
+#'
+#' fit <- lslm(
+#'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+#'   data = toy_data, light = FALSE
+#' ) %>%
+#'   gibbs_sampler(num_sim = 100)
+#'
+#' # list of 4 matrices with 100 rows each
+#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#'
+#' # list input applies thinning() to all matrices
+#' thinning(samples, freq = 10)
+#'
+#' # extract matrices separately for different thinning frequencies
+#' thinning(samples$location, freq = 5)
+#' thinning(samples$scale, freq = 20)
+#'
+#' # works in many different contexts
+#' thinning(rnorm(50), freq = 5)
+#'
+#' # works well in combination with burnin() and in
+#' # pipe workflows
+#' samples$location %>%
+#'   burnin(num_burn = 10) %>%
+#'   thinning(freq = 5) %>%
+#'   mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
 #'
 #' @export
 
