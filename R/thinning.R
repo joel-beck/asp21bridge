@@ -1,6 +1,6 @@
 thin_element <- function(samples, freq) {
   # check for validity of 'freq'
-  if ((as.integer(freq) != freq) || freq < 0) {
+  if ((as.integer(freq) != freq) || freq <= 0) {
     stop("'freq' must be a positive integer!")
   }
 
@@ -24,7 +24,7 @@ thin_element <- function(samples, freq) {
 
 
 
-#' @title Remove samples of a Markov Chain by a constant frequency
+#' @title Remove samples of a Markov Chain by a constant frequency `freq`
 #'
 #' @description
 #' `thinning()` takes a numeric vector, matrix or list of matrices as input and
@@ -36,8 +36,9 @@ thin_element <- function(samples, freq) {
 #' @param samples Numeric vector, matrix or list of matrices containing the
 #'                samples of the MCMC sampler.
 #'
-#' @param freq Controls the degree to which the Markov-Chain is thinned out,
-#'             e.g. `freq = 10` only keeps every 10th sample.
+#' @param freq Positive integer which controls the degree to which the
+#'             Markov-Chain is thinned out, e.g. `freq = 10` only keeps every
+#'             10th sample.
 #'
 #' @returns
 #' Same data type as the provided input, i.e. a numeric vector, matrix or list

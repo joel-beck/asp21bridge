@@ -2,28 +2,26 @@
 % Please edit documentation in R/burnin.R
 \name{burnin}
 \alias{burnin}
-\title{FUNCTION_TITLE}
+\title{Remove first \code{num_burn} samples of a Markov Chain}
 \usage{
 burnin(samples, num_burn)
 }
 \arguments{
-\item{samples}{PARAM_DESCRIPTION}
+\item{samples}{Numeric vector, matrix or list of matrices containing the
+samples of the MCMC sampler.}
 
-\item{num_burn}{PARAM_DESCRIPTION}
+\item{num_burn}{Nonnegative integer which controls the number of removed
+samples, e.g. \code{num_burn = 10} removes the first 10 samples.}
 }
 \value{
-OUTPUT_DESCRIPTION
+Same data type as the provided input, i.e. a numeric vector, matrix or list
+of matrices with removed elements at the beginning.
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
-}
-\examples{
-\dontrun{
-if(interactive()){
- #EXAMPLE1
- }
-}
+\code{burnin()} takes a numeric vector, matrix or list of matrices as input and
+returns a modified copy of the input object with a removed first part of
+the original entries.
+The function is primarily used in the context of Markov-Chain Monte-Carlo
+sampling to obtain samples of the posterior distribution after a converging
+phase.
 }

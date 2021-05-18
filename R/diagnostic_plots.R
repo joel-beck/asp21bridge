@@ -9,19 +9,20 @@
 #' @details DETAILS
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
 #' }
 #' @rdname time_plot
 #' @export
+#'
+#' @importFrom rlang .data
 
 time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
-
   if (is.list(samples) && length(samples) == 1) {
     data <- as.data.frame(samples[[1]])
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
-             is.vector(samples, mode = "numeric")) {
+    is.vector(samples, mode = "numeric")) {
     data <- as.data.frame(samples)
   } else {
     stop(paste(
@@ -41,7 +42,9 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   }
 
 
-  plot <- ggplot2::ggplot(data = data, mapping = ggplot2::aes(x = time, y = values)) +
+  plot <- ggplot2::ggplot(
+    data = data, mapping = ggplot2::aes(x = .data$time, y = .data$values)
+  ) +
     ggplot2::geom_line() +
     ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plot") +
     ggplot2::theme_minimal() +
@@ -59,7 +62,9 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   # Cut off Tails of Distribution
   if (robust) {
     plot <- plot +
-      ggplot2::coord_cartesian(ylim = stats::quantile(data$values, probs = c(0.01, 0.99)))
+      ggplot2::coord_cartesian(
+        ylim = stats::quantile(data$values, probs = c(0.01, 0.99))
+      )
   }
 
 
@@ -88,19 +93,20 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @details DETAILS
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
 #' }
 #' @rdname density_plot
 #' @export
+#'
+#' @importFrom rlang .data
 
 density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
-
   if (is.list(samples) && length(samples) == 1) {
     data <- as.data.frame(samples[[1]])
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
-             is.vector(samples, mode = "numeric")) {
+    is.vector(samples, mode = "numeric")) {
     data <- as.data.frame(samples)
   } else {
     stop(paste(
@@ -119,9 +125,14 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   }
 
 
-  plot <- ggplot2::ggplot(data = data, mapping = ggplot2::aes(x = values)) +
+  plot <- ggplot2::ggplot(
+    data = data, mapping = ggplot2::aes(x = .data$values)
+  ) +
     ggplot2::geom_density() +
-    ggplot2::geom_point(mapping = ggplot2::aes(y = 0), size = 0.5, shape = 4, color = "grey50") +
+    ggplot2::geom_point(
+      mapping = ggplot2::aes(y = 0), size = 0.5, shape = 4,
+      color = "grey50"
+    ) +
     ggplot2::labs(x = "Values", y = NULL, title = "Density Estimate") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
@@ -138,7 +149,9 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   # Cut off Tails of Distribution
   if (robust) {
     plot <- plot +
-      ggplot2::coord_cartesian(xlim = stats::quantile(data$values, probs = c(0.01, 0.99)))
+      ggplot2::coord_cartesian(
+        xlim = stats::quantile(data$values, probs = c(0.01, 0.99))
+      )
   }
 
   # Format Plot Label in LaTeX
@@ -166,22 +179,23 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @details DETAILS
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
 #' }
 #' @rdname acl_plot
 #' @export
+#'
+#' @importFrom rlang .data
 
 acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
-
   if (is.list(samples) && length(samples) == 1) {
     name <- colnames(as.data.frame(samples[[1]]))
     data <- data.frame(
       acl = drop(stats::acf(x = samples[[1]], lag.max = lag_max, plot = FALSE)$acf)
     )
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
-             is.vector(samples, mode = "numeric")) {
+    is.vector(samples, mode = "numeric")) {
     name <- colnames(as.data.frame(samples))
     data <- data.frame(
       acl = drop(stats::acf(x = samples, lag.max = lag_max, plot = FALSE)$acf)
@@ -202,10 +216,12 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
   }
 
 
-  plot <- ggplot2::ggplot(data = data, mapping = ggplot2::aes(x = time, y = acl)) +
+  plot <- ggplot2::ggplot(
+    data = data, mapping = ggplot2::aes(x = .data$time, y = .data$acl)
+  ) +
     ggplot2::geom_point(size = 1.5) +
     ggplot2::geom_hline(yintercept = 0, linetype = "dashed", color = "grey50") +
-    ggplot2::geom_segment(mapping = ggplot2::aes(xend = time, yend = 0)) +
+    ggplot2::geom_segment(mapping = ggplot2::aes(xend = .data$time, yend = 0)) +
     ggplot2::coord_cartesian(xlim = c(1, min(length(data$time), lag_max))) +
     ggplot2::labs(x = "Lag", y = NULL, title = "Autocorrelation") +
     ggplot2::theme_minimal() +
@@ -241,9 +257,9 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #' @details DETAILS
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
 #' }
 #' @rdname diagnostic_plots
 #' @export

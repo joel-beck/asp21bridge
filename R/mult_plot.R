@@ -17,6 +17,8 @@
 #' }
 #' @rdname mult_plot
 #' @export
+#'
+#' @importFrom rlang .data
 
 mult_plot <- function(samples, type = c("time", "density", "both"),
                       log = FALSE, robust = FALSE, free_scale = FALSE,
@@ -61,9 +63,9 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   data <- data %>%
     dplyr::mutate(time = seq_len(nrow(data))) %>%
     tidyr::pivot_longer(
-      cols = -time, names_to = "Parameter", values_to = "vals"
+      cols = -.data$time, names_to = "Parameter", values_to = "vals"
     ) %>%
-    dplyr::mutate(Parameter = factor(Parameter) %>% forcats::fct_inorder())
+    dplyr::mutate(Parameter = factor(.data$Parameter) %>% forcats::fct_inorder())
 
 
 
@@ -71,10 +73,12 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   free_scale <- ifelse(test = free_scale, yes = "free_y", no = "fixed")
 
   time_p <- data %>%
-    ggplot2::ggplot(mapping = ggplot2::aes(x = time, y = vals, color = Parameter)) +
+    ggplot2::ggplot(mapping = ggplot2::aes(
+      x = .data$time, y = .data$vals, color = .data$Parameter
+    )) +
     ggplot2::geom_line() +
     ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plots") +
-    ggplot2::facet_wrap(facets = ggplot2::vars(Parameter), scales = free_scale) +
+    ggplot2::facet_wrap(facets = ggplot2::vars(.data$Parameter), scales = free_scale) +
     ggplot2::guides(color = FALSE) +
     ggplot2::theme_minimal() +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
@@ -87,7 +91,7 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   if (latex) {
     time_p <- time_p +
       ggplot2::facet_wrap(
-        facets = ggplot2::vars(Parameter), scales = free_scale,
+        facets = ggplot2::vars(.data$Parameter), scales = free_scale,
         labeller = ggplot2::label_parsed
       )
   }
@@ -96,9 +100,9 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   # Density Plot
   density_p <- data %>%
-    ggplot2::ggplot(mapping = ggplot2::aes(x = vals, fill = Parameter)) +
+    ggplot2::ggplot(mapping = ggplot2::aes(x = .data$vals, fill = .data$Parameter)) +
     ggridges::geom_density_ridges(
-      mapping = ggplot2::aes(y = Parameter %>% forcats::fct_rev()), alpha = 0.5
+      mapping = ggplot2::aes(y = .data$Parameter %>% forcats::fct_rev()), alpha = 0.5
     ) +
     ggplot2::labs(x = "Values", y = NULL, title = "Density Estimates") +
     ggplot2::guides(fill = FALSE) +
@@ -123,7 +127,7 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   if (robust) {
     bounds <- data %>%
-      dplyr::summarise(bounds = stats::quantile(vals, probs = c(0.01, 0.99)))
+      dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
     density_p <- density_p +
       ggplot2::coord_cartesian(xlim = bounds$bounds)
   }

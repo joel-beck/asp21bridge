@@ -2,7 +2,7 @@
 % Please edit documentation in R/thinning.R
 \name{thinning}
 \alias{thinning}
-\title{Remove samples of a Markov Chain by a constant frequency}
+\title{Remove samples of a Markov Chain by a constant frequency \code{freq}}
 \usage{
 thinning(samples, freq)
 }
@@ -10,8 +10,9 @@ thinning(samples, freq)
 \item{samples}{Numeric vector, matrix or list of matrices containing the
 samples of the MCMC sampler.}
 
-\item{freq}{Controls the degree to which the Markov-Chain is thinned out,
-e.g. \code{freq = 10} only keeps every 10th sample.}
+\item{freq}{Positive integer which controls the degree to which the
+Markov-Chain is thinned out, e.g. \code{freq = 10} only keeps every
+10th sample.}
 }
 \value{
 Same data type as the provided input, i.e. a numeric vector, matrix or list
