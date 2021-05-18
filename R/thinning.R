@@ -1,7 +1,18 @@
 thin_element <- function(samples, freq) {
+  # check for validity of 'freq'
+  if ((as.integer(freq) != freq) || freq < 0) {
+    stop("'freq' must be a positive integer!")
+  }
+
   if (is.matrix(samples)) {
+    if (freq > nrow(samples)) {
+      stop("'freq' must not be larger than the number of samples!")
+    }
     samples[seq(from = 1, to = nrow(samples), by = freq), , drop = FALSE]
   } else if (is.vector(samples, mode = "numeric")) {
+    if (freq > length(samples)) {
+      stop("'freq' must not be larger than the number of samples!")
+    }
     samples[seq(from = 1, to = length(samples), by = freq)]
   } else {
     stop(paste(

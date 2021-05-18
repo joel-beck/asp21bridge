@@ -2,6 +2,7 @@
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param samples PARAM_DESCRIPTION
+#' @param log PARAM_DESCRIPTION
 #' @param robust PARAM_DESCRIPTION, Default: FALSE
 #' @param latex PARAM_DESCRIPTION, Default: FALSE
 #' @return OUTPUT_DESCRIPTION
@@ -80,6 +81,7 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param samples PARAM_DESCRIPTION
+#' @param log PARAM_DESCRIPTION
 #' @param robust PARAM_DESCRIPTION, Default: FALSE
 #' @param latex PARAM_DESCRIPTION, Default: FALSE
 #' @return OUTPUT_DESCRIPTION
@@ -231,6 +233,7 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #' @title FUNCTION_TITLE
 #' @description FUNCTION_DESCRIPTION
 #' @param samples PARAM_DESCRIPTION
+#' @param log PARAM_DESCRIPTION
 #' @param lag_max PARAM_DESCRIPTION, Default: 30
 #' @param robust PARAM_DESCRIPTION, Default: FALSE
 #' @param latex PARAM_DESCRIPTION, Default: FALSE

@@ -9,6 +9,8 @@ density_plot(samples, log = FALSE, robust = FALSE, latex = FALSE)
 \arguments{
 \item{samples}{PARAM_DESCRIPTION}
 
+\item{log}{PARAM_DESCRIPTION}
+
 \item{robust}{PARAM_DESCRIPTION, Default: FALSE}
 
 \item{latex}{PARAM_DESCRIPTION, Default: FALSE}

@@ -1,13 +1,3 @@
-# Packages
-pacman::p_load(
-  dplyr,
-  tidyr,
-  purrr
-)
-
-
-### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
-### Creates data frame with results for a single matrix                     ####
 
 collect_results <- function(samples, include_plot = FALSE) {
   full_data <- samples %>%
@@ -58,9 +48,20 @@ collect_results <- function(samples, include_plot = FALSE) {
 }
 
 
-
-### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
-### Combines results for all matrices in the input list into one data frame ####
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param samples PARAM_DESCRIPTION
+#' @param include_plot PARAM_DESCRIPTION, Default: FALSE
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname summary_complete
+#' @export
 
 summary_complete <- function(samples, include_plot = FALSE) {
   if (class(samples) == "lslm") {

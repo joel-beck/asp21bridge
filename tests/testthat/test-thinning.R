@@ -27,7 +27,7 @@ test_that("thinning works for matrices", {
   thinned <- samples$location %>% thinning(freq = 5)
 
   expect_equal(nrow(thinned), 10)
-  expect_equal(samples$location[11,], thinned[3,])
+  expect_equal(samples$location[11, ], thinned[3, ])
   expect_equal(ncol(thinned), 5)
 })
 
@@ -44,6 +44,24 @@ test_that("thinning works for lists", {
 
   expect_equal(length(thinned), 4)
   expect_equal(nrow(thinned[[1]]), 10)
-  expect_equal(samples[[2]][11,], thinned[[2]][3,])
+  expect_equal(samples[[2]][11, ], thinned[[2]][3, ])
   expect_type(thinned, "list")
+})
+
+test_that("thinning handles edge cases correctly", {
+  thinned_1 <- samples$location %>% thinning(freq = 1)
+  thinned_2 <- samples$location %>% thinning(freq = 50)
+
+  expect_equal(samples$location, thinned_1)
+  expect_equal(samples$location[1,, drop = FALSE], thinned_2)
+})
+
+test_that("thinning gives helpful error messages", {
+  expect_error(samples$location %>% thinning(freq = -1),
+               regexp = "'freq' must be a positive integer!")
+  expect_error(samples$location %>% thinning(freq = 0.5),
+               regexp = "'freq' must be a positive integer!")
+  expect_error(samples$location %>% thinning(freq = 51),
+    regexp = "'freq' must not be larger than the number of samples!"
+  )
 })

@@ -14,15 +14,17 @@ mult_plot(
 )
 }
 \arguments{
+\item{samples}{PARAM_DESCRIPTION}
+
 \item{type}{PARAM_DESCRIPTION, Default: c("time", "density", "both")}
+
+\item{log}{PARAM_DESCRIPTION}
 
 \item{robust}{PARAM_DESCRIPTION, Default: FALSE}
 
 \item{free_scale}{PARAM_DESCRIPTION, Default: FALSE}
 
 \item{latex}{PARAM_DESCRIPTION, Default: FALSE}
-
-\item{samples_list}{PARAM_DESCRIPTION}
 }
 \value{
 OUTPUT_DESCRIPTION

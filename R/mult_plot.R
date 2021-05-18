@@ -3,6 +3,7 @@
 #' @description FUNCTION_DESCRIPTION
 #' @param samples PARAM_DESCRIPTION
 #' @param type PARAM_DESCRIPTION, Default: c("time", "density", "both")
+#' @param log PARAM_DESCRIPTION
 #' @param robust PARAM_DESCRIPTION, Default: FALSE
 #' @param free_scale PARAM_DESCRIPTION, Default: FALSE
 #' @param latex PARAM_DESCRIPTION, Default: FALSE

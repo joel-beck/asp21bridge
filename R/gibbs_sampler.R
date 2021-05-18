@@ -1,3 +1,27 @@
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param m PARAM_DESCRIPTION, Default: NULL
+#' @param X PARAM_DESCRIPTION, Default: NULL
+#' @param Z PARAM_DESCRIPTION, Default: NULL
+#' @param y PARAM_DESCRIPTION, Default: NULL
+#' @param beta_start PARAM_DESCRIPTION, Default: NULL
+#' @param gamma_start PARAM_DESCRIPTION, Default: NULL
+#' @param tau_start PARAM_DESCRIPTION, Default: 1
+#' @param xi_start PARAM_DESCRIPTION, Default: 1
+#' @param a_tau PARAM_DESCRIPTION, Default: 1
+#' @param b_tau PARAM_DESCRIPTION, Default: 3
+#' @param a_xi PARAM_DESCRIPTION, Default: 1
+#' @param b_xi PARAM_DESCRIPTION, Default: 3
+#' @param num_sim PARAM_DESCRIPTION, Default: 1000
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname gibbs_sampler
 #' @export
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,

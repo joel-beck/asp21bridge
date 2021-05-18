@@ -17,6 +17,8 @@ diagnostic_plots(
 
 \item{lag_max}{PARAM_DESCRIPTION, Default: 30}
 
+\item{log}{PARAM_DESCRIPTION}
+
 \item{robust}{PARAM_DESCRIPTION, Default: FALSE}
 
 \item{latex}{PARAM_DESCRIPTION, Default: FALSE}

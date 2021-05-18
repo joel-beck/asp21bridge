@@ -11,6 +11,20 @@ burn_element <- function(samples, num_burn) {
   }
 }
 
+
+#' @title FUNCTION_TITLE
+#' @description FUNCTION_DESCRIPTION
+#' @param samples PARAM_DESCRIPTION
+#' @param num_burn PARAM_DESCRIPTION
+#' @return OUTPUT_DESCRIPTION
+#' @details DETAILS
+#' @examples
+#' \dontrun{
+#' if(interactive()){
+#'  #EXAMPLE1
+#'  }
+#' }
+#' @rdname burnin
 #' @export
 
 burnin <- function(samples, num_burn) {
