@@ -1,5 +1,5 @@
 Package: lslmbRidge
-Title: Gaussian Location-Scale Regression Models
+Title: Markov Chain Monte Carlo Sampler with Ridge Penalty
 Version: 0.0.0.9000
 Authors@R: c(
       person(given = "Joel",
@@ -19,11 +19,9 @@ Authors@R: c(
              role = "aut",
              email = "hriebl@uni-goettingen.de")
              )
-Description: The Gaussian location-scale regression model is a multi-predictor
-    model with explanatory variables for the mean (= location) and the standard
-    deviation (= scale) of a response variable. This package implements maximum
-    likelihood and Markov chain Monte Carlo (MCMC) inference, a parametric
-    bootstrap algorithm, and diagnostic plots for the model.
+Description: The lslmbRidge package adds a Markov Chain Monte Carlo Sampler with 
+             Ridge Regularization to the Gaussian location-scale regression 
+             model implemented in the lslm package.
 Imports: 
     dplyr,
     forcats,
