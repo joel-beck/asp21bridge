@@ -29,7 +29,15 @@ y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \ma
 \end{aligned}
 ```
 <!--  -->
-where the *location* parameter $`\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \cdots & \beta_K \end{pmatrix}`$ and the *scale* parameter $`\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \cdots & \gamma_L \end{pmatrix}`$ are themselves normally distributed with prior mean $0$ and *hyperparameters* $`\tau^2`$ and $`\xi^2`$ for the prior variances .
+where the *location* parameter 
+$`\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \cdots & \beta_K \end{pmatrix}`$ 
+and the *scale* parameter 
+$`\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \cdots & \gamma_L \end{pmatrix}`$ 
+are themselves normally distributed with prior mean $0$ and *hyperparameters* 
+$\tau^2$ 
+and 
+$\xi^2$ 
+for the prior variances .
 
 ## The Data
 

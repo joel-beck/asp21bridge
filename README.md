@@ -23,8 +23,8 @@ $\`\\boldsymbol{\\beta} = \\begin{pmatrix} \\beta\_0 & \\cdots & \\beta\_K \\end
 and the *scale* parameter
 $\`\\boldsymbol{\\gamma} = \\begin{pmatrix} \\gamma\_0 & \\cdots & \\gamma\_L \\end{pmatrix}\`$
 are themselves normally distributed with prior mean 0 and
-*hyperparameters* $\`\\tau^2\`$ and $\`\\xi^2\`$ for the prior variances
-.
+*hyperparameters* *τ*<sup>2</sup> and *ξ*<sup>2</sup> for the prior
+variances .
 
 ## The Data
 
