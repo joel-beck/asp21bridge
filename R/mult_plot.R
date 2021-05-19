@@ -19,6 +19,7 @@
 #' @export
 #'
 #' @importFrom rlang .data
+#' @import patchwork
 
 mult_plot <- function(samples, type = c("time", "density", "both"),
                       log = FALSE, robust = FALSE, free_scale = FALSE,
@@ -121,7 +122,9 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   if (latex) {
     density_p <- density_p +
-      ggplot2::scale_y_discrete(labels = parse(text = levels(data$Parameter)))
+      ggplot2::scale_y_discrete(
+        labels = parse(text = levels(data$Parameter %>% forcats::fct_rev()))
+      )
   }
 
 

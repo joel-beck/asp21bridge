@@ -1,0 +1,110 @@
+---
+output: 
+  github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "##",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# lslmbRidge
+
+The goal of `lslmbRidge` is to extend the `lslm` package by implementing a Markov Chain Monte Carlo Sampler with Ridge penalization.
+
+
+## Underlying Model
+
+The observation model in consideration is given by 
+<!--  -->
+```math
+\begin{aligned}
+y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right) \right) \qquad i = 1, \ldots n, 
+\end{aligned}
+```
+<!--  -->
+where the *location* parameter $`\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \cdots & \beta_K \end{pmatrix}`$ and the *scale* parameter $`\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \cdots & \gamma_L \end{pmatrix}`$ are themselves normally distributed with prior mean $0$ and *hyperparameters* $`\tau^2`$ and $`\xi^2`$ for the prior variances .
+
+## The Data
+
+In the following examples the built-in simulated `toy_data` is used, which consists of a column `y` representing a vector of observed values and the explanatory variables `x1`, `x2`, `z1` and `z2`.
+Here, all explanatory variables predict the mean of `y` and only the latter two model the variance.
+
+```{r}
+library(lslmbRidge)
+head(toy_data)
+```
+
+## Sampling Process
+
+We first apply the usual regression model based on Maximum - Likelihood estimation implemented in the `lslm` model and enhance this approach by adding the MCMC samples of the posterior distributions:
+
+```{r}
+set.seed(1234)
+
+fit <- toy_data %>%
+  lslm(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
+  gibbs_sampler(num_sim = 1000)
+```
+
+## Numerical Analysis
+
+The `lslmbRidge` package contains various tools to analyze the sampling results both numerically and graphically.
+
+A first quick overview can be gained by the generic `summary()` function:
+
+```{r}
+summary(fit, type = "mcmc_ridge")
+```
+
+A more comprehensive list of the estimated parameter values is provided by the `summary_complete()` function:
+
+```{r}
+results <- summary_complete(fit)
+results
+```
+
+Since the results are embedded in a `data frame` the usual methods of data frame manipulation allow for a convenient analysis even for high dimensional parameter vectors.
+For the sake of illustration we can easily sort all scale parameters by their standard deviation:
+
+```{r}
+results %>%
+  dplyr::select(Parameter, `Standard Deviation`) %>%
+  dplyr::filter(stringr::str_detect(Parameter, pattern = "gamma")) %>%
+  dplyr::arrange(dplyr::desc(`Standard Deviation`))
+```
+
+## Graphical Analysis
+
+The building blocks of monitoring the convergence of the posterior chains as well as the autocorrelation are the functions `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for combining multiple chains.
+
+First we analyze the convergence of the location coefficients. 
+Note that the posterior samples are saved in the list entry `mcmc_ridge$coefficient_sampling_matrices`:
+
+```{r}
+samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+
+mult_plot(
+  samples = samples$location, type = "both",
+  free_scale = TRUE, latex = TRUE
+)
+```
+
+We can observe stable time plots indicating convergence and a sufficient exploration of the posterior space as well as approximate normal posterior distributions for $\beta_1$ up to $\beta_4$. 
+
+While time plots, density plots and autocorrelation plots can always be displayed separately, it is often convenient to combine all of them in a single plot.
+This can be achieved with the `diagnostic_plots()` function as demonstrated below.
+Since the variance parameter $\xi^2$ is strictly positive, we choose a logarithmic scale:
+
+```{r}
+diagnostic_plots(samples = samples$scale_prior, log = TRUE, latex = TRUE)
+```
+
+All three plots confirm the validity of the posterior distribution estimates.
+In this case there is neither a thinning procedure nor a Burn-In phase necessary, which are implemented by the functions `thinning()` and `burnin()`.
