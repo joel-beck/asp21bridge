@@ -18,10 +18,9 @@ y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \ma
 
 <!--  -->
 
-where the *location* parameter **β** and the *scale* parameter **γ** are
-themselves normally distributed with prior mean vector **0** and
-*hyperparameters* *τ*<sup>2</sup> and *ξ*<sup>2</sup> for the prior
-variances .
+where the *location* parameter *β* and the *scale* parameter *γ* are
+themselves normally distributed with prior mean 0 and *hyperparameters*
+*τ*<sup>2</sup> and *ξ*<sup>2</sup> for the prior variances.
 
 ## The Data
 
