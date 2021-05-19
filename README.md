@@ -119,10 +119,10 @@ results
 ## # ... with 1 more variable: Standard Deviation <dbl>
 ```
 
-Since the results are embedded in a `data frame` the usual methods of
+Since the results are embedded in a `data frame`, the usual methods of
 data frame manipulation allow for a convenient analysis even for high
-dimensional parameter vectors. For the sake of illustration we can
-easily sort all scale parameters by their standard deviation:
+dimensional parameter vectors. For illustration purposes we can easily
+sort all scale parameters by their standard deviation:
 
 ``` r
 results %>%
@@ -139,13 +139,13 @@ results %>%
 
 ## Graphical Analysis
 
-The building blocks of monitoring the convergence of the posterior
-chains as well as the autocorrelation are the functions
+The building blocks for monitoring the convergence of the posterior
+chains as well as the autocorrelations are the functions
 `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for
 combining multiple chains.
 
-First we analyze the convergence of the location coefficients. Note that
-the posterior samples are saved in the list entry
+First, we analyze the convergence of the location coefficients. Note
+that the posterior samples are saved in the list entry
 `mcmc_ridge$coefficient_sampling_matrices`:
 
 ``` r
