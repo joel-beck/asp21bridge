@@ -20,7 +20,7 @@ for (i in seq_along(y)) {
   y[i] <- rnorm(n = 1, mean = mu, sd = sigma^2)
 }
 
-toy_data <- data.frame(
+toy_data <- dplyr::tibble(
   y = y, x1 = x1, x2 = x2, z1 = z1, z2 = z2
 )
 

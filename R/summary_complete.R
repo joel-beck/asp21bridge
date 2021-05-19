@@ -1,3 +1,5 @@
+#' @importFrom rlang .data
+
 collect_results <- function(samples, include_plot = FALSE) {
   full_data <- samples %>%
     as.data.frame() %>%

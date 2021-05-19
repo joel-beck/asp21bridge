@@ -3,7 +3,7 @@
 #' Simulated data set constructed for unit testing and illustration package
 #' functionality in documentation examples as well as vignettes.
 #'
-#' @format A data frame with 50 rows and 5 columns:
+#' @format A `tibble` with 50 rows and 5 columns:
 #' \describe{
 #' \item{y}{Numeric vector representing observations}
 #' \item{x1, x2}{Regressors for the location parameter}
