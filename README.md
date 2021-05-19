@@ -19,9 +19,9 @@ y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \ma
 <!--  -->
 
 where the *location* parameter
-$\`\\boldsymbol{\\beta} = \\begin{pmatrix} \\beta\_0 & \\cdots & \\beta\_K \\end{pmatrix}\`$
+$\\boldsymbol{\\beta} = \\begin{pmatrix} \\beta\_0 & \\cdots & \\beta\_K \\end{pmatrix}$
 and the *scale* parameter
-$\`\\boldsymbol{\\gamma} = \\begin{pmatrix} \\gamma\_0 & \\cdots & \\gamma\_L \\end{pmatrix}\`$
+$\\boldsymbol{\\gamma} = \\begin{pmatrix} \\gamma\_0 & \\cdots & \\gamma\_L \\end{pmatrix}$
 are themselves normally distributed with prior mean 0 and
 *hyperparameters* *τ*<sup>2</sup> and *ξ*<sup>2</sup> for the prior
 variances .
