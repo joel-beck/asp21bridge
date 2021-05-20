@@ -25,7 +25,7 @@ The observation model in consideration is given by
 <!--  -->
 ```math
 \begin{aligned}
-y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right) \right) \qquad i = 1, \ldots n, 
+y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)^2 \right) \qquad i = 1, \ldots n, 
 \end{aligned}
 ```
 <!--  -->
