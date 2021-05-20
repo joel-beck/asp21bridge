@@ -53,13 +53,11 @@ OUTPUT_DESCRIPTION
 \description{
 FUNCTION_DESCRIPTION
 }
-\details{
-DETAILS
-}
 \examples{
 \dontrun{
-if(interactive()){
- #EXAMPLE1
- }
+if (interactive()) {
+  # EXAMPLE1
 }
+}
+
 }

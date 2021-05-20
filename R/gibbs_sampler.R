@@ -1,5 +1,7 @@
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param m PARAM_DESCRIPTION, Default: NULL
 #' @param X PARAM_DESCRIPTION, Default: NULL
 #' @param Z PARAM_DESCRIPTION, Default: NULL
@@ -13,49 +15,55 @@
 #' @param a_xi PARAM_DESCRIPTION, Default: 1
 #' @param b_xi PARAM_DESCRIPTION, Default: 3
 #' @param num_sim PARAM_DESCRIPTION, Default: 1000
+#'
 #' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#'
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
 #' }
-#' @rdname gibbs_sampler
+#' }
+#'
 #' @export
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
                           a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, num_sim = 1000) {
-  if (is.null(m) & (is.null(X) | is.null(Z) | is.null(y))) {
-    stop("At least either all model matrices (X, Z, y) or a model object (m) must be given.")
-  } else if (!is.null(m)) {
-    if (class(m) == "lslm") {
-      if (m$light) {
-        stop("Cannot run MCMC, lslm() called with argument 'light = TRUE'")
+  mod <- FALSE
+  mcmc_ridge_m <- m
+
+  if (is.null(m) &
+    (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
+    stop("At least either all model matrices (X, Z, y) and coefficients (beta_start, gamma_start)
+         or a model object (m) must be given.")
+  } else if (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start)) {
+    input_list <- list(
+      X = X,
+      Z = Z,
+      y = y,
+      beta_start = beta_start,
+      gamma_start = gamma_start
+    )
+    mod_name_list <- list(
+      X = mcmc_ridge_m$x,
+      Z = mcmc_ridge_m$z,
+      Y = mcmc_ridge_m$y,
+      beta_start = mcmc_ridge_m$coefficients$location, # hard-gecoded
+      gamma_start = mcmc_ridge_m$coefficients$scale # hard-gecoded
+    )
+    for (l in 1:length(input_list)) {
+      if (is.null(input_list[[l]])) {
+        mod <- TRUE
+        assign(names(input_list[l]), mod_name_list[[l]])
       }
-
-      # Where m is an object of the model lslm
-      cat("Model object chosen for further calculations.")
-      mod <- TRUE
-
-      mcmc_ridge_m <- m
-
-      X <- mcmc_ridge_m$x
-      Z <- mcmc_ridge_m$z
-      y <- mcmc_ridge_m$y
-      beta_start <- mcmc_ridge_m$coefficients$location
-      gamma_start <- mcmc_ridge_m$coefficients$scale
-    } else {
-      stop("Implementation of the Gibbs Sampler for anything but lslm model objects is not released yet.") # Wie implementiere ich Z für andere Modellobjekte?
     }
-  } else if (!is.null(X) & !is.null(Z) & !is.null(y) & !is.null(beta_start) & !is.null(gamma_start)) {
-    if ((ncol(X) != length(beta_start)) | ncol(Z) != length(gamma_start)) {
-      stop("Dimensions of design matrices do not match with length of coefficients")
-    } else {
-      cat("Matrices and coefficients chosen for further calculations.")
-      mod <- FALSE
+
+    if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
+      stop("Dimensions of design matrices do not match with length of coefficients.")
     }
+  } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
+    stop("Dimensions of design matrices do not match with length of coefficients.")
   }
 
 
@@ -97,6 +105,7 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
 
   for (i in 2:num_sim) {
 
+
     # sampling beta
     g_gamma <- vector(mode = "numeric", length = n)
     for (k in 1:n) {
@@ -105,11 +114,13 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
       u[k] <- y[k] / g_gamma[k]
     }
 
+
     beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(K))
     beta_mean <- beta_var %*% crossprod(W, u)
     beta_samples[i, ] <- mvtnorm::rmvnorm(n = 1, mean = beta_mean, sigma = beta_var)
 
     # sampling gamma with metropolis-hastings
+
     gamma_list <- mh_gamma(
       y = y, X = X, Z = Z, beta = beta_samples[i, ],
       gamma = gamma_samples[i - 1, ], g_gamma = g_gamma,
