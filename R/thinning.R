@@ -26,13 +26,12 @@ thin_element <- function(samples, freq) {
 
 #' @title Remove samples of a Markov Chain by a constant frequency
 #'
-#' @description
-#' `thinning()` takes a numeric vector, matrix or list of matrices as input and
-#' returns a modified copy of the input object with only a fraction of the
-#' original entries.
-#'
-#' The function is primarily used in the context of Markov-Chain Monte-Carlo
-#' sampling to obtain uncorrelated samples of the posterior distribution.
+#' @description `thinning()` takes a numeric vector, matrix or list of matrices
+#'              as input and returns a modified copy of the input object with
+#'              only a fraction of the original entries. \cr
+#'              The function is primarily used in the context of Markov-Chain
+#'              Monte-Carlo sampling to obtain uncorrelated samples of the
+#'              posterior distribution.
 #'
 #' @param samples Numeric vector, matrix or list of matrices containing the
 #'                samples of the MCMC sampler.
@@ -41,9 +40,8 @@ thin_element <- function(samples, freq) {
 #'             Markov-Chain is thinned out, e.g. `freq = 10` only keeps every
 #'             10th sample.
 #'
-#' @returns
-#' Same data type as the provided input, i.e. a numeric vector, matrix or list
-#' of matrices with thinned out elements.
+#' @returns Same data type as the provided input, i.e. a numeric vector,
+#'          matrix or list of matrices with thinned out elements.
 #'
 #' @examples
 #' fit <- lslm(

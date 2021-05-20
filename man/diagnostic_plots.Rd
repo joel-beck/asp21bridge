@@ -2,7 +2,8 @@
 % Please edit documentation in R/diagnostic_plots.R
 \name{diagnostic_plots}
 \alias{diagnostic_plots}
-\title{FUNCTION_TITLE}
+\title{Combine time, density and autocorrelation plots for a single
+Markov Chain into one graphical display}
 \usage{
 diagnostic_plots(
   samples,
@@ -13,29 +14,55 @@ diagnostic_plots(
 )
 }
 \arguments{
-\item{samples}{PARAM_DESCRIPTION}
+\item{samples}{Numeric vector, matrix with a single column or list
+containing such a vector or matrix as the only element.}
 
-\item{lag_max}{PARAM_DESCRIPTION, Default: 30}
+\item{lag_max}{Positive integer representing the maximum number of lags
+that are shown on the x - axis of the autocorrelation plot. \cr
+Default: 30}
 
-\item{log}{PARAM_DESCRIPTION}
+\item{log}{Logical. If TRUE, the y - axis in the time plot and the x - axis
+in the density plot are transformed to the logarithmic scale. \cr
+Default: FALSE}
 
-\item{robust}{PARAM_DESCRIPTION, Default: FALSE}
+\item{robust}{Logical. If TRUE, the first and last percentile of the samples'
+distribution are omitted from the time plot as well as the
+density plot to avoid a strong influence of outliers. \cr
+Default: FALSE}
 
-\item{latex}{PARAM_DESCRIPTION, Default: FALSE}
+\item{latex}{Logical. If TRUE, mathematical symbols such as greek letters
+in the plot title with subscripts and superscripts are properly
+rendered.
+This option requires the column of the input matrix to be
+labeled accordingly (as in the output of the \code{gibbs_sampler()}
+function). \cr
+Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+Plot object of the classes "patchwork" and "ggplot".
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
+The \code{diagnostic_plots()} function stacks a time plot on top
+of side-by-side density and autocorrelation plots for a single
+Markov Chain. \cr
+This functionality is particularly convenient to analyze both
+the convergence as well as the dependence of the collected
+samples.
 }
 \examples{
-\dontrun{
-if (interactive()) {
-  # EXAMPLE1
-}
-}
+fit <- lslm(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+) \%>\%
+  gibbs_sampler(num_sim = 1000)
+
+# list of 4 matrices with 1000 rows each
+samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+
+# extract first chain of the location parameter
+diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)
+
+# log argument often useful for strictly positive variance parameters
+diagnostic_plots(samples$scale_prior, log = TRUE, robust = TRUE, latex = TRUE)
+
 }

@@ -14,17 +14,16 @@ samples of the MCMC sampler.}
 samples, e.g. \code{num_burn = 10} removes the first 10 samples.}
 }
 \value{
-Same data type as the provided input, i.e. a numeric vector, matrix or list
-of matrices with removed elements at the beginning.
+Same data type as the provided input, i.e. a numeric vector,
+matrix or list of matrices with removed elements at the beginning.
 }
 \description{
-\code{burnin()} takes a numeric vector, matrix or list of matrices as input and
-returns a modified copy of the input object with a removed first part of
-the original entries.
-
-The function is primarily used in the context of Markov-Chain Monte-Carlo
-sampling to obtain samples of the posterior distribution after a converging
-phase.
+\code{burnin()} takes a numeric vector, matrix or list of matrices as
+input and returns a modified copy of the input object with a
+removed first part of the original entries. \cr
+The function is primarily used in the context of Markov-Chain
+Monte-Carlo sampling to obtain samples of the posterior
+distribution after a converging phase.
 }
 \examples{
 fit <- lslm(
@@ -52,6 +51,5 @@ samples$location \%>\%
   burnin(num_burn = 100) \%>\%
   thinning(freq = 5) \%>\%
   mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
-
 
 }

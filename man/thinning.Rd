@@ -15,16 +15,16 @@ Markov-Chain is thinned out, e.g. \code{freq = 10} only keeps every
 10th sample.}
 }
 \value{
-Same data type as the provided input, i.e. a numeric vector, matrix or list
-of matrices with thinned out elements.
+Same data type as the provided input, i.e. a numeric vector,
+matrix or list of matrices with thinned out elements.
 }
 \description{
-\code{thinning()} takes a numeric vector, matrix or list of matrices as input and
-returns a modified copy of the input object with only a fraction of the
-original entries.
-
-The function is primarily used in the context of Markov-Chain Monte-Carlo
-sampling to obtain uncorrelated samples of the posterior distribution.
+\code{thinning()} takes a numeric vector, matrix or list of matrices
+as input and returns a modified copy of the input object with
+only a fraction of the original entries. \cr
+The function is primarily used in the context of Markov-Chain
+Monte-Carlo sampling to obtain uncorrelated samples of the
+posterior distribution.
 }
 \examples{
 fit <- lslm(

@@ -19,8 +19,8 @@ of the MCMC sampler.}
 
 \item{type}{One of the values "time", "density" or "both". \cr
 Controls whether only time plots or only density plots should
-be included for all chains. The option "both" stacks time plots
-on top of the density plots.}
+be included for all chains.
+The option "both" stacks time plots on top of the density plots.}
 
 \item{log}{Logical. If TRUE, the y - axis in time plots and the x - axis in
 density plots are transformed to the logarithmic scale. \cr
@@ -47,11 +47,11 @@ Default: FALSE}
 Plot object of the class "ggplot".
 }
 \description{
-The \code{mult_plot()} function allows to combine time and/or density plots of
-multiple Markov Chains into a single graphical illustration.
-
-Time plots are displayed separately in facets, density plots are shown in a
-ridgeline plot.
+The \code{mult_plot()} function allows to combine time and / or
+density plots of multiple Markov Chains into a single graphical
+illustration. \cr
+Time plots are displayed separately in facets, density plots
+are shown in a ridgeline plot.
 }
 \examples{
 fit <- lslm(

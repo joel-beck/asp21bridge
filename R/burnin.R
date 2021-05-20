@@ -25,14 +25,12 @@ burn_element <- function(samples, num_burn) {
 
 #' @title Remove beginning samples of a Markov Chain
 #'
-#' @description
-#' `burnin()` takes a numeric vector, matrix or list of matrices as input and
-#' returns a modified copy of the input object with a removed first part of
-#' the original entries.
-#'
-#' The function is primarily used in the context of Markov-Chain Monte-Carlo
-#' sampling to obtain samples of the posterior distribution after a converging
-#' phase.
+#' @description `burnin()` takes a numeric vector, matrix or list of matrices as
+#'              input and returns a modified copy of the input object with a
+#'              removed first part of the original entries. \cr
+#'              The function is primarily used in the context of Markov-Chain
+#'              Monte-Carlo sampling to obtain samples of the posterior
+#'              distribution after a converging phase.
 #'
 #' @param samples Numeric vector, matrix or list of matrices containing the
 #'                samples of the MCMC sampler.
@@ -40,10 +38,8 @@ burn_element <- function(samples, num_burn) {
 #' @param num_burn Nonnegative integer which controls the number of removed
 #'                 samples, e.g. `num_burn = 10` removes the first 10 samples.
 #'
-#' @returns
-#' Same data type as the provided input, i.e. a numeric vector, matrix or list
-#' of matrices with removed elements at the beginning.
-#'
+#' @returns Same data type as the provided input, i.e. a numeric vector,
+#'          matrix or list of matrices with removed elements at the beginning.
 #'
 #' @examples
 #' fit <- lslm(
@@ -71,7 +67,6 @@ burn_element <- function(samples, num_burn) {
 #'   burnin(num_burn = 100) %>%
 #'   thinning(freq = 5) %>%
 #'   mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
-#'
 #'
 #' @export
 

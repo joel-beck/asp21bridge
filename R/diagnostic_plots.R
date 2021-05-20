@@ -1,19 +1,50 @@
-
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param samples PARAM_DESCRIPTION
-#' @param log PARAM_DESCRIPTION
-#' @param robust PARAM_DESCRIPTION, Default: FALSE
-#' @param latex PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Plot values of a single Markov Chain over time
+#'
+#' @description The `time_plot()` function creates a line graph of Markov Chain
+#'              samples, where the sampled values are mapped to the y - axis
+#'              and the iteration / index is placed on the x - axis in
+#'              chronological order. \cr
+#'              This type of plot is typically used to evaluate the convergence
+#'              of the chain, possibly towards a posterior distribution.
+#'
+#' @param samples Numeric vector, matrix with a single column or list
+#'                containing such a vector or matrix as the only element.
+#'
+#' @param log Logical. If TRUE, the y - axis is transformed to the
+#'            logarithmic scale. \cr
+#'            Default: FALSE
+#'
+#' @param robust Logical. If TRUE, the first and last percentile of the samples'
+#'               distribution are omitted to avoid a strong influence of
+#'               outliers on the y - axis scale. \cr
+#'               Default: FALSE
+#'
+#' @param latex Logical. If TRUE, mathematical symbols such as greek letters
+#'              in the plot title with subscripts and superscripts are properly
+#'              rendered.
+#'              This option requires the column of the input matrix to be
+#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              function). \cr
+#'              Default: FALSE
+#'
+#' @returns Plot object of the class "ggplot".
+#'
 #' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   # EXAMPLE1
-#' }
-#' }
-#' @rdname time_plot
+#' fit <- lslm(
+#'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+#'   data = toy_data, light = FALSE
+#' ) %>%
+#'   gibbs_sampler(num_sim = 1000)
+#'
+#' # list of 4 matrices with 1000 rows each
+#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#'
+#' # extract first chain of the location parameter
+#' diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)
+#'
+#' # log argument often useful for strictly positive variance parameters
+#' time_plot(samples$scale_prior, log = TRUE, latex = TRUE)
+#'
 #' @export
 #'
 #' @importFrom rlang .data
@@ -83,21 +114,52 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param samples PARAM_DESCRIPTION
-#' @param log PARAM_DESCRIPTION
-#' @param robust PARAM_DESCRIPTION, Default: FALSE
-#' @param latex PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Plot kernel density estimate for values of a single Markov Chain
+#'
+#' @description The `density_plot()` function creates a kernel density plot of
+#'              Markov Chain samples with the sampled values mapped to the
+#'              x - axis.
+#'              The individual data points are displayed by gray points on the
+#'              x - axis to get a more detailed overview of the distribution.
+#'
+#' @param samples Numeric vector, matrix with a single column or list
+#'                containing such a vector or matrix as the only element.
+#'
+#' @param log Logical. If TRUE, the x - axis is transformed to the
+#'            logarithmic scale. \cr
+#'            Default: FALSE
+#'
+#' @param robust Logical. If TRUE, the first and last percentile of the samples'
+#'               distribution are omitted to avoid a strong influence of
+#'               outliers on the x - axis scale. \cr
+#'               Default: FALSE
+#'
+#' @param latex Logical. If TRUE, mathematical symbols such as greek letters
+#'              in the plot title with subscripts and superscripts are properly
+#'              rendered.
+#'              This option requires the column of the input matrix to be
+#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              function). \cr
+#'              Default: FALSE
+#'
+#' @returns Plot object of the class "ggplot".
+#'
 #' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   # EXAMPLE1
-#' }
-#' }
-#' @rdname density_plot
+#' fit <- lslm(
+#'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+#'   data = toy_data, light = FALSE
+#' ) %>%
+#'   gibbs_sampler(num_sim = 1000)
+#'
+#' # list of 4 matrices with 1000 rows each
+#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#'
+#' # extract first chain of the scale parameter
+#' density_plot(samples$scale[, 1], robust = TRUE)
+#'
+#' # log argument often useful for strictly positive variance parameters
+#' density_plot(samples$scale_prior, log = TRUE, latex = TRUE)
+#'
 #' @export
 #'
 #' @importFrom rlang .data
@@ -170,20 +232,48 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param samples PARAM_DESCRIPTION
-#' @param lag_max PARAM_DESCRIPTION, Default: 30
-#' @param latex PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Plot autocorrelations of a single Markov Chain
+#'
+#' @description The `acl_plot()` function creates a graphical display of
+#'              autocorrelations for various lags of a single Markov Chain.
+#'              The lags are mapped to the x - axis in increasing order with the
+#'              corresponding autocorrelation values mapped to the y - axis. \cr
+#'              This type of plot can be used to analyze the dependence of the
+#'              collected samples i.e. from a posterior distribution.
+#'
+#' @param samples Numeric vector, matrix with a single column or list
+#'                containing such a vector or matrix as the only element.
+#'
+#' @param lag_max Positive integer representing the maximum number of lags
+#'                that are shown on the x - axis. \cr
+#'                Default: 30
+#'
+#' @param latex Logical. If TRUE, mathematical symbols such as greek letters
+#'              in the plot title with subscripts and superscripts are properly
+#'              rendered.
+#'              This option requires the column of the input matrix to be
+#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              function). \cr
+#'              Default: FALSE
+#'
+#' @returns Plot object of the class "ggplot".
+#'
 #' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   # EXAMPLE1
-#' }
-#' }
-#' @rdname acl_plot
+#' fit <- lslm(
+#'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+#'   data = toy_data, light = FALSE
+#' ) %>%
+#'   gibbs_sampler(num_sim = 1000)
+#'
+#' # list of 4 matrices with 1000 rows each
+#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#'
+#' # uses default lag_max = 30
+#' acl_plot(samples$scale_prior, latex = TRUE)
+#'
+#' # value of lag_max should be adapted depending on the correlation structure
+#' acl_plot(samples$scale[, 1, drop = FALSE], lag_max = 100, latex = TRUE)
+#'
 #' @export
 #'
 #' @importFrom rlang .data
@@ -246,22 +336,58 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 
 
 
-#' @title FUNCTION_TITLE
-#' @description FUNCTION_DESCRIPTION
-#' @param samples PARAM_DESCRIPTION
-#' @param log PARAM_DESCRIPTION
-#' @param lag_max PARAM_DESCRIPTION, Default: 30
-#' @param robust PARAM_DESCRIPTION, Default: FALSE
-#' @param latex PARAM_DESCRIPTION, Default: FALSE
-#' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#' @title Combine time, density and autocorrelation plots for a single
+#'        Markov Chain into one graphical display
+#'
+#' @description The `diagnostic_plots()` function stacks a time plot on top
+#'              of side-by-side density and autocorrelation plots for a single
+#'              Markov Chain. \cr
+#'              This functionality is particularly convenient to analyze both
+#'              the convergence as well as the dependence of the collected
+#'              samples.
+#'
+#' @param samples Numeric vector, matrix with a single column or list
+#'                containing such a vector or matrix as the only element.
+#'
+#' @param lag_max Positive integer representing the maximum number of lags
+#'                that are shown on the x - axis of the autocorrelation plot. \cr
+#'                Default: 30
+#'
+#' @param log Logical. If TRUE, the y - axis in the time plot and the x - axis
+#'            in the density plot are transformed to the logarithmic scale. \cr
+#'            Default: FALSE
+#'
+#' @param robust Logical. If TRUE, the first and last percentile of the samples'
+#'               distribution are omitted from the time plot as well as the
+#'               density plot to avoid a strong influence of outliers. \cr
+#'               Default: FALSE
+#'
+#' @param latex Logical. If TRUE, mathematical symbols such as greek letters
+#'              in the plot title with subscripts and superscripts are properly
+#'              rendered.
+#'              This option requires the column of the input matrix to be
+#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              function). \cr
+#'              Default: FALSE
+#'
+#' @returns Plot object of the classes "patchwork" and "ggplot".
+#'
 #' @examples
-#' \dontrun{
-#' if (interactive()) {
-#'   # EXAMPLE1
-#' }
-#' }
-#' @rdname diagnostic_plots
+#' fit <- lslm(
+#'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+#'   data = toy_data, light = FALSE
+#' ) %>%
+#'   gibbs_sampler(num_sim = 1000)
+#'
+#' # list of 4 matrices with 1000 rows each
+#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#'
+#' # extract first chain of the location parameter
+#' diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)
+#'
+#' # log argument often useful for strictly positive variance parameters
+#' diagnostic_plots(samples$scale_prior, log = TRUE, robust = TRUE, latex = TRUE)
+#'
 #' @export
 #'
 #' @import patchwork
