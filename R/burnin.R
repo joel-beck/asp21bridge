@@ -51,17 +51,17 @@ burn_element <- function(samples, num_burn) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 100)
+#'   gibbs_sampler(num_sim = 1000)
 #'
-#' # list of 4 matrices with 100 rows each
+#' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
 #'
 #' # list input applies burnin() to all matrices
-#' burnin(samples, num_burn = 10)
+#' burnin(samples, num_burn = 100)
 #'
 #' # extract matrices separately for different length of Burn-In phase
-#' burnin(samples$location, num_burn = 5)
-#' burnin(samples$scale, num_burn = 20)
+#' burnin(samples$location, num_burn = 50)
+#' burnin(samples$scale, num_burn = 200)
 #'
 #' # works in many different contexts
 #' burnin(rnorm(50), num_burn = 1)
@@ -69,7 +69,7 @@ burn_element <- function(samples, num_burn) {
 #' # works well in combination with thinning() and in
 #' # pipe workflows
 #' samples$location %>%
-#'   burnin(num_burn = 10) %>%
+#'   burnin(num_burn = 100) %>%
 #'   thinning(freq = 5) %>%
 #'   mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
 #'

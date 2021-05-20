@@ -2,7 +2,7 @@
 % Please edit documentation in R/mult_plot.R
 \name{mult_plot}
 \alias{mult_plot}
-\title{FUNCTION_TITLE}
+\title{Plot multiple Markov Chains together}
 \usage{
 mult_plot(
   samples,
@@ -14,31 +14,66 @@ mult_plot(
 )
 }
 \arguments{
-\item{samples}{PARAM_DESCRIPTION}
+\item{samples}{Numeric matrix or list of matrices containing samples
+of the MCMC sampler.}
 
-\item{type}{PARAM_DESCRIPTION, Default: c("time", "density", "both")}
+\item{type}{One of the values "time", "density" or "both". \cr
+Controls whether only time plots or only density plots should
+be included for all chains. The option "both" stacks time plots
+on top of the density plots.}
 
-\item{log}{PARAM_DESCRIPTION}
+\item{log}{Logical. If TRUE, the y - axis in time plots and the x - axis in
+density plots are transformed to the logarithmic scale. \cr
+Default: FALSE}
 
-\item{robust}{PARAM_DESCRIPTION, Default: FALSE}
+\item{robust}{Logical. If TRUE, the first and last percentile of the samples'
+distributions are omitted from density plots to avoid a strong
+influence of outliers on the x - axis scale. \cr
+Default: FALSE}
 
-\item{free_scale}{PARAM_DESCRIPTION, Default: FALSE}
+\item{free_scale}{Logical. If TRUE, the y - axis scale in time plots is
+chosen differently for all facets. \cr
+Default: FALSE}
 
-\item{latex}{PARAM_DESCRIPTION, Default: FALSE}
+\item{latex}{Logical. If TRUE, facets in time plots and ridgelines in density
+plots can be labeled by rendered mathematical symbols such as
+greek letters in combination with subscripts and superscripts.
+This option requires the columns of the input matrices to be
+labeled accordingly (as in the output of the \code{gibbs_sampler()}
+function). \cr
+Default: FALSE}
 }
 \value{
-OUTPUT_DESCRIPTION
+Plot object of the class "ggplot".
 }
 \description{
-FUNCTION_DESCRIPTION
-}
-\details{
-DETAILS
+The \code{mult_plot()} function allows to combine time and/or density plots of
+multiple Markov Chains into a single graphical illustration.
+
+Time plots are displayed separately in facets, density plots are shown in a
+ridgeline plot.
 }
 \examples{
-\dontrun{
-if (interactive()) {
-  # EXAMPLE1
-}
-}
+
+fit <- lslm(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+) \%>\%
+  gibbs_sampler(num_sim = 1000)
+
+# list of 4 matrices with 1000 rows each
+samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+
+# plots all output list elements together for quick overview
+mult_plot(samples, type = "both", robust = TRUE, free_scale = TRUE, latex = TRUE)
+
+# time plot of location coefficients
+mult_plot(samples$location, type = "time", free_scale = TRUE, latex = TRUE)
+
+# log argument often useful for strictly positive variance parameters
+mult_plot(
+  list(samples$location_prior, samples$scale_prior),
+  type = "both", log = TRUE, latex = TRUE
+)
+
 }

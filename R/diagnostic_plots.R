@@ -263,6 +263,8 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #' }
 #' @rdname diagnostic_plots
 #' @export
+#'
+#' @import patchwork
 
 diagnostic_plots <- function(samples, lag_max = 30, log = FALSE,
                              robust = FALSE, latex = FALSE) {

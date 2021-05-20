@@ -51,9 +51,9 @@ thin_element <- function(samples, freq) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 100)
+#'   gibbs_sampler(num_sim = 1000)
 #'
-#' # list of 4 matrices with 100 rows each
+#' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
 #'
 #' # list input applies thinning() to all matrices
