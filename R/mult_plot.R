@@ -35,7 +35,6 @@
 #' Plot object of the class "ggplot".
 #'
 #' @examples
-#'
 #' fit <- lslm(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE

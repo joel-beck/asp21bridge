@@ -27,7 +27,6 @@ The function is primarily used in the context of Markov-Chain Monte-Carlo
 sampling to obtain uncorrelated samples of the posterior distribution.
 }
 \examples{
-
 fit <- lslm(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
