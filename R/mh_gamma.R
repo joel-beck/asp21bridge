@@ -41,7 +41,7 @@ mh_gamma <- function(y, X, Z, beta, gamma, g_gamma, xi_squared, prop_var) {
   n <- length(y)
 
   # Proposal für Gamma
-  Sigma <- diag(1/colMeans(Z^2)) * 3 / (n * length(gamma))
+  Sigma <- diag(1/colMeans(Z^2)) * prop_var / (n * length(gamma))
   gamma_proposal <- mvtnorm::rmvnorm(n = 1, mean = gamma, sigma = Sigma)
 
   # Auswertung Full Conditional Densities

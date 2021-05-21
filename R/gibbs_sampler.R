@@ -30,7 +30,7 @@
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
-                          a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, prop_var = 0.5,
+                          a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, prop_var = 3,
                           num_sim = 1000) {
   mod <- FALSE
   mcmc_ridge_m <- m
