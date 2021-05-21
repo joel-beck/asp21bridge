@@ -50,18 +50,21 @@ collect_results <- function(samples, include_plot = FALSE) {
 
 
 #' @title FUNCTION_TITLE
+#'
 #' @description FUNCTION_DESCRIPTION
+#'
 #' @param samples PARAM_DESCRIPTION
 #' @param include_plot PARAM_DESCRIPTION, Default: FALSE
+#'
 #' @return OUTPUT_DESCRIPTION
-#' @details DETAILS
+#'
 #' @examples
 #' \dontrun{
 #' if(interactive()){
 #'  #EXAMPLE1
 #'  }
 #' }
-#' @rdname summary_complete
+#'
 #' @export
 
 summary_complete <- function(samples, include_plot = FALSE) {
