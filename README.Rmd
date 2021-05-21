@@ -21,7 +21,7 @@ The goal of `lslmbRidge` is to extend the `lslm` package by implementing a Marko
 
 ## Underlying Model
 
-The observation model in consideration is given by 
+The observation model in consideration is given by  
 <!--  -->
 ```math
 \begin{aligned}

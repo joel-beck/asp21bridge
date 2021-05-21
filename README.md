@@ -8,7 +8,8 @@ a Markov Chain Monte Carlo Sampler with Ridge penalization.
 
 ## Underlying Model
 
-The observation model in consideration is given by <!--  -->
+The observation model in consideration is given by  
+<!--  -->
 
 ``` math
 \begin{aligned}
@@ -56,7 +57,6 @@ set.seed(1234)
 fit <- toy_data %>%
   lslm(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
   gibbs_sampler(num_sim = 1000)
-## Model object chosen for further calculations.
 ```
 
 ## Numerical Analysis
@@ -155,7 +155,6 @@ mult_plot(
   samples = samples$location, type = "both",
   free_scale = TRUE, latex = TRUE
 )
-## Picking joint bandwidth of 0.0582
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" width="100%" />

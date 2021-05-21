@@ -193,5 +193,6 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     plot <- density_p
   }
 
-  return(plot)
+  # avoid console message of gg_ridges
+  suppressMessages(print(plot))
 }
