@@ -14,6 +14,7 @@
 #' @param b_tau PARAM_DESCRIPTION, Default: 3
 #' @param a_xi PARAM_DESCRIPTION, Default: 1
 #' @param b_xi PARAM_DESCRIPTION, Default: 3
+#' @param prop_var PARAM_DESCRIPTION, Default: 1
 #' @param num_sim PARAM_DESCRIPTION, Default: 1000
 #'
 #' @return OUTPUT_DESCRIPTION
@@ -29,7 +30,8 @@
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
-                          a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, num_sim = 1000) {
+                          a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, prop_var = 1,
+                          num_sim = 1000) {
   mod <- FALSE
   mcmc_ridge_m <- m
 
@@ -124,7 +126,7 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
     gamma_list <- mh_gamma(
       y = y, X = X, Z = Z, beta = beta_samples[i, ],
       gamma = gamma_samples[i - 1, ], g_gamma = g_gamma,
-      xi_squared = xi_samples[i - 1, ]
+      xi_squared = xi_samples[i - 1, ], prop_var = prop_var
     )
 
     gamma_samples[i, ] <- gamma_list$gamma

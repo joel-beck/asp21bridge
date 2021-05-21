@@ -35,11 +35,11 @@ log_full_cond_2 <- function(y, X, Z, beta, gamma, xi_squared, n) {
 ################ Gamma Update #################################
 
 
-mh_gamma <- function(y, X, Z, beta, gamma, g_gamma, xi_squared) {
+mh_gamma <- function(y, X, Z, beta, gamma, g_gamma, xi_squared, prop_var) {
   n <- length(y)
 
   # Proposal für Gamma
-  Sigma <- diag(length(gamma)) / 1000
+  Sigma <- diag(length(gamma)) * prop_var / (n * length(gamma))
   gamma_proposal <- mvtnorm::rmvnorm(n = 1, mean = gamma, sigma = Sigma)
 
   # Auswertung Full Conditional Densities
