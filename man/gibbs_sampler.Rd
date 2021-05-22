@@ -17,7 +17,7 @@ gibbs_sampler(
   b_tau = 3,
   a_xi = 1,
   b_xi = 3,
-  prop_var = 0.5,
+  prop_var = 3,
   num_sim = 1000
 )
 }
@@ -46,7 +46,7 @@ gibbs_sampler(
 
 \item{b_xi}{PARAM_DESCRIPTION, Default: 3}
 
-\item{prop_var}{PARAM_DESCRIPTION, Default: 1}
+\item{prop_var}{PARAM_DESCRIPTION, Default: 3}
 
 \item{num_sim}{PARAM_DESCRIPTION, Default: 1000}
 }

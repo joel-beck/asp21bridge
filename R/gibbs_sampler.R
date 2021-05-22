@@ -14,7 +14,7 @@
 #' @param b_tau PARAM_DESCRIPTION, Default: 3
 #' @param a_xi PARAM_DESCRIPTION, Default: 1
 #' @param b_xi PARAM_DESCRIPTION, Default: 3
-#' @param prop_var PARAM_DESCRIPTION, Default: 1
+#' @param prop_var PARAM_DESCRIPTION, Default: 3
 #' @param num_sim PARAM_DESCRIPTION, Default: 1000
 #'
 #' @return OUTPUT_DESCRIPTION
