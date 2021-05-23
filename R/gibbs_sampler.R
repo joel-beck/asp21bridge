@@ -14,9 +14,15 @@
 #' @param Z Matrix containing the data according to the gamma_start coefficient,
 #'          Default: NULL
 #' @param y Response vector; `y = X * beta + Z * gamma`, Default: NULL
-#' @param beta_start Starting values for simulation, where `beta` , Default: NULL
-#' @param gamma_start PARAM_DESCRIPTION, Default: NULL
-#' @param tau_start PARAM_DESCRIPTION, Default: 1
+#' @param beta_start Starting vector for simulation, where `beta` is a linear predictor
+#'                   for the mean (= the location), that is normally distributed,
+#'                   Default: NULL
+#' @param gamma_start Starting vector for simulation, where `gamma` is a linear predictor
+#'                    for the standard deviation (= the scale), that is normally
+#'                    distributed, Default: NULL
+#' @param tau_start Starting value for the variance of the normal distribution of the beta
+#'                  parameter. Regularization parameter in a Bayesian ridge
+#'                  setting, Default: 1
 #' @param xi_start PARAM_DESCRIPTION, Default: 1
 #' @param a_tau PARAM_DESCRIPTION, Default: 1
 #' @param b_tau PARAM_DESCRIPTION, Default: 3
