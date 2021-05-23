@@ -1,12 +1,20 @@
-#' @title FUNCTION_TITLE
+#' @title Gibbs sampling algorithm
 #'
-#' @description FUNCTION_DESCRIPTION
+#' @description The `gibbs_sampler()` function allows to simulate from parameters of
+#'              a location scale regression model or from matrices and parameters that
+#'              are assigned by hand. As result, a Markov Chain of samples for the
+#'              parameters is generated.
 #'
-#' @param m PARAM_DESCRIPTION, Default: NULL
-#' @param X PARAM_DESCRIPTION, Default: NULL
-#' @param Z PARAM_DESCRIPTION, Default: NULL
-#' @param y PARAM_DESCRIPTION, Default: NULL
-#' @param beta_start PARAM_DESCRIPTION, Default: NULL
+#'
+#' @param m Model object containing a beta and gamma predictor, as well as the according
+#'          model matrices. The model is used in second stage, if one of `X`, `Z`, `y`,
+#'          `beta_start` or `gamma_start` is not given, Default: NULL
+#' @param X Matrix containing the data according to the beta_start coefficient,
+#'          Default: NULL
+#' @param Z Matrix containing the data according to the gamma_start coefficient,
+#'          Default: NULL
+#' @param y Response vector; `y = X * beta + Z * gamma`, Default: NULL
+#' @param beta_start Starting values for simulation, where `beta` , Default: NULL
 #' @param gamma_start PARAM_DESCRIPTION, Default: NULL
 #' @param tau_start PARAM_DESCRIPTION, Default: 1
 #' @param xi_start PARAM_DESCRIPTION, Default: 1
@@ -14,8 +22,8 @@
 #' @param b_tau PARAM_DESCRIPTION, Default: 3
 #' @param a_xi PARAM_DESCRIPTION, Default: 1
 #' @param b_xi PARAM_DESCRIPTION, Default: 3
-#' @param prop_var PARAM_DESCRIPTION, Default: 3
-#' @param num_sim PARAM_DESCRIPTION, Default: 1000
+#' @param prop_var Proposal Variance for sampling gamma, Default: 3
+#' @param num_sim Number of simulations, Default: 1000
 #'
 #' @return OUTPUT_DESCRIPTION
 #'
