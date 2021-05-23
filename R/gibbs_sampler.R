@@ -1,3 +1,22 @@
+# helper function for gibbs_sampler
+# detects intercept in design matrix
+# later use: intercept_x <- includes_intercept(X)
+#            intercept_z <- includes_intercept(Z)
+
+includes_intercept <- function(mat) {
+  any(
+    apply(
+      X = mat,
+      MARGIN = 2,
+      FUN = function(col) all(col == col[1])
+    )
+  )
+}
+
+
+
+
+
 #' @title FUNCTION_TITLE
 #'
 #' @description FUNCTION_DESCRIPTION
