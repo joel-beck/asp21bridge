@@ -1,4 +1,27 @@
+<<<<<<< HEAD
 #' @title Gibbs sampling algorithm
+=======
+# helper function for gibbs_sampler
+# detects intercept in design matrix
+# later use: intercept_x <- includes_intercept(X)
+#            intercept_z <- includes_intercept(Z)
+
+includes_intercept <- function(mat) {
+  any(
+    apply(
+      X = mat,
+      MARGIN = 2,
+      FUN = function(col) all(col == col[1])
+    )
+  )
+}
+
+
+
+
+
+#' @title Gibbs Sampler
+>>>>>>> 35ceac7d5515364d2bd6325b2e8b71b801b232ff
 #'
 #' @description The `gibbs_sampler()` function allows to simulate from parameters of
 #'              a location scale regression model or from matrices and parameters that
@@ -30,7 +53,7 @@
 #' @param b_tau Fix scale parameter of the IG distribution of `tau_start`, Default: 3
 #' @param a_xi Fix shape parameter of the IG distribution of `xi_start`, Default: 1
 #' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, Default: 3
-#' @param prop_var Proposal Variance for sampling gamma, Default: 3
+#' @param prop_var Variance of proposal distribution for gamma sampling, Default: 3
 #' @param num_sim Number of simulations, Default: 1000
 #'
 #' @return OUTPUT_DESCRIPTION
