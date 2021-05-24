@@ -24,43 +24,53 @@ gibbs_sampler(
 \arguments{
 \item{m}{Model object containing a beta and gamma predictor, as well as the according
 model matrices. The model is used in second stage, if one of \code{X}, \code{Z}, \code{y},
-\code{beta_start} or \code{gamma_start} is not given, Default: NULL}
-
-\item{X}{Matrix containing the data according to the beta_start coefficient,
+\code{beta_start} or \code{gamma_start} is not given, \cr
 Default: NULL}
 
-\item{Z}{Matrix containing the data according to the gamma_start coefficient,
+\item{X}{Matrix containing the data according to the beta_start coefficient, \cr
+Default: NULL}
+
+\item{Z}{Matrix containing the data according to the gamma_start coefficient, \cr
 Default: NULL}
 
 \item{y}{Response vector; \code{y = X * beta + Z * gamma}, Default: NULL}
 
 \item{beta_start}{Starting vector for simulation, where \code{beta} is a linear predictor
-for the mean (= the location), that is normally distributed,
+for the mean (= the location), that is normally distributed, \cr
 Default: NULL}
 
 \item{gamma_start}{Starting vector for simulation, where \code{gamma} is a linear predictor
 for the standard deviation (= the scale), that is normally
-distributed, Default: NULL}
+distributed, \cr
+Default: NULL}
 
 \item{tau_start}{Starting value for the variance of the normal distribution of the beta
 parameter, where \code{tau_start} is inverse gamma (IG) distributed.
-Regularization parameter in a Bayesian ridge setting, Default: 1}
+Regularization parameter in a Bayesian ridge setting, \cr
+Default: 1}
 
 \item{xi_start}{Starting value for the variance of the normal distribution of the gamma
 parameter, where \code{xi_start} is inverse gamma (IG) distributed.
-Regularization parameter in a Bayesian ridge setting, Default: 1}
+Regularization parameter in a Bayesian ridge setting, \cr
+Default: 1}
 
-\item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, Default: 1}
+\item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, \cr
+Default: 1}
 
-\item{b_tau}{Fix scale parameter of the IG distribution of \code{tau_start}, Default: 3}
+\item{b_tau}{Fix scale parameter of the IG distribution of \code{tau_start}, \cr
+Default: 3}
 
-\item{a_xi}{Fix shape parameter of the IG distribution of \code{xi_start}, Default: 1}
+\item{a_xi}{Fix shape parameter of the IG distribution of \code{xi_start}, \cr
+Default: 1}
 
-\item{b_xi}{Fix scale parameter of the IG distribution of \code{xi_start}, Default: 3}
+\item{b_xi}{Fix scale parameter of the IG distribution of \code{xi_start}, \cr
+Default: 3}
 
-\item{prop_var}{Variance of proposal distribution for gamma sampling, Default: 3}
+\item{prop_var}{Variance of proposal distribution for gamma sampling, \cr
+Default: 3}
 
-\item{num_sim}{Number of simulations, Default: 1000}
+\item{num_sim}{Number of simulations, \cr
+Default: 1000}
 }
 \value{
 Depending on the input structure, two different output types are available.

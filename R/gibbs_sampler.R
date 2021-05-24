@@ -34,30 +34,40 @@ includes_intercept <- function(mat) {
 #'
 #' @param m Model object containing a beta and gamma predictor, as well as the according
 #'          model matrices. The model is used in second stage, if one of `X`, `Z`, `y`,
-#'          `beta_start` or `gamma_start` is not given, Default: NULL
-#' @param X Matrix containing the data according to the beta_start coefficient,
+#'          `beta_start` or `gamma_start` is not given, \cr
 #'          Default: NULL
-#' @param Z Matrix containing the data according to the gamma_start coefficient,
+#' @param X Matrix containing the data according to the beta_start coefficient, \cr
+#'          Default: NULL
+#' @param Z Matrix containing the data according to the gamma_start coefficient, \cr
 #'          Default: NULL
 #' @param y Response vector; `y = X * beta + Z * gamma`, Default: NULL
 #' @param beta_start Starting vector for simulation, where `beta` is a linear predictor
-#'                   for the mean (= the location), that is normally distributed,
+#'                   for the mean (= the location), that is normally distributed, \cr
 #'                   Default: NULL
 #' @param gamma_start Starting vector for simulation, where `gamma` is a linear predictor
 #'                    for the standard deviation (= the scale), that is normally
-#'                    distributed, Default: NULL
+#'                    distributed, \cr
+#'                    Default: NULL
 #' @param tau_start Starting value for the variance of the normal distribution of the beta
 #'                  parameter, where `tau_start` is inverse gamma (IG) distributed.
-#'                  Regularization parameter in a Bayesian ridge setting, Default: 1
+#'                  Regularization parameter in a Bayesian ridge setting, \cr
+#'                  Default: 1
 #' @param xi_start Starting value for the variance of the normal distribution of the gamma
 #'                 parameter, where `xi_start` is inverse gamma (IG) distributed.
-#'                 Regularization parameter in a Bayesian ridge setting, Default: 1
-#' @param a_tau Fix shape parameter of the IG distribution of `tau_start`, Default: 1
-#' @param b_tau Fix scale parameter of the IG distribution of `tau_start`, Default: 3
-#' @param a_xi Fix shape parameter of the IG distribution of `xi_start`, Default: 1
-#' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, Default: 3
-#' @param prop_var Variance of proposal distribution for gamma sampling, Default: 3
-#' @param num_sim Number of simulations, Default: 1000
+#'                 Regularization parameter in a Bayesian ridge setting, \cr
+#'                 Default: 1
+#' @param a_tau Fix shape parameter of the IG distribution of `tau_start`, \cr
+#'              Default: 1
+#' @param b_tau Fix scale parameter of the IG distribution of `tau_start`, \cr
+#'              Default: 3
+#' @param a_xi Fix shape parameter of the IG distribution of `xi_start`, \cr
+#'             Default: 1
+#' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, \cr
+#'             Default: 3
+#' @param prop_var Variance of proposal distribution for gamma sampling, \cr
+#'                 Default: 3
+#' @param num_sim Number of simulations, \cr
+#'                Default: 1000
 #'
 #' @return Depending on the input structure, two different output types are available.
 #'         In each case a a Markov Chain of samples for the parameters is generated.
