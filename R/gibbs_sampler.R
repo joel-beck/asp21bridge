@@ -66,7 +66,7 @@ includes_intercept <- function(mat) {
 #'         command.
 #'         In case a model object is used at any stage, the output extends the model by
 #'         the same list, that can be obtained via `model$mcmc_ridge` or outputs the last
-#'         iteration as model parameters via `summary(model, type = "mcmc_ridge`).
+#'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`.
 #'
 #' @examples
 #'
