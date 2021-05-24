@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+#<<<<<<< HEAD
 #' @title Gibbs sampling algorithm
-=======
+#=======
 # helper function for gibbs_sampler
 # detects intercept in design matrix
 # later use: intercept_x <- includes_intercept(X)
@@ -20,8 +20,8 @@ includes_intercept <- function(mat) {
 
 
 
-#' @title Gibbs Sampler
->>>>>>> 35ceac7d5515364d2bd6325b2e8b71b801b232ff
+#' @title Gibbs sampling algorithm
+#>>>>>>> 35ceac7d5515364d2bd6325b2e8b71b801b232ff
 #'
 #' @description The `gibbs_sampler()` function is a Markov chain Monte Carlo (MCMC)
 #'              algorithm allowing to simulate from parameters of a location scale
@@ -81,8 +81,7 @@ includes_intercept <- function(mat) {
 #' )
 #' summary(fit, type = "mcmc_ridge")
 #'
-#' # Gibbs sampling with input by hand. Outputs list with each iteration for each
-#'   parameter to sample for.
+#' # Gibbs sampling with input by hand. Outputs list with each parameter and iteration.
 #' beta <- c(2, -4, 5, 1)
 #' gamma <- c(0.003, 0.002)
 #' fit <- gibbs_sampler(
@@ -95,8 +94,8 @@ includes_intercept <- function(mat) {
 #' print(fit)
 #'
 #' # Gibbs sampling with mixed input. The function uses matrices assigned by hand on first
-#'   stage and takes missing parameters out of the model. Output extends model by
-#'   Ridge-part, since model objects were used.
+#' # stage and takes missing parameters out of the model. Output extends model by
+#' # Ridge-part, since model objects were used.
 #' gamma <- c(0.003, 0.002)
 #' fit <- lslm(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,

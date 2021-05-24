@@ -2,7 +2,7 @@
 % Please edit documentation in R/gibbs_sampler.R
 \name{gibbs_sampler}
 \alias{gibbs_sampler}
-\title{FUNCTION_TITLE}
+\title{Gibbs Sampler}
 \usage{
 gibbs_sampler(
   m = NULL,
@@ -22,45 +22,105 @@ gibbs_sampler(
 )
 }
 \arguments{
-\item{m}{PARAM_DESCRIPTION, Default: NULL}
+\item{m}{Model object containing a beta and gamma predictor, as well as the according
+model matrices. The model is used in second stage, if one of \code{X}, \code{Z}, \code{y},
+\code{beta_start} or \code{gamma_start} is not given, Default: NULL}
 
-\item{X}{PARAM_DESCRIPTION, Default: NULL}
+\item{X}{Matrix containing the data according to the beta_start coefficient,
+Default: NULL}
 
-\item{Z}{PARAM_DESCRIPTION, Default: NULL}
+\item{Z}{Matrix containing the data according to the gamma_start coefficient,
+Default: NULL}
 
-\item{y}{PARAM_DESCRIPTION, Default: NULL}
+\item{y}{Response vector; \code{y = X * beta + Z * gamma}, Default: NULL}
 
-\item{beta_start}{PARAM_DESCRIPTION, Default: NULL}
+\item{beta_start}{Starting vector for simulation, where \code{beta} is a linear predictor
+for the mean (= the location), that is normally distributed,
+Default: NULL}
 
-\item{gamma_start}{PARAM_DESCRIPTION, Default: NULL}
+\item{gamma_start}{Starting vector for simulation, where \code{gamma} is a linear predictor
+for the standard deviation (= the scale), that is normally
+distributed, Default: NULL}
 
-\item{tau_start}{PARAM_DESCRIPTION, Default: 1}
+\item{tau_start}{Starting value for the variance of the normal distribution of the beta
+parameter, where $\tau^2 \sim IG(a_{\tau}, \, b_{\tau})$.
+Regularization parameter in a Bayesian ridge setting, Default: 1}
 
-\item{xi_start}{PARAM_DESCRIPTION, Default: 1}
+\item{xi_start}{Starting value for the variance of the normal distribution of the gamma
+parameter, where $\xi^2 \sim IG(a_{\xi}, \, b_{\xi})$.
+Regularization parameter in a Bayesian ridge setting, Default: 1}
 
-\item{a_tau}{PARAM_DESCRIPTION, Default: 1}
+\item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, Default: 1}
 
-\item{b_tau}{PARAM_DESCRIPTION, Default: 3}
+\item{b_tau}{Fix scale parameter of the IG distribution of \code{tau_start}, Default: 3}
 
-\item{a_xi}{PARAM_DESCRIPTION, Default: 1}
+\item{a_xi}{Fix shape parameter of the IG distribution of \code{xi_start}, Default: 1}
 
-\item{b_xi}{PARAM_DESCRIPTION, Default: 3}
+\item{b_xi}{Fix scale parameter of the IG distribution of \code{xi_start}, Default: 3}
 
-\item{prop_var}{PARAM_DESCRIPTION, Default: 3}
+\item{prop_var}{Variance of proposal distribution for gamma sampling, Default: 3}
 
-\item{num_sim}{PARAM_DESCRIPTION, Default: 1000}
+\item{num_sim}{Number of simulations, Default: 1000}
 }
 \value{
-OUTPUT_DESCRIPTION
+Depending on the input structure, two different output types are available.
+In each case a a Markov Chain of samples for the parameters is generated.
+If matrices and parameters are only assigned by hand, a list containing the
+parameters with their according iterations is available via the \code{print()}
+command.
+In case a model object is used at any stage, the output extends the model by
+the same list, that can be obtained via \code{model$mcmc_ridge} or outputs the last
+iteration as model parameters via \verb{summary(model, type = "mcmc_ridge)}.
 }
 \description{
-FUNCTION_DESCRIPTION
+The \code{gibbs_sampler()} function is a Markov chain Monte Carlo (MCMC)
+algorithm allowing to simulate from parameters of a location scale
+regression model or from matrices and parameters that are assigned by
+hand. \cr
+The function is primarly used in a Bayesian setting, where
+ridge-regularization can be obtained through the variance of the
+coefficient distributions.
 }
 \examples{
-\dontrun{
-if (interactive()) {
-  # EXAMPLE1
-}
-}
+
+# Gibbs sampling with lslm model input. Output extends model by Ridge-part.
+fit <- lslm(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+)
+fit <- gibbs_sampler(
+  m = fit,
+  num_sim = 1000
+)
+summary(fit, type = "mcmc_ridge")
+
+# Gibbs sampling with input by hand. Outputs list with each iteration for each
+  parameter to sample for.
+beta <- c(2, -4, 5, 1)
+gamma <- c(0.003, 0.002)
+fit <- gibbs_sampler(
+  X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
+  Z = cbind(toy_data$z1, toy_data$z2), y = toy_data$y,
+  beta_start = beta, gamma_start = gamma,
+  tau_start = 3, xi_start = 0.5,
+  prop_var = 2.3
+)
+print(fit)
+
+# Gibbs sampling with mixed input. The function uses matrices assigned by hand on first
+  stage and takes missing parameters out of the model. Output extends model by
+  Ridge-part, since model objects were used.
+gamma <- c(0.003, 0.002)
+fit <- lslm(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+)
+fit <- gibbs_sampler(
+  m = fit,
+  Z = cbind(toy_data$z1, toy_data$z2),
+  gamma_start = gamma,
+  num_sim = 10000
+)
+summary(fit, type = "mcmc_ridge")
 
 }
