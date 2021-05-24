@@ -21,13 +21,15 @@
 #'                    for the standard deviation (= the scale), that is normally
 #'                    distributed, Default: NULL
 #' @param tau_start Starting value for the variance of the normal distribution of the beta
-#'                  parameter. Regularization parameter in a Bayesian ridge
-#'                  setting, Default: 1
-#' @param xi_start PARAM_DESCRIPTION, Default: 1
-#' @param a_tau PARAM_DESCRIPTION, Default: 1
-#' @param b_tau PARAM_DESCRIPTION, Default: 3
-#' @param a_xi PARAM_DESCRIPTION, Default: 1
-#' @param b_xi PARAM_DESCRIPTION, Default: 3
+#'                  parameter, where $\tau^2 \sim IG(a_{\tau}, \, b_{\tau})$.
+#'                  Regularization parameter in a Bayesian ridge setting, Default: 1
+#' @param xi_start Starting value for the variance of the normal distribution of the gamma
+#'                 parameter, where $\xi^2 \sim IG(a_{\xi}, \, b_{\xi})$.
+#'                 Regularization parameter in a Bayesian ridge setting, Default: 1
+#' @param a_tau Fix shape parameter of the IG distribution of `tau_start`, Default: 1
+#' @param b_tau Fix scale parameter of the IG distribution of `tau_start`, Default: 3
+#' @param a_xi Fix shape parameter of the IG distribution of `xi_start`, Default: 1
+#' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, Default: 3
 #' @param prop_var Proposal Variance for sampling gamma, Default: 3
 #' @param num_sim Number of simulations, Default: 1000
 #'
