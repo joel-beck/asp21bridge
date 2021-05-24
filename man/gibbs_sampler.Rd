@@ -43,11 +43,11 @@ for the standard deviation (= the scale), that is normally
 distributed, Default: NULL}
 
 \item{tau_start}{Starting value for the variance of the normal distribution of the beta
-parameter, where \verb{$\\tau^2 \\sim IG(a_\{\\tau\}, \\, b_\{\\tau\})$}.
+parameter, where \code{tau_start} is inverse gamma (IG) distributed.
 Regularization parameter in a Bayesian ridge setting, Default: 1}
 
 \item{xi_start}{Starting value for the variance of the normal distribution of the gamma
-parameter, where \verb{$\\xi^2 \\sim IG(a_\{\\xi\}, \\, b_\{\\xi\})$}.
+parameter, where \code{xi_start} is inverse gamma (IG) distributed.
 Regularization parameter in a Bayesian ridge setting, Default: 1}
 
 \item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, Default: 1}
@@ -83,7 +83,8 @@ coefficient distributions.
 }
 \examples{
 
-# Gibbs sampling with lslm model input. Output extends model by Ridge-part.
+# Gibbs sampling with lslm model input.
+# Output extends model by Ridge-part.
 fit <- lslm(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
@@ -94,7 +95,8 @@ fit <- gibbs_sampler(
 )
 summary(fit, type = "mcmc_ridge")
 
-# Gibbs sampling with input by hand. Outputs list with each parameter and iteration.
+# Gibbs sampling with input by hand.
+# Outputs list with each parameter and iteration.
 beta <- c(2, -4, 5, 1)
 gamma <- c(0.003, 0.002)
 fit <- gibbs_sampler(
@@ -106,9 +108,9 @@ fit <- gibbs_sampler(
 )
 print(fit)
 
-# Gibbs sampling with mixed input. The function uses matrices assigned by hand on first
-# stage and takes missing parameters out of the model. Output extends model by
-# Ridge-part, since model objects were used.
+# Gibbs sampling with mixed input. The function uses matrices assigned by
+# hand on first stage and takes missing parameters out of the model.
+# Output extends model by Ridge-part, since model objects were used.
 gamma <- c(0.003, 0.002)
 fit <- lslm(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
