@@ -2,7 +2,7 @@
 % Please edit documentation in R/gibbs_sampler.R
 \name{gibbs_sampler}
 \alias{gibbs_sampler}
-\title{Gibbs Sampler}
+\title{Gibbs sampling algorithm}
 \usage{
 gibbs_sampler(
   m = NULL,
@@ -43,11 +43,11 @@ for the standard deviation (= the scale), that is normally
 distributed, Default: NULL}
 
 \item{tau_start}{Starting value for the variance of the normal distribution of the beta
-parameter, where $\tau^2 \sim IG(a_{\tau}, \, b_{\tau})$.
+parameter, where \verb{$\\tau^2 \\sim IG(a_\{\\tau\}, \\, b_\{\\tau\})$}.
 Regularization parameter in a Bayesian ridge setting, Default: 1}
 
 \item{xi_start}{Starting value for the variance of the normal distribution of the gamma
-parameter, where $\xi^2 \sim IG(a_{\xi}, \, b_{\xi})$.
+parameter, where \verb{$\\xi^2 \\sim IG(a_\{\\xi\}, \\, b_\{\\xi\})$}.
 Regularization parameter in a Bayesian ridge setting, Default: 1}
 
 \item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, Default: 1}
@@ -94,8 +94,7 @@ fit <- gibbs_sampler(
 )
 summary(fit, type = "mcmc_ridge")
 
-# Gibbs sampling with input by hand. Outputs list with each iteration for each
-  parameter to sample for.
+# Gibbs sampling with input by hand. Outputs list with each parameter and iteration.
 beta <- c(2, -4, 5, 1)
 gamma <- c(0.003, 0.002)
 fit <- gibbs_sampler(
@@ -108,8 +107,8 @@ fit <- gibbs_sampler(
 print(fit)
 
 # Gibbs sampling with mixed input. The function uses matrices assigned by hand on first
-  stage and takes missing parameters out of the model. Output extends model by
-  Ridge-part, since model objects were used.
+# stage and takes missing parameters out of the model. Output extends model by
+# Ridge-part, since model objects were used.
 gamma <- c(0.003, 0.002)
 fit <- lslm(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
