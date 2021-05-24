@@ -1,6 +1,3 @@
-#<<<<<<< HEAD
-#' @title Gibbs sampling algorithm
-#=======
 # helper function for gibbs_sampler
 # detects intercept in design matrix
 # later use: intercept_x <- includes_intercept(X)
@@ -21,16 +18,14 @@ includes_intercept <- function(mat) {
 
 
 #' @title Gibbs sampling algorithm
-#>>>>>>> 35ceac7d5515364d2bd6325b2e8b71b801b232ff
 #'
 #' @description The `gibbs_sampler()` function is a Markov chain Monte Carlo (MCMC)
 #'              algorithm allowing to simulate from parameters of a location scale
 #'              regression model or from matrices and parameters that are assigned by
 #'              hand. \cr
-#'              The function is primarly used in a Bayesian setting, where
+#'              The function is primarily used in a Bayesian setting, where
 #'              ridge-regularization can be obtained through the variance of the
-#'              coefficient distributions.
-#'
+#'              corresponding prior distributions.
 #'
 #' @param m Model object containing a beta and gamma predictor, as well as the according
 #'          model matrices. The model is used in second stage, if one of `X`, `Z`, `y`,
@@ -40,7 +35,8 @@ includes_intercept <- function(mat) {
 #'          Default: NULL
 #' @param Z Matrix containing the data according to the gamma_start coefficient, \cr
 #'          Default: NULL
-#' @param y Response vector; `y = X * beta + Z * gamma`, Default: NULL
+#' @param y Response vector; `y = X * beta + Z * gamma`,
+#'          Default: NULL
 #' @param beta_start Starting vector for simulation, where `beta` is a linear predictor
 #'                   for the mean (= the location), that is normally distributed, \cr
 #'                   Default: NULL
@@ -79,7 +75,6 @@ includes_intercept <- function(mat) {
 #'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`.
 #'
 #' @examples
-#'
 #' # Gibbs sampling with lslm model input.
 #' # Output extends model by Ridge-part.
 #' fit <- lslm(
@@ -98,7 +93,8 @@ includes_intercept <- function(mat) {
 #' gamma <- c(0.003, 0.002)
 #' fit <- gibbs_sampler(
 #'   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
-#'   Z = cbind(toy_data$z1, toy_data$z2), y = toy_data$y,
+#'   Z = cbind(toy_data$z1, toy_data$z2),
+#'   y = toy_data$y,
 #'   beta_start = beta, gamma_start = gamma,
 #'   tau_start = 3, xi_start = 0.5,
 #'   prop_var = 2.3

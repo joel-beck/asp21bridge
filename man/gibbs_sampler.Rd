@@ -33,7 +33,8 @@ Default: NULL}
 \item{Z}{Matrix containing the data according to the gamma_start coefficient, \cr
 Default: NULL}
 
-\item{y}{Response vector; \code{y = X * beta + Z * gamma}, Default: NULL}
+\item{y}{Response vector; \code{y = X * beta + Z * gamma},
+Default: NULL}
 
 \item{beta_start}{Starting vector for simulation, where \code{beta} is a linear predictor
 for the mean (= the location), that is normally distributed, \cr
@@ -87,12 +88,11 @@ The \code{gibbs_sampler()} function is a Markov chain Monte Carlo (MCMC)
 algorithm allowing to simulate from parameters of a location scale
 regression model or from matrices and parameters that are assigned by
 hand. \cr
-The function is primarly used in a Bayesian setting, where
+The function is primarily used in a Bayesian setting, where
 ridge-regularization can be obtained through the variance of the
-coefficient distributions.
+corresponding prior distributions.
 }
 \examples{
-
 # Gibbs sampling with lslm model input.
 # Output extends model by Ridge-part.
 fit <- lslm(
@@ -111,7 +111,8 @@ beta <- c(2, -4, 5, 1)
 gamma <- c(0.003, 0.002)
 fit <- gibbs_sampler(
   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
-  Z = cbind(toy_data$z1, toy_data$z2), y = toy_data$y,
+  Z = cbind(toy_data$z1, toy_data$z2),
+  y = toy_data$y,
   beta_start = beta, gamma_start = gamma,
   tau_start = 3, xi_start = 0.5,
   prop_var = 2.3
