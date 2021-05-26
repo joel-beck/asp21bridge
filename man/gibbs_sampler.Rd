@@ -131,8 +131,7 @@ fit <- gibbs_sampler(
   m = fit,
   Z = cbind(toy_data$z1, toy_data$z2),
   gamma_start = gamma,
-  num_sim = 10000
+  num_sim = 1000
 )
 summary(fit, type = "mcmc_ridge")
-
 }

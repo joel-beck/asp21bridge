@@ -113,10 +113,9 @@ includes_intercept <- function(mat) {
 #'   m = fit,
 #'   Z = cbind(toy_data$z1, toy_data$z2),
 #'   gamma_start = gamma,
-#'   num_sim = 10000
+#'   num_sim = 1000
 #' )
 #' summary(fit, type = "mcmc_ridge")
-#'
 #' @export
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
@@ -128,8 +127,10 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
 
   if (is.null(m) &
     (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
-    stop("At least either all model matrices (X, Z, y) and coefficients (beta_start, gamma_start)
-         or a model object (m) must be given.")
+    stop(paste(
+      "At least either all model matrices (X, Z, y) and coefficients",
+      "(beta_start, gamma_start) or a model object (m) must be given."
+    ))
   } else if (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start)) {
     input_list <- list(
       X = X,
