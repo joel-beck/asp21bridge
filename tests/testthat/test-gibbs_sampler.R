@@ -9,7 +9,7 @@ beta <- c(2, -4, 5, 1)
 gamma <- c(0.003, 0.002)
 testmat <- matrix(rnorm(600, 0, 1), ncol = 6) # matrix to cause errors
 
-fit1 <- gibbs_sampler(m = fit, num_sim = 50)# model-only input
+fit1 <- gibbs_sampler(m = fit, num_sim = 50) # model-only input
 fit2 <- gibbs_sampler(
   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
   Z = cbind(toy_data$z1, toy_data$z2),
@@ -83,3 +83,5 @@ test_that("Error Code of missing input data is thrown", {
     fixed = TRUE
   )
 })
+
+# summary complete
