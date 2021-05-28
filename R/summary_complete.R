@@ -79,7 +79,7 @@ summary_complete <- function(samples, include_plot = FALSE) {
     collect_results(samples = samples, include_plot = include_plot)
   } else if (is.list(samples)) {
     # if input is a list but not a model object
-    purrr::map_dfr(.x = samples, .f = collect_results, include_plot = include_plot)
+    purrr::map_dfr(.x = samples[[1]], .f = collect_results, include_plot = include_plot)
   } else {
     stop(paste(
       "Input 'samples' must be a numeric vector,",
