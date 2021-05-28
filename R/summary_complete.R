@@ -60,9 +60,9 @@ collect_results <- function(samples, include_plot = FALSE) {
 #'
 #' @examples
 #' \dontrun{
-#' if(interactive()){
-#'  #EXAMPLE1
-#'  }
+#' if (interactive()) {
+#'   # EXAMPLE1
+#' }
 #' }
 #'
 #' @export
@@ -79,7 +79,21 @@ summary_complete <- function(samples, include_plot = FALSE) {
     collect_results(samples = samples, include_plot = include_plot)
   } else if (is.list(samples)) {
     # if input is a list but not a model object
-    purrr::map_dfr(.x = samples[[1]], .f = collect_results, include_plot = include_plot)
+
+
+    if (any(names(samples) == "sampling_matrices")) {
+      # if input is gibbs_sampler() output in list format with two entries
+      purrr::map_dfr(
+        .x = samples[["sampling_matrices"]],
+        .f = collect_results, include_plot = include_plot
+      )
+    } else {
+      # if input is list with just the sampling matrices
+      purrr::map_dfr(
+        .x = samples,
+        .f = collect_results, include_plot = include_plot
+      )
+    }
   } else {
     stop(paste(
       "Input 'samples' must be a numeric vector,",
