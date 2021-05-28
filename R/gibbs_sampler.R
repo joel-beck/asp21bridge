@@ -241,7 +241,7 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
 
   if (mod) {
     result_gibbs_list <- list(
-      coefficient_sampling_matrices = list(
+      sampling_matrices = list(
         location = beta_samples,
         scale = gamma_samples,
         location_prior = tau_samples,

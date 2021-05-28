@@ -37,7 +37,7 @@
 #'   gibbs_sampler(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
-#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # extract first chain of the location parameter
 #' diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)
@@ -152,7 +152,7 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'   gibbs_sampler(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
-#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # extract first chain of the scale parameter
 #' density_plot(samples$scale[, 1], robust = TRUE)
@@ -266,7 +266,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'   gibbs_sampler(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
-#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # uses default lag_max = 30
 #' acl_plot(samples$scale_prior, latex = TRUE)
@@ -380,7 +380,7 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #'   gibbs_sampler(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
-#' samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+#' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # extract first chain of the location parameter
 #' diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)

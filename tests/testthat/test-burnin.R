@@ -4,7 +4,7 @@ fit <- lslm(
 ) %>%
   gibbs_sampler(num_sim = 50)
 
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 test_that("burnin works for numeric vectors", {
   burned <- drop(samples$location_prior) %>% burnin(num_burn = 10)

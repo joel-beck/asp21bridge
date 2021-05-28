@@ -33,10 +33,10 @@ test_that("Using Model Matrices extends lslm-model summary() function", {
 })
 
 test_that("Output list contains each parameter, each simulation and acceptance rate", {
-  expect_equal(dim(fit1$mcmc_ridge$coefficient_sampling_matrices$location), c(50, 5))
-  expect_equal(dim(fit1$mcmc_ridge$coefficient_sampling_matrices$scale), c(50, 3))
-  expect_length(fit1$mcmc_ridge$coefficient_sampling_matrices$location_prior, 50)
-  expect_length(fit1$mcmc_ridge$coefficient_sampling_matrices$scale_prior, 50)
+  expect_equal(dim(fit1$mcmc_ridge$sampling_matrices$location), c(50, 5))
+  expect_equal(dim(fit1$mcmc_ridge$sampling_matrices$scale), c(50, 3))
+  expect_length(fit1$mcmc_ridge$sampling_matrices$location_prior, 50)
+  expect_length(fit1$mcmc_ridge$sampling_matrices$scale_prior, 50)
   expect_type(fit1$mcmc_ridge$acceptance_rate, "double")
   expect_type(fit1$mcmc_ridge, "list")
 })
@@ -44,7 +44,6 @@ test_that("Output list contains each parameter, each simulation and acceptance r
 test_that("Using by-hand-assigned-input does not extend the model, but gives a list", {
   expect_type(fit2$mcmc_ridge, "NULL")
   expect_type(fit2, "list")
-  # expect_type(summary(fit2, type = "mcmc_ridge"), "NULL") # Discussion point
 })
 
 test_that("Using mixed input extends lslm-model summary() function", {

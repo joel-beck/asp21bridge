@@ -85,10 +85,10 @@ results %>%
 The building blocks for monitoring the convergence of the posterior chains as well as the autocorrelations are the functions `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for combining multiple chains.
 
 First, we analyze the convergence of the location coefficients. 
-Note that the posterior samples are saved in the list entry `mcmc_ridge$coefficient_sampling_matrices`:
+Note that the posterior samples are saved in the list entry `mcmc_ridge$sampling_matrices`:
 
 ```{r}
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 mult_plot(
   samples = samples$location, type = "both",

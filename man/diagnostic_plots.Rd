@@ -57,7 +57,7 @@ fit <- lslm(
   gibbs_sampler(num_sim = 1000)
 
 # list of 4 matrices with 1000 rows each
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 # extract first chain of the location parameter
 diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)

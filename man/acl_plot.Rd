@@ -41,7 +41,7 @@ fit <- lslm(
   gibbs_sampler(num_sim = 1000)
 
 # list of 4 matrices with 1000 rows each
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 # uses default lag_max = 30
 acl_plot(samples$scale_prior, latex = TRUE)

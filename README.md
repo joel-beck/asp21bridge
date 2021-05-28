@@ -79,17 +79,17 @@ summary(fit, type = "mcmc_ridge")
 ## 
 ## Location coefficients (identity link function):
 ##           Mean    2.5%     50%  97.5%
-## beta_0  0.6810 -0.7828  0.6806  2.098
-## beta_1  2.2194  1.8784  2.2203  2.555
-## beta_2 -4.0164 -4.2780 -4.0244 -3.707
-## beta_3  4.9386  4.6695  4.9422  5.208
-## beta_4  0.9147  0.6955  0.9178  1.133
+## beta_0  0.5468 -0.9426  0.5800  1.971
+## beta_1  2.2240  1.8702  2.2243  2.543
+## beta_2 -4.0308 -4.2951 -4.0325 -3.739
+## beta_3  4.9699  4.6681  4.9763  5.252
+## beta_4  0.9182  0.6892  0.9198  1.149
 ## 
 ## Scale coefficients (log link function):
 ##              Mean      2.5%       50% 97.5%
-## gamma_0 -0.220360 -0.601008 -0.190793 0.100
-## gamma_1  0.039030 -0.085464  0.043419 0.154
-## gamma_2  0.026578 -0.135393  0.008777 0.205
+## gamma_0  0.104034 -1.170869 -0.003655 1.550
+## gamma_1  0.004717 -0.228834  0.006573 0.168
+## gamma_2 -0.024053 -0.208590 -0.035959 0.189
 ## 
 ## Residual degrees of freedom: 42 
 ## Log-likelihood: -68.83 
@@ -106,16 +106,16 @@ results
 ## # A tibble: 10 x 6
 ##    Parameter `5% Quantile` `Posterior Mean` `Posterior Median` `95% Quantile`
 ##    <chr>             <dbl>            <dbl>              <dbl>          <dbl>
-##  1 beta_0         -0.509             0.681             0.681           1.80  
-##  2 beta_1          1.93              2.22              2.22            2.50  
-##  3 beta_2         -4.25             -4.02             -4.02           -3.76  
-##  4 beta_3          4.70              4.94              4.94            5.17  
-##  5 beta_4          0.722             0.915             0.918           1.11  
-##  6 gamma_0        -0.555            -0.220            -0.191           0.0717
-##  7 gamma_1        -0.0685            0.0390            0.0434          0.140 
-##  8 gamma_2        -0.122             0.0266            0.00878         0.185 
-##  9 tau^2           0.00534           0.0154            0.0118          0.0309
-## 10 xi^2            0.0604            0.227             0.152           0.608 
+##  1 beta_0         -0.711            0.547              0.580           1.72  
+##  2 beta_1          1.95             2.22               2.22            2.50  
+##  3 beta_2         -4.26            -4.03              -4.03           -3.79  
+##  4 beta_3          4.70             4.97               4.98            5.21  
+##  5 beta_4          0.724            0.918              0.920           1.11  
+##  6 gamma_0        -1.03             0.104             -0.00366         1.49  
+##  7 gamma_1        -0.208            0.00472            0.00657         0.158 
+##  8 gamma_2        -0.192           -0.0241            -0.0360          0.159 
+##  9 tau^2           0.00530          0.0153             0.0117          0.0309
+## 10 xi^2            0.0545           0.212              0.140           0.552 
 ## # ... with 1 more variable: Standard Deviation <dbl>
 ```
 
@@ -132,9 +132,9 @@ results %>%
 ## # A tibble: 3 x 2
 ##   Parameter `Standard Deviation`
 ##   <chr>                    <dbl>
-## 1 gamma_0                 0.176 
-## 2 gamma_2                 0.103 
-## 3 gamma_1                 0.0609
+## 1 gamma_0                  0.764
+## 2 gamma_2                  0.115
+## 3 gamma_1                  0.106
 ```
 
 ## Graphical Analysis
@@ -146,10 +146,10 @@ combining multiple chains.
 
 First, we analyze the convergence of the location coefficients. Note
 that the posterior samples are saved in the list entry
-`mcmc_ridge$coefficient_sampling_matrices`:
+`mcmc_ridge$sampling_matrices`:
 
 ``` r
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 mult_plot(
   samples = samples$location, type = "both",

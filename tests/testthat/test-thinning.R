@@ -4,7 +4,7 @@ fit <- lslm(
 ) %>%
   gibbs_sampler(num_sim = 50)
 
-samples <- fit$mcmc_ridge$coefficient_sampling_matrices
+samples <- fit$mcmc_ridge$sampling_matrices
 
 test_that("thinning works for numeric vectors", {
   thinned <- drop(samples$location_prior) %>% thinning(freq = 5)
