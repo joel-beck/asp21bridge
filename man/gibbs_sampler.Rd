@@ -74,14 +74,17 @@ Default: 3}
 Default: 1000}
 }
 \value{
-Depending on the input structure, two different output types are available.
+Depending on the input structure, different output types are available.
 In each case a a Markov Chain of samples for the parameters is generated.
 If matrices and parameters are only assigned by hand, a list containing the
 parameters with their according iterations is available via the \code{print()}
 command.
 In case a model object is used at any stage, the output extends the model by
 the same list, that can be obtained via \code{model$mcmc_ridge} or outputs the last
-iteration as model parameters via \verb{summary(model, type = "mcmc_ridge)}.
+iteration as model parameters via \verb{summary(model, type = "mcmc_ridge)}. \cr
+In both cases the package comes with the \code{summary_complete()} function, which
+gives additional information about the Markov Chain's results. For more see
+\code{?summary_complete()}.
 }
 \description{
 The \code{gibbs_sampler()} function is a Markov chain Monte Carlo (MCMC)
@@ -104,6 +107,7 @@ fit <- gibbs_sampler(
   num_sim = 1000
 )
 summary(fit, type = "mcmc_ridge")
+summary_complete(fit)
 
 # Gibbs sampling with input by hand.
 # Outputs list with each parameter and iteration.
@@ -118,6 +122,7 @@ fit <- gibbs_sampler(
   prop_var = 2.3
 )
 print(fit)
+summary_complete(fit)
 
 # Gibbs sampling with mixed input. The function uses matrices assigned by
 # hand on first stage and takes missing parameters out of the model.
@@ -134,4 +139,5 @@ fit <- gibbs_sampler(
   num_sim = 1000
 )
 summary(fit, type = "mcmc_ridge")
+summary_complete(fit)
 }
