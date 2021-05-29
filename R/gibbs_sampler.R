@@ -73,9 +73,9 @@ includes_intercept <- function(mat) {
 #'         In case a model object is used at any stage, the output extends the model by
 #'         the same list, that can be obtained via `model$mcmc_ridge` or outputs the last
 #'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`. \cr
-#'         In both cases the package comes with the `summary_complete()` function, which
-#'         gives additional information about the Markov Chain's results. For more see
-#'         `?summary_complete()`.
+#'         In both cases the package comes with the `summary_complete(model)` function,
+#'         which gives additional information about the Markov Chain's results. For more
+#'         see `?summary_complete()`.
 #'
 #' @examples
 #' # Gibbs sampling with lslm model input.
