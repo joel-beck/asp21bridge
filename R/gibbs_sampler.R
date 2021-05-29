@@ -65,15 +65,17 @@ includes_intercept <- function(mat) {
 #' @param num_sim Number of simulations, \cr
 #'                Default: 1000
 #'
-#' @return Depending on the input structure, two different output types are available.
+#' @return Depending on the input structure, different output types are available.
 #'         In each case a a Markov Chain of samples for the parameters is generated.
 #'         If matrices and parameters are only assigned by hand, a list containing the
 #'         parameters with their according iterations is available via the `print()`
 #'         command.
 #'         In case a model object is used at any stage, the output extends the model by
 #'         the same list, that can be obtained via `model$mcmc_ridge` or outputs the last
-#'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`.
-#'         SUMMARY COMPLETE
+#'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`. \cr
+#'         In both cases the package comes with the `summary_complete()` function, which
+#'         gives additional information about the Markov Chain's results. For more see
+#'         `?summary_complete()`.
 #'
 #' @examples
 #' # Gibbs sampling with lslm model input.
@@ -87,6 +89,7 @@ includes_intercept <- function(mat) {
 #'   num_sim = 1000
 #' )
 #' summary(fit, type = "mcmc_ridge")
+#' summary_complete(fit)
 #'
 #' # Gibbs sampling with input by hand.
 #' # Outputs list with each parameter and iteration.
@@ -101,6 +104,7 @@ includes_intercept <- function(mat) {
 #'   prop_var = 2.3
 #' )
 #' print(fit)
+#' summary_complete(fit)
 #'
 #' # Gibbs sampling with mixed input. The function uses matrices assigned by
 #' # hand on first stage and takes missing parameters out of the model.
@@ -117,6 +121,7 @@ includes_intercept <- function(mat) {
 #'   num_sim = 1000
 #' )
 #' summary(fit, type = "mcmc_ridge")
+#' summary_complete(fit)
 #' @export
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
