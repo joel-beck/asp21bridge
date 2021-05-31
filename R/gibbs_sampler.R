@@ -1,8 +1,9 @@
-# helper function for gibbs_sampler
+#   ____________________________________________________________________________
+#   Helper Functions                                                        ####
+
 # detects intercept in design matrix
 # later use: intercept_x <- includes_intercept(X)
 #            intercept_z <- includes_intercept(Z)
-
 includes_intercept <- function(mat) {
   any(
     apply(
@@ -14,8 +15,26 @@ includes_intercept <- function(mat) {
 }
 
 
+# initializes sampling matrices with correct dimension and column names
+# preallocates each row with the given starting value
+init_sampling_matrix <- function(name, nrow, start_value) {
+  mat <- matrix(
+    data = rep(start_value, times = nrow),
+    nrow = nrow, byrow = TRUE
+  )
+  if (length(start_value) == 1) {
+    colnames(mat) <- name
+  } else if (length(start_value) > 1) {
+    colnames(mat) <- paste(name, 0:(length(start_value) - 1), sep = "_")
+  } else {
+    stop("'start_value' must be a scalar or a nonempty vector!")
+  }
+  return(mat)
+}
 
 
+#   ____________________________________________________________________________
+#   Gibbs Sampler                                                           ####
 
 #' @title Gibbs sampling algorithm
 #'
@@ -119,12 +138,15 @@ includes_intercept <- function(mat) {
 #' summary(fit, type = "mcmc_ridge")
 #' @export
 
+
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
                           a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3, prop_var = 3,
                           num_sim = 1000) {
   mod <- FALSE
   mcmc_ridge_m <- m
+
+  # validate input ----------------------------------------------------------
 
   if (is.null(m) &
     (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
@@ -161,35 +183,23 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
     stop("Dimensions of design matrices do not match with length of coefficients.")
   }
 
+  # initialize variables ----------------------------------------------------
 
-  n <- length(y) # number of observations
+  beta_samples <- init_sampling_matrix(
+    name = "beta", nrow = num_sim, start_value = beta_start
+  )
+  gamma_samples <- init_sampling_matrix(
+    name = "gamma", nrow = num_sim, start_value = gamma_start
+  )
+  tau_samples <- init_sampling_matrix(
+    name = "tau^2", nrow = num_sim, start_value = tau_start
+  )
+  xi_samples <- init_sampling_matrix(
+    name = "xi^2", nrow = num_sim, start_value = xi_start
+  )
+
+  n <- length(y)
   acceptance_count <- 0
-
-  beta_samples <- matrix(rep(0, times = num_sim * length(beta_start)),
-    nrow = num_sim, ncol = length(beta_start)
-  )
-  colnames(beta_samples) <- paste("beta", 0:(ncol(beta_samples) - 1), sep = "_")
-
-  gamma_samples <- matrix(rep(0, times = num_sim * length(gamma_start)),
-    nrow = num_sim, ncol = length(gamma_start)
-  )
-  colnames(gamma_samples) <- paste("gamma", 0:(ncol(gamma_samples) - 1), sep = "_")
-
-  tau_samples <- matrix(rep(0, times = num_sim * length(tau_start)),
-    nrow = num_sim, ncol = length(tau_start)
-  )
-  colnames(tau_samples) <- "tau^2"
-
-  xi_samples <- matrix(rep(0, times = num_sim * length(xi_start)),
-    nrow = num_sim, ncol = length(xi_start)
-  )
-  colnames(xi_samples) <- "xi^2"
-
-  # Eintragen der Startwerte in die erste Zeile
-  beta_samples[1, ] <- beta_start
-  gamma_samples[1, ] <- gamma_start
-  tau_samples[1, ] <- tau_start
-  xi_samples[1, ] <- xi_start
 
   # Berechnung der Variablen für die Full Conditionals
   K <- length(beta_start)
@@ -197,9 +207,9 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
   W <- matrix(rep(0, times = n * K), nrow = n)
   u <- numeric(length = n)
 
+  # sampling process --------------------------------------------------------
 
   for (i in 2:num_sim) {
-
 
     # sampling beta
     g_gamma <- vector(mode = "numeric", length = n)
@@ -209,13 +219,11 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
       u[k] <- y[k] / g_gamma[k]
     }
 
-
     beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(K))
     beta_mean <- beta_var %*% crossprod(W, u)
     beta_samples[i, ] <- mvtnorm::rmvnorm(n = 1, mean = beta_mean, sigma = beta_var)
 
     # sampling gamma with metropolis-hastings
-
     gamma_list <- mh_gamma(
       y = y, X = X, Z = Z, beta = beta_samples[i, ],
       gamma = gamma_samples[i - 1, ], g_gamma = g_gamma,
@@ -240,6 +248,8 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
     )
   }
 
+  # return value ------------------------------------------------------------
+
   if (mod) {
     result_gibbs_list <- list(
       sampling_matrices = list(
@@ -250,7 +260,6 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
       ),
       acceptance_rate = acceptance_count / num_sim
     )
-
     m$mcmc_ridge <- result_gibbs_list
     return(m)
   } else {
@@ -263,7 +272,6 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL,
       ),
       acceptance_rate = acceptance_count / num_sim
     )
-
     return(result_gibbs_list)
   }
 }

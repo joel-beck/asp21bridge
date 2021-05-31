@@ -82,6 +82,7 @@ command.
 In case a model object is used at any stage, the output extends the model by
 the same list, that can be obtained via \code{model$mcmc_ridge} or outputs the last
 iteration as model parameters via \verb{summary(model, type = "mcmc_ridge)}.
+SUMMARY COMPLETE
 }
 \description{
 The \code{gibbs_sampler()} function is a Markov chain Monte Carlo (MCMC)
