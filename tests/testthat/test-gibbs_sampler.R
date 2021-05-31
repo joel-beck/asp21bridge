@@ -54,6 +54,16 @@ test_that("Using mixed input extends lslm-model summary() function", {
   expect_s3_class(fit3, "lslm")
 })
 
+test_that("Independent of input type, the summary_complete() function can be called", {
+  expect_equal(dim(summary_complete(fit1)), c(10, 6))
+  expect_equal(dim(summary_complete(fit2)), c(8, 6))
+  expect_equal(dim(summary_complete(fit3)), c(10, 6))
+  expect_type(summary_complete(fit1), "list")
+  expect_type(summary_complete(fit2), "list")
+  expect_type(summary_complete(fit3), "list")
+
+})
+
 test_that("Error Code of not matching dimensions is thrown", {
   expect_error(
     gibbs_sampler(m = fit, X = testmat, num_sim = 50),
