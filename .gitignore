@@ -30,4 +30,4 @@ vignettes/*.pdf
 docs/
 # translation temp files
 po/*~
-lslm.Rproj
+asp21bridge.Rproj
