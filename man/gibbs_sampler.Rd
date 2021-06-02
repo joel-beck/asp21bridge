@@ -9,6 +9,7 @@ gibbs_sampler(
   X = NULL,
   Z = NULL,
   y = NULL,
+  num_sim = 1000,
   beta_start = NULL,
   gamma_start = NULL,
   tau_start = 1,
@@ -17,8 +18,9 @@ gibbs_sampler(
   b_tau = 3,
   a_xi = 1,
   b_xi = 3,
-  prop_var = 3,
-  num_sim = 1000
+  prop_var_scale = 3,
+  mh_location = FALSE,
+  prop_var_loc = 1
 )
 }
 \arguments{
@@ -35,6 +37,9 @@ Default: NULL}
 
 \item{y}{Response vector; \code{y = X * beta + Z * gamma},
 Default: NULL}
+
+\item{num_sim}{Number of simulations, \cr
+Default: 1000}
 
 \item{beta_start}{Starting vector for simulation, where \code{beta} is a linear predictor
 for the mean (= the location), that is normally distributed, \cr
@@ -67,11 +72,15 @@ Default: 1}
 \item{b_xi}{Fix scale parameter of the IG distribution of \code{xi_start}, \cr
 Default: 3}
 
-\item{prop_var}{Variance of proposal distribution for gamma sampling, \cr
+\item{prop_var_scale}{Variance of proposal distribution for gamma sampling, \cr
 Default: 3}
 
-\item{num_sim}{Number of simulations, \cr
-Default: 1000}
+\item{mh_location}{If TRUE, location parameter is sampled with
+Metropolis - Hastings Algorithm \cr
+Default: FALSE}
+
+\item{prop_var_loc}{Variance of proposal distribution for beta sampling, \cr
+Default: 1}
 }
 \value{
 Depending on the input structure, different output types are available.
@@ -119,7 +128,7 @@ fit <- gibbs_sampler(
   y = toy_data$y,
   beta_start = beta, gamma_start = gamma,
   tau_start = 3, xi_start = 0.5,
-  prop_var = 2.3
+  prop_var_scale = 2.3
 )
 print(fit)
 summary_complete(fit)

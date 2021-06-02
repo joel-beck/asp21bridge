@@ -34,7 +34,7 @@ gamma <- c(-3, 1, 1)
 m <- set_coef(m, "location", beta)
 m <- set_coef(m, "scale", gamma)
 
-nsim <- 5000
+nsim <- 500
 
 reps <- replicate(nsim, {
   y <- rnorm(n, 0 + 1 * x1 + 1 * x3, exp(-3 + 1 * x2 + 1 * x3))
