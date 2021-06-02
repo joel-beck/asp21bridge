@@ -193,7 +193,6 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
     }
 
     if (mh_location) {
-
       # sampling beta with metropolis-hastings
       beta_list <- mh_beta(
         y = y, X = X, Z = Z, beta = beta_samples[i, ],
@@ -203,7 +202,6 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
       beta_samples[i, ] <- beta_list$beta
       acc_count_loc <- acc_count_loc + beta_list$accepted
     } else {
-
       # sampling beta with closed form full conditional
       beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(K))
       beta_mean <- beta_var %*% crossprod(W, u)
