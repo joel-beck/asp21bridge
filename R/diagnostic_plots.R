@@ -69,15 +69,18 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
     ))
   }
 
-  name <- colnames(data)
-  data$values <- data[[1]]
-  data$time <- seq_len(nrow(data))
-
-  if (name == "samples" && latex) {
+  # include check !is.data.frame() for latex labels in summary_complete()
+  if ((!is.list(samples) && is.null(colnames(samples)) ||
+       is.list(samples) && !is.data.frame(samples) && is.null(colnames(samples[[1]])))
+      && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
   # basic plot -------------------------------------------------------------
+
+  name <- colnames(data)
+  data$values <- data[[1]]
+  data$time <- seq_len(nrow(data))
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$time, y = .data$values)
@@ -183,14 +186,16 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
     ))
   }
 
-  name <- colnames(data)
-  data$values <- data[[1]]
-
-  if (name == "samples" && latex) {
+  if ((!is.list(samples) && is.null(colnames(samples)) ||
+       is.list(samples) && is.null(colnames(samples[[1]])))
+      && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
   # basic plot --------------------------------------------------------------
+
+  name <- colnames(data)
+  data$values <- data[[1]]
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$values)
@@ -304,13 +309,15 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
     ))
   }
 
-  data$time <- 0:(length(data$acl) - 1)
-
-  if (name == "samples" && latex) {
+  if ((!is.list(samples) && is.null(colnames(samples)) ||
+       is.list(samples) && is.null(colnames(samples[[1]])))
+      && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
   # basic plot --------------------------------------------------------------
+
+  data$time <- 0:(length(data$acl) - 1)
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$time, y = .data$acl)

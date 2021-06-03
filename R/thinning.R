@@ -1,3 +1,6 @@
+#   ____________________________________________________________________________
+#   Helper Functions                                                        ####
+
 thin_element <- function(samples, freq) {
   # check for validity of 'freq'
   if ((as.integer(freq) != freq) || freq <= 0) {
@@ -23,6 +26,8 @@ thin_element <- function(samples, freq) {
 }
 
 
+#   ____________________________________________________________________________
+#   Main Function                                                           ####
 
 #' @title Remove samples of a Markov Chain by a constant frequency
 #'

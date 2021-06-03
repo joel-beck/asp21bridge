@@ -1,3 +1,6 @@
+#   ____________________________________________________________________________
+#   Helper Functions                                                        ####
+
 burn_element <- function(samples, num_burn) {
   # check for validity of 'num_burn'
   if ((as.integer(num_burn) != num_burn) || num_burn < 0) {
@@ -22,6 +25,9 @@ burn_element <- function(samples, num_burn) {
   }
 }
 
+
+#   ____________________________________________________________________________
+#   Main Function                                                           ####
 
 #' @title Remove beginning samples of a Markov Chain
 #'
