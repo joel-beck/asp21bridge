@@ -1,3 +1,80 @@
+#   ____________________________________________________________________________
+#   Helper Functions                                                        ####
+
+#' @importFrom rlang .data
+
+mult_time <- function(data, log, free_scale, latex) {
+  free_scale <- ifelse(test = free_scale, yes = "free_y", no = "fixed")
+
+  time_p <- data %>%
+    ggplot2::ggplot(mapping = ggplot2::aes(
+      x = .data$time, y = .data$vals, color = .data$Parameter
+    )) +
+    ggplot2::geom_line() +
+    ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plots") +
+    ggplot2::facet_wrap(facets = ggplot2::vars(.data$Parameter), scales = free_scale) +
+    ggplot2::guides(color = FALSE) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+  if (log) {
+    time_p <- time_p +
+      ggplot2::scale_y_log10()
+  }
+
+  if (latex) {
+    time_p <- time_p +
+      ggplot2::facet_wrap(
+        facets = ggplot2::vars(.data$Parameter), scales = free_scale,
+        labeller = ggplot2::label_parsed
+      )
+  }
+  return(time_p)
+}
+
+
+#' @importFrom rlang .data
+
+mult_density <- function(data, log, robust, latex) {
+  density_p <- data %>%
+    ggplot2::ggplot(mapping = ggplot2::aes(x = .data$vals, fill = .data$Parameter)) +
+    ggridges::geom_density_ridges(
+      mapping = ggplot2::aes(y = .data$Parameter %>% forcats::fct_rev()), alpha = 0.5
+    ) +
+    ggplot2::labs(x = "Values", y = NULL, title = "Density Estimates") +
+    ggplot2::guides(fill = FALSE) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5),
+      axis.title = ggplot2::element_text(size = 10)
+    )
+
+  if (log) {
+    density_p <- density_p +
+      ggplot2::scale_x_log10()
+  }
+
+  if (latex) {
+    density_p <- density_p +
+      ggplot2::scale_y_discrete(
+        labels = parse(text = levels(data$Parameter %>% forcats::fct_rev()))
+      )
+  }
+
+  if (robust) {
+    bounds <- data %>%
+      dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
+    density_p <- density_p +
+      ggplot2::coord_cartesian(xlim = bounds$bounds)
+  }
+  return(density_p)
+}
+
+
+
+#   ____________________________________________________________________________
+#   Main Function                                                           ####
+
 #' @title Plot multiple Markov Chains together
 #'
 #' @description The `mult_plot()` function allows to combine time and / or
@@ -67,9 +144,11 @@
 mult_plot <- function(samples, type = c("time", "density", "both"),
                       log = FALSE, robust = FALSE, free_scale = FALSE,
                       latex = FALSE) {
+
+  # validate input ----------------------------------------------------------
+
   type <- rlang::arg_match(type)
 
-  # Error Messages
   if (!is.list(samples) && !is.matrix(samples)) {
     stop("Input 'samples' must be a numeric matrix or a list of matrices!")
   }
@@ -82,20 +161,13 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     ))
   }
 
-  # rows_matrix <- purrr::map_dbl(.x = samples, .f = nrow)
-  # if (any(rows_matrix != rows_matrix[1])) {
-  #   stop("The number of simulations must be equal for all parameters!")
-  # }
+  # common data for all outputs ---------------------------------------------
 
-  # Plotting Data for both types
   if (is.list(samples)) {
     data <- purrr::map_dfc(.x = samples, .f = as.data.frame)
-  }
-
-  if (is.matrix(samples)) {
+  } else if (is.matrix(samples)) {
     data <- as.data.frame(samples)
   }
-
 
   if (latex) {
     # replace underscores in column names with brackets
@@ -111,85 +183,25 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     ) %>%
     dplyr::mutate(Parameter = factor(.data$Parameter) %>% forcats::fct_inorder())
 
+  # time plot ---------------------------------------------------------------
 
-
-  # Time Plot
-  free_scale <- ifelse(test = free_scale, yes = "free_y", no = "fixed")
-
-  time_p <- data %>%
-    ggplot2::ggplot(mapping = ggplot2::aes(
-      x = .data$time, y = .data$vals, color = .data$Parameter
-    )) +
-    ggplot2::geom_line() +
-    ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plots") +
-    ggplot2::facet_wrap(facets = ggplot2::vars(.data$Parameter), scales = free_scale) +
-    ggplot2::guides(color = FALSE) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-  if (log) {
-    time_p <- time_p +
-      ggplot2::scale_y_log10()
-  }
-
-  if (latex) {
-    time_p <- time_p +
-      ggplot2::facet_wrap(
-        facets = ggplot2::vars(.data$Parameter), scales = free_scale,
-        labeller = ggplot2::label_parsed
-      )
-  }
-
-
-
-  # Density Plot
-  density_p <- data %>%
-    ggplot2::ggplot(mapping = ggplot2::aes(x = .data$vals, fill = .data$Parameter)) +
-    ggridges::geom_density_ridges(
-      mapping = ggplot2::aes(y = .data$Parameter %>% forcats::fct_rev()), alpha = 0.5
-    ) +
-    ggplot2::labs(x = "Values", y = NULL, title = "Density Estimates") +
-    ggplot2::guides(fill = FALSE) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      plot.title = ggplot2::element_text(hjust = 0.5),
-      axis.title = ggplot2::element_text(size = 10)
+  time_p <- mult_time(
+    data = data, log = log, free_scale = free_scale, latex = latex
     )
 
+  # density plot ------------------------------------------------------------
 
-  if (log) {
-    density_p <- density_p +
-      ggplot2::scale_x_log10()
-  }
+  density_p <- mult_density(
+    data = data, log = log, robust = robust, latex = latex
+    )
 
+  # output depending on type ------------------------------------------------
 
-  if (latex) {
-    density_p <- density_p +
-      ggplot2::scale_y_discrete(
-        labels = parse(text = levels(data$Parameter %>% forcats::fct_rev()))
-      )
-  }
-
-
-  if (robust) {
-    bounds <- data %>%
-      dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
-    density_p <- density_p +
-      ggplot2::coord_cartesian(xlim = bounds$bounds)
-  }
-
-
-
-  # return plot object depending on input "type"
   if (type == "both") {
     plot <- time_p / density_p
-  }
-
-  if (type == "time") {
+  } else if (type == "time") {
     plot <- time_p
-  }
-
-  if (type == "density") {
+  } else if (type == "density") {
     plot <- density_p
   }
 

@@ -50,6 +50,9 @@
 #' @importFrom rlang .data
 
 time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
+
+  # validate input ----------------------------------------------------------
+
   if (is.list(samples) && length(samples) == 1) {
     data <- as.data.frame(samples[[1]])
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
@@ -66,12 +69,11 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   data$values <- data[[1]]
   data$time <- seq_len(nrow(data))
 
-
-  # Error Messages
   if (name == "samples" && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
+  # basic plot -------------------------------------------------------------
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$time, y = .data$values)
@@ -84,13 +86,13 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
       axis.title = ggplot2::element_text(size = 10)
     )
 
+  # plot options ------------------------------------------------------------
+
   if (log) {
     plot <- plot +
       ggplot2::scale_y_log10()
   }
 
-
-  # Cut off Tails of Distribution
   if (robust) {
     plot <- plot +
       ggplot2::coord_cartesian(
@@ -98,14 +100,11 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
       )
   }
 
-
-  # Format Plot Label in LaTeX
   if (latex) {
     name <- stringr::str_glue("$\\{name}$")
     plot <- plot +
       ggplot2::labs(title = latex2exp::TeX(paste("Time Plot for", name)))
   }
-
 
   return(plot)
 }
@@ -165,6 +164,9 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @importFrom rlang .data
 
 density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
+
+  # validate input ----------------------------------------------------------
+
   if (is.list(samples) && length(samples) == 1) {
     data <- as.data.frame(samples[[1]])
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
@@ -180,12 +182,11 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   name <- colnames(data)
   data$values <- data[[1]]
 
-
-  # Error Messages
   if (name == "samples" && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
+  # basic plot --------------------------------------------------------------
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$values)
@@ -202,13 +203,13 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
       axis.title = ggplot2::element_text(size = 10)
     )
 
+  # plot options ------------------------------------------------------------
 
   if (log) {
     plot <- plot +
       ggplot2::scale_x_log10()
   }
 
-  # Cut off Tails of Distribution
   if (robust) {
     plot <- plot +
       ggplot2::coord_cartesian(
@@ -216,7 +217,6 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
       )
   }
 
-  # Format Plot Label in LaTeX
   if (latex) {
     name <- stringr::str_glue("$\\{name}$")
     plot <- plot +
@@ -279,6 +279,9 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @importFrom rlang .data
 
 acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
+
+  # validate input ----------------------------------------------------------
+
   if (is.list(samples) && length(samples) == 1) {
     name <- colnames(as.data.frame(samples[[1]]))
     data <- data.frame(
@@ -299,12 +302,11 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 
   data$time <- 0:(length(data$acl) - 1)
 
-
-  # Error Messages
   if (name == "samples" && latex) {
     stop("Set 'latex = TRUE' only if column names are provided.")
   }
 
+  # basic plot --------------------------------------------------------------
 
   plot <- ggplot2::ggplot(
     data = data, mapping = ggplot2::aes(x = .data$time, y = .data$acl)
@@ -320,8 +322,8 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
       axis.title = ggplot2::element_text(size = 10)
     )
 
+  # plot options ------------------------------------------------------------
 
-  # Format Plot Label in LaTeX
   if (latex) {
     name <- stringr::str_glue("$\\{name}$")
     plot <- plot +
