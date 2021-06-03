@@ -53,7 +53,11 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 
   # validate input ----------------------------------------------------------
 
-  if (is.list(samples) && length(samples) == 1) {
+  # check for data frame included to display correct column names in
+  # summary_complete(., include_plot = TRUE)
+  if (is.data.frame(samples)) {
+    data <- samples
+  } else if (is.list(samples) && length(samples) == 1) {
     data <- as.data.frame(samples[[1]])
   } else if ((is.matrix(samples) && ncol(samples) == 1) ||
     is.vector(samples, mode = "numeric")) {
