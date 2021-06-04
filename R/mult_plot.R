@@ -83,8 +83,8 @@ mult_density <- function(data, log, robust, latex) {
 #'              Time plots are displayed separately in facets, density plots
 #'              are shown in a ridgeline plot.
 #'
-#' @param samples Numeric matrix or list of matrices containing samples
-#'                of the MCMC sampler.
+#' @param samples Model object of the class 'lslm', list or matrix
+#'                containing samples of the MCMC sampler.
 #'
 #' @param type One of the values "time", "density" or "both". \cr
 #'             Controls whether only time plots or only density plots should
@@ -149,10 +149,6 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   type <- rlang::arg_match(type)
 
-  if (!is.list(samples) && !is.matrix(samples)) {
-    stop("Input 'samples' must be a numeric matrix or a list of matrices!")
-  }
-
   if (!(is.logical(robust) && is.logical(free_scale) && is.logical(log) &&
     is.logical(latex))) {
     stop(paste(
@@ -161,13 +157,28 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     ))
   }
 
-  # common data for all outputs ---------------------------------------------
-
-  if (is.list(samples)) {
-    data <- purrr::map_dfc(.x = samples, .f = as.data.frame)
-  } else if (is.matrix(samples)) {
+  if (is.matrix(samples)) {
     data <- as.data.frame(samples)
+  } else if (class(samples) == "lslm") {
+    # if input is model object
+    data <- purrr::map_dfc(.x = samples$mcmc_ridge[[1]], .f = as.data.frame)
+  } else if (is.list(samples)) {
+    # if input is a list but not a model object
+    if (any(names(samples) == "sampling_matrices")) {
+      # if input is gibbs_sampler() output in list format with two entries
+      data <- purrr::map_dfc(.x = samples[["sampling_matrices"]], .f = as.data.frame)
+    } else {
+      # if input is list with just the sampling matrices
+      data <- purrr::map_dfc(.x = samples, .f = as.data.frame)
+    }
+  } else {
+    stop(paste(
+      "Input 'samples' must be a model object of the class 'lslm',",
+      "a numeric matrix or a list of vectors and matrices!"
+    ))
   }
+
+  # common data for all output types ----------------------------------------
 
   if (latex) {
     # replace underscores in column names with brackets

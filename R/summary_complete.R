@@ -141,8 +141,8 @@ summary_complete <- function(samples, include_plot = FALSE) {
     }
   } else {
     stop(paste(
-      "Input 'samples' must be a numeric vector,",
-      "matrix or list of vectors and matrices!"
+      "Input 'samples' must be a model object of the class 'lslm',",
+      "a numeric vector or matrix or a list of vectors and matrices!"
     ))
   }
 }

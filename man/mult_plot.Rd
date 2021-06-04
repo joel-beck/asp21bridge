@@ -14,8 +14,8 @@ mult_plot(
 )
 }
 \arguments{
-\item{samples}{Numeric matrix or list of matrices containing samples
-of the MCMC sampler.}
+\item{samples}{Model object of the class 'lslm', list or matrix
+containing samples of the MCMC sampler.}
 
 \item{type}{One of the values "time", "density" or "both". \cr
 Controls whether only time plots or only density plots should
