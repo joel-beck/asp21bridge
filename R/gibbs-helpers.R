@@ -64,8 +64,9 @@ create_output <- function(mod, beta_samples, gamma_samples, tau_samples, xi_samp
 
 
 # Validate function's input conditions
-validate_input <- function(m = m, X = X, Z = Z, y = y,
-                           beta_start = beta_start, gamma_start = gamma_start) {
+validate_input <- function(m, X, Z, y,
+                           beta_start, gamma_start,
+                           mod, mcmc_ridge_m) {
   if (is.null(m) &
       (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
     stop(paste(
