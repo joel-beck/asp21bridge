@@ -43,19 +43,19 @@
 #'             Default: 1
 #' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, \cr
 #'             Default: 3
-#' @param prop_var_scale Variance of proposal distribution for gamma sampling, \cr
+#' @param prop_var_scale Variance of proposal distribution for `gamma` sampling, \cr
 #'                       Default: 3
 #' @param mh_location If TRUE, location parameter is sampled with
-#'                    Metropolis - Hastings Algorithm \cr
+#'                    Metropolis - Hastings Algorithm, \cr
 #'                    Default: FALSE
-#' @param prop_var_loc Variance of proposal distribution for beta sampling, \cr
+#' @param prop_var_loc Variance of proposal distribution for `beta` sampling, \cr
 #'                     Default: 1
 #'
 #' @return Depending on the input structure, different output types are available.
-#'         In each case a a Markov Chain of samples for the parameters is generated.
+#'         In each case a a Markov Chain of samples for the parameters is generated. \cr
 #'         If matrices and parameters are only assigned by hand, a list containing the
 #'         parameters with their according iterations is available via the `print()`
-#'         command.
+#'         command. \cr
 #'         In case a model object is used at any stage, the output extends the model by
 #'         the same list, that can be obtained via `model$mcmc_ridge` or outputs the last
 #'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`. \cr
