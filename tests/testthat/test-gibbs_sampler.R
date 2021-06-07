@@ -108,5 +108,3 @@ test_that("Error Code of missing input data is thrown", {
     fixed = TRUE
   )
 })
-
-# summary complete
