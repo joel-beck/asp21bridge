@@ -107,8 +107,10 @@ validate_input <- function(m, X, Z, y,
 
   } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
     stop("Dimensions of design matrices do not match with length of coefficients.")
+
+  } else {
+    return(input_list)
   }
 
-  return(input_list)
 }
 
