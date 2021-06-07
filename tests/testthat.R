@@ -1,4 +1,4 @@
 library(testthat)
-library(lslmbRidge)
+library(asp21bridge)
 
-test_check("lslmbRidge")
+test_check("asp21bridge")

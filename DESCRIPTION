@@ -1,4 +1,4 @@
-Package: lslmbRidge
+Package: asp21bridge
 Title: Markov Chain Monte Carlo Sampler with Ridge Penalty
 Version: 0.0.0.9000
 Authors@R: c(
@@ -19,10 +19,10 @@ Authors@R: c(
              role = "aut",
              email = "hriebl@uni-goettingen.de")
              )
-Description: The lslmbRidge package adds a Markov Chain Monte Carlo Sampler with 
-             Ridge Regularization to the Gaussian location-scale regression 
+Description: The asp21bridge package adds a Markov Chain Monte Carlo Sampler with
+             Ridge Regularization to the Gaussian location-scale regression
              model implemented in the lslm package.
-Imports: 
+Imports:
     dplyr,
     forcats,
     generics,
@@ -36,10 +36,10 @@ Imports:
     rlang,
     stringr,
     tidyr
-Suggests: 
+Suggests:
     numDeriv,
     testthat (>= 3.0.0)
-Depends: 
+Depends:
     R (>= 2.10)
 License: MIT + file LICENSE
 Encoding: UTF-8

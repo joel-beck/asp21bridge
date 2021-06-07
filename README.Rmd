@@ -1,5 +1,5 @@
 ---
-output: 
+output:
   github_document
 ---
 
@@ -14,18 +14,18 @@ knitr::opts_chunk$set(
 )
 ```
 
-# lslmbRidge
+# asp21bridge
 
-The goal of `lslmbRidge` is to extend the `lslm` package by implementing a Markov Chain Monte Carlo Sampler with Ridge penalization.
+The goal of `asp21bridge` is to extend the `lslm` package by implementing a Markov Chain Monte Carlo Sampler with Ridge penalization.
 
 
 ## Underlying Model
 
-The observation model in consideration is given by  
+The observation model in consideration is given by
 <!--  -->
 ```math
 \begin{aligned}
-y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)^2 \right) \qquad i = 1, \ldots n, 
+y_i \sim \mathcal{N} \left( \mathbf{x}_i^T \boldsymbol{\beta},\, \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)^2 \right) \qquad i = 1, \ldots n,
 \end{aligned}
 ```
 <!--  -->
@@ -37,7 +37,7 @@ In the following examples the built-in simulated `toy_data` is used, which consi
 Here, all explanatory variables predict the mean of `y` and only the latter two model the variance.
 
 ```{r}
-library(lslmbRidge)
+library(asp21bridge)
 head(toy_data)
 ```
 
@@ -55,7 +55,7 @@ fit <- toy_data %>%
 
 ## Numerical Analysis
 
-The `lslmbRidge` package contains various tools to analyze the sampling results both numerically and graphically.
+The `asp21bridge` package contains various tools to analyze the sampling results both numerically and graphically.
 
 A first quick overview can be gained by the generic `summary()` function:
 
@@ -84,7 +84,7 @@ results %>%
 
 The building blocks for monitoring the convergence of the posterior chains as well as the autocorrelations are the functions `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for combining multiple chains.
 
-First, we analyze the convergence of the location coefficients. 
+First, we analyze the convergence of the location coefficients.
 Note that the posterior samples are saved in the list entry `mcmc_ridge$sampling_matrices`:
 
 ```{r}
@@ -96,7 +96,7 @@ mult_plot(
 )
 ```
 
-We can observe stable time plots indicating convergence and a sufficient exploration of the posterior space as well as approximate normal posterior distributions for $\beta_1$ up to $\beta_4$. 
+We can observe stable time plots indicating convergence and a sufficient exploration of the posterior space as well as approximate normal posterior distributions for $\beta_1$ up to $\beta_4$.
 
 While time plots, density plots and autocorrelation plots can always be displayed separately, it is often convenient to combine all of them in a single plot.
 This can be achieved with the `diagnostic_plots()` function as demonstrated below.
