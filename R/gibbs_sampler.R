@@ -120,9 +120,13 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
 
   # validate input ----------------------------------------------------------
 
-  validate_input(m = m, X = X, Z = Z, y = y,
-                 beta_start = beta_start, gamma_start = gamma_start,
-                 mod = mod, mcmc_ridge_m = mcmc_ridge_m)
+  input_list <- validate_input(m = m, X = X, Z = Z, y = y,
+                               beta_start = beta_start, gamma_start = gamma_start,
+                               mod = mod, mcmc_ridge_m = mcmc_ridge_m)
+  for (j in 1:length(input_list) - 1) {
+    assign(names(input_list[j]), input_list[[j]])
+  }
+  mod <- input_list[[length(input_list)]]
 
   # initialize variables ----------------------------------------------------
 

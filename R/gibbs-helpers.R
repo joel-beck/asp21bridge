@@ -91,13 +91,17 @@ validate_input <- function(m, X, Z, y,
     for (l in 1:length(input_list)) {
       if (is.null(input_list[[l]])) {
         mod <- TRUE
-        assign(names(input_list[l]), mod_name_list[[l]], inherits = TRUE)
+        assign(names(input_list[l]), mod_name_list[[l]])
+        input_list[[l]] <- mod_name_list[[l]]
       }
     }
 
     if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
       stop("Dimensions of design matrices do not match with length of coefficients.")
     }
+    input_list <- append(input_list, mod)
+    return(input_list)
+
   } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
     stop("Dimensions of design matrices do not match with length of coefficients.")
   }
