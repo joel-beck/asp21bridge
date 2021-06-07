@@ -100,6 +100,7 @@ validate_input <- function(m, X, Z, y,
       stop("Dimensions of design matrices do not match with length of coefficients.")
     }
     input_list <- append(input_list, mod)
+    names(input_list)[length(input_list)] <- "mod"
     return(input_list)
 
   } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
