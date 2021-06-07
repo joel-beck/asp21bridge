@@ -91,7 +91,7 @@ validate_input <- function(m, X, Z, y,
     for (l in 1:length(input_list)) {
       if (is.null(input_list[[l]])) {
         mod <- TRUE
-        assign(names(input_list[l]), mod_name_list[[l]])
+        return(assign(names(input_list[l]), mod_name_list[[l]]))
       }
     }
 
