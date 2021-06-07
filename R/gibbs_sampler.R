@@ -120,40 +120,7 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
 
   # validate input ----------------------------------------------------------
 
-  if (is.null(m) &
-    (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
-    stop(paste(
-      "At least either all model matrices (X, Z, y) and coefficients",
-      "(beta_start, gamma_start) or a model object (m) must be given."
-    ))
-  } else if (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start)) {
-    input_list <- list(
-      X = X,
-      Z = Z,
-      y = y,
-      beta_start = beta_start,
-      gamma_start = gamma_start
-    )
-    mod_name_list <- list(
-      X = mcmc_ridge_m$x,
-      Z = mcmc_ridge_m$z,
-      Y = mcmc_ridge_m$y,
-      beta_start = mcmc_ridge_m$coefficients$location,
-      gamma_start = mcmc_ridge_m$coefficients$scale
-    )
-    for (l in 1:length(input_list)) {
-      if (is.null(input_list[[l]])) {
-        mod <- TRUE
-        assign(names(input_list[l]), mod_name_list[[l]])
-      }
-    }
-
-    if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
-      stop("Dimensions of design matrices do not match with length of coefficients.")
-    }
-  } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
-    stop("Dimensions of design matrices do not match with length of coefficients.")
-  }
+  validate_input()
 
   # initialize variables ----------------------------------------------------
 
