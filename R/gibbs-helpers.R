@@ -67,6 +67,14 @@ create_output <- function(mod, beta_samples, gamma_samples, tau_samples, xi_samp
 validate_input <- function(m, X, Z, y,
                            beta_start, gamma_start,
                            mod, mcmc_ridge_m) {
+  input_list <- list(
+    X = X,
+    Z = Z,
+    y = y,
+    beta_start = beta_start,
+    gamma_start = gamma_start
+  )
+
   if (is.null(m) &
       (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
     stop(paste(
@@ -74,13 +82,7 @@ validate_input <- function(m, X, Z, y,
       "(beta_start, gamma_start) or a model object (m) must be given."
     ))
   } else if (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start)) {
-    input_list <- list(
-      X = X,
-      Z = Z,
-      y = y,
-      beta_start = beta_start,
-      gamma_start = gamma_start
-    )
+
     mod_name_list <- list(
       X = mcmc_ridge_m$x,
       Z = mcmc_ridge_m$z,
@@ -106,5 +108,7 @@ validate_input <- function(m, X, Z, y,
   } else if ((ncol(X) != length(beta_start)) | (ncol(Z) != length(gamma_start))) {
     stop("Dimensions of design matrices do not match with length of coefficients.")
   }
+
+  return(input_list)
 }
 
