@@ -201,14 +201,14 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
     acc_count_scale <- acc_count_scale + gamma_list$accepted
 
     # sampling tau
-    tau_samples[i, ] <- 1 / stats::rgamma(
+    tau_samples[i, ] <- invgamma::rinvgamma(
       n = ncol(tau_samples),
       shape = a_tau + K / 2,
       rate = b_tau + 0.5 * crossprod(beta_samples[i - 1, ])
     )
 
     # sampling xi
-    xi_samples[i, ] <- 1 / stats::rgamma(
+    xi_samples[i, ] <- invgamma::rinvgamma(
       n = ncol(xi_samples),
       shape = a_xi + J / 2,
       rate = b_xi + 0.5 * crossprod(gamma_samples[i - 1, ])

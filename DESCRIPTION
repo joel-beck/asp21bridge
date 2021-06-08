@@ -28,6 +28,7 @@ Imports:
     generics,
     ggplot2,
     ggridges,
+    invgamma,
     latex2exp,
     magrittr,
     mvtnorm,
