@@ -120,15 +120,36 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
 
   # validate input ----------------------------------------------------------
 
-  input_list <- validate_input(m = m, X = X, Z = Z, y = y,
-                               beta_start = beta_start, gamma_start = gamma_start,
-                               mod = mod, mcmc_ridge_m = mcmc_ridge_m
+  input_list <- validate_input(
+    m = m, X = X, Z = Z, y = y,
+    beta_start = beta_start, gamma_start = gamma_start,
+    mod = mod, mcmc_ridge_m = mcmc_ridge_m
   )
-  for (j in 1:length(input_list)) {
+  for (j in seq_along(input_list)) {
     assign(names(input_list[j]), input_list[[j]])
   }
 
+  intercept_list <- add_intercept(
+    X = X, Z = Z, beta_start = beta_start, gamma_start = gamma_start, mod = mod
+  )
+
+  for (j in seq_along(intercept_list)) {
+    assign(names(intercept_list[j]), intercept_list[[j]])
+  }
+
   # initialize variables ----------------------------------------------------
+
+  n <- length(y)
+  acc_count_scale <- 0
+  if (mh_location) {
+    acc_count_loc <- 0
+  }
+
+  # Berechnung der Variablen für die Full Conditionals
+  K <- length(beta_start) - 1
+  J <- length(gamma_start) - 1
+  W <- matrix(rep(0, times = n * (K + 1)), nrow = n)
+  u <- numeric(length = n)
 
   beta_samples <- init_sampling_matrix(
     name = "beta", nrow = num_sim, start_value = beta_start
@@ -142,18 +163,6 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
   xi_samples <- init_sampling_matrix(
     name = "xi^2", nrow = num_sim, start_value = xi_start
   )
-
-  n <- length(y)
-  acc_count_scale <- 0
-  if (mh_location) {
-    acc_count_loc <- 0
-  }
-
-  # Berechnung der Variablen für die Full Conditionals
-  K <- length(beta_start)
-  J <- length(gamma_start)
-  W <- matrix(rep(0, times = n * K), nrow = n)
-  u <- numeric(length = n)
 
   # sampling process --------------------------------------------------------
 
@@ -176,7 +185,7 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
       acc_count_loc <- acc_count_loc + beta_list$accepted
     } else {
       # sampling beta with closed form full conditional
-      beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(K))
+      beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(c(0, rep(1, times = K))))
       beta_mean <- beta_var %*% crossprod(W, u)
       beta_samples[i, ] <- mvtnorm::rmvnorm(n = 1, mean = beta_mean, sigma = beta_var)
     }
@@ -195,14 +204,14 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
     tau_samples[i, ] <- 1 / stats::rgamma(
       n = ncol(tau_samples),
       shape = a_tau + K / 2,
-      scale = b_tau + 0.5 * crossprod(beta_samples[i - 1, ])
+      rate = b_tau + 0.5 * crossprod(beta_samples[i - 1, ])
     )
 
     # sampling xi
     xi_samples[i, ] <- 1 / stats::rgamma(
       n = ncol(xi_samples),
       shape = a_xi + J / 2,
-      scale = b_xi + 0.5 * crossprod(gamma_samples[i - 1, ])
+      rate = b_xi + 0.5 * crossprod(gamma_samples[i - 1, ])
     )
   }
 
