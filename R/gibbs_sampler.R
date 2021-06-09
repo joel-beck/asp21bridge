@@ -113,7 +113,7 @@
 
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
-                          a_tau = 1, b_tau = 3, a_xi = 1, b_xi = 3,
+                          a_tau = 1, b_tau = 1, a_xi = 1, b_xi = 1,
                           prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 1) {
   mod <- FALSE
   mcmc_ridge_m <- m
@@ -204,14 +204,14 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
     tau_samples[i, ] <- invgamma::rinvgamma(
       n = ncol(tau_samples),
       shape = a_tau + K / 2,
-      rate = b_tau + 0.5 * crossprod(beta_samples[i - 1, ])
+      rate = b_tau + 0.5 * sum((beta_samples[i - 1, -1])^2)
     )
 
     # sampling xi
     xi_samples[i, ] <- invgamma::rinvgamma(
       n = ncol(xi_samples),
       shape = a_xi + J / 2,
-      rate = b_xi + 0.5 * crossprod(gamma_samples[i - 1, ])
+      rate = b_xi + 0.5 * sum((gamma_samples[i - 1, -1])^2)
     )
   }
 

@@ -15,9 +15,9 @@ gibbs_sampler(
   tau_start = 1,
   xi_start = 1,
   a_tau = 1,
-  b_tau = 3,
+  b_tau = 1,
   a_xi = 1,
-  b_xi = 3,
+  b_xi = 1,
   prop_var_scale = 3,
   mh_location = FALSE,
   prop_var_loc = 1

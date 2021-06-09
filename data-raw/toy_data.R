@@ -9,15 +9,15 @@ z2 <- rnorm(n = 50, mean = 3, sd = 1)
 X <- cbind(x1, x2, z1, z2)
 Z <- cbind(z1, z2)
 
-beta <- c(2, -4, 5, 1)
-gamma <- c(0.003, 0.002)
+beta <- c(-2, -1, 1, 2)
+gamma <- c(-1, 1)
 
 y <- vector(mode = "numeric", length = 50)
 
 for (i in seq_along(y)) {
-  mu <- t(X[i,]) %*% beta
-  sigma <- exp(t(Z[i]) %*% gamma)
-  y[i] <- rnorm(n = 1, mean = mu, sd = sigma^2)
+  mu <- sum(X[i,] * beta)
+  sigma <- exp(sum(Z[i,] * gamma))
+  y[i] <- rnorm(n = 1, mean = mu, sd = sigma)
 }
 
 toy_data <- dplyr::tibble(

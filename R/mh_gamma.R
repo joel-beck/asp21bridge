@@ -10,7 +10,7 @@ help_function_1 <- function(y, X, Z, beta, g_gamma, n) {
 
 # Log Full Conditional für aktuelles Gamma
 log_full_cond_1 <- function(y, X, Z, beta, gamma, g_gamma, xi_squared, n) {
-  -0.5 * ((1 / xi_squared) * sum(gamma[2:length(gamma)]^2) +
+  -0.5 * ((1 / xi_squared) * sum(gamma[-1]^2) +
     2 * sum(Z %*% drop(gamma)) +
     help_function_1(
       y = y, X = X, Z = Z, beta = beta, g_gamma = g_gamma, n = n
@@ -29,7 +29,7 @@ help_function_2 <- function(y, X, Z, beta, gamma, n) {
 
 # Log Full Conditional für Proposal-Gamma
 log_full_cond_2 <- function(y, X, Z, beta, gamma, xi_squared, n) {
-  -0.5 * ((1 / xi_squared) * sum(gamma[2:length(gamma)]^2)
+  -0.5 * ((1 / xi_squared) * sum(gamma[-1]^2)
     + 2 * sum(Z %*% drop(gamma)) +
     help_function_2(y = y, X = X, Z = Z, beta = beta, gamma = gamma, n = n))
 }
