@@ -33,7 +33,8 @@ where the *location* parameter $\beta$ and the *scale* parameter $\gamma$ are th
 ## The Data
 
 In the following examples the built-in simulated `toy_data` is used, which consists of a column `y` representing a vector of observed values and the explanatory variables `x1`, `x2`, `z1` and `z2`.
-Here, all explanatory variables predict the mean of `y` whereas only the latter two model the variance.
+The data is constructed according to the mathematical model in the previous section, 
+where all explanatory variables predict the mean of `y` and only the latter two model the variance.
 
 ```{r}
 library(asp21bridge)
@@ -88,15 +89,23 @@ summary_complete(fit) %>%
   dplyr::filter(stringr::str_detect(Parameter, pattern = "beta|gamma")) %>%
   dplyr::mutate(
     mcmc = summary_complete(fit$mcmc)$`Posterior Mean`,
-    mle = c(coef(fit)$location, coef(fit)$scale)
+    mle = c(coef(fit)$location, coef(fit)$scale),
+    truth = c(0, -2, -1, 1, 2, 0, -1, 1)
   )
 ```
 
-The estimates for $\beta_1$ up to $\beta_4$ are identical in the three models and coincide with the true data generating values.
-This behaviour is somewhat expected since the $\beta$ vector is drawn from a closed form multivariate normal distribution with independent samples across iterations of the MCMC sampler.
+The estimates for $\beta_1$ up to $\beta_4$ are identical in the three models and almost coincide with the true data generating values.
+This behaviour is somewhat expected, since the $\beta$ vector is drawn from a closed form multivariate normal distribution with independent samples across iterations of the MCMC sampler.
 
 The results for the scale parameter $\gamma$ show a greater variation between the models and are therefore more interesting to analyze.
-The Markov Chain Monte Carlo samples based on the Metropolis - Hastings algorithm implemented in the `gibbs_sampler()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
+The Maximum Likelihood approach is able to recover the true / data generating value of $\gamma_2$, while the MCMC sampler with Ridge penalty performs best for estimating $\gamma_1$.
+All three models fail to identify the correct intercept parameter $\gamma_0$, which, however, is often of minor interest.
+
+Simulations across different data sets and sample sizes show similar patterns: 
+If the data is generated according to the mathematical model introduced in the first section, i.e. the estimation model using Maximum Likelihood is correctly specified, the `mle` and the `mcmc_ridge` estimates tend to be closest to the true values.
+If, however, the underlying model used for simulation deviates from the Gaussian location-scale regression model, the `mle` results are, unsurprisingly, worse than both of the more flexible MCMC methods.
+
+The Markov Chain Monte Carlo samples for $\gamma$ based on the Metropolis - Hastings algorithm implemented in the `gibbs_sampler()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
 
 ```{r}
 fit$mcmc_ridge$acceptance_rate
@@ -151,7 +160,7 @@ samples$scale[, 3, drop = FALSE] %>%
 ```
 
 Even a thinning factor of $30$, i.e. only every $30$th observation is kept in the sample, does not get rid of the autocorrelation. 
-The posterior density seems to be approximately normal though and the time plot indicates a decent exploration of the posterior space.
+Yet, the posterior density seems to be approximately normal and the time plot indicates a decent exploration of the posterior space.
 
 These findings serve as a great starting point for a more in-depth analysis, which is beyond the scope of this brief introduction to the `asp21bridge` package.
 Full descriptions of all functions, their arguments and common applications can be found in the documentation.
