@@ -6,14 +6,9 @@ log_full_cond <- function(beta, beta_var, W, u) {
 
 ################ Beta Update #########################################
 
-mh_beta <- function(y, X, Z, beta, g_gamma, tau_squared, prop_var_loc) {
+mh_beta <- function(beta, W, u, tau_squared, n, prop_var_loc) {
 
-  n <- length(y)
   K <- length(beta) - 1
-  for (k in 1:n) {
-    W[k, ] <- X[k, ] / g_gamma[k]
-    u[k] <- y[k] / g_gamma[k]
-  }
 
   beta_var <- solve(crossprod(W) + (1 / tau_squared) * diag(c(0, rep(1, times = K))))
 
