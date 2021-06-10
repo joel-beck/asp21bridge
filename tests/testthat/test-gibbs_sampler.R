@@ -106,8 +106,8 @@ test_that("Using mixed input extends lslm-model summary() function", {
   expect_s3_class(fit5, "lslm")
 })
 
-test_that("Using by-hand-assigned-input and sampling beta with M-H Algorithm extends output by
-          location acc_rate", {
+test_that("Using by-hand-assigned-input and sampling beta with M-H Algorithm extends
+           output by location acc_rate", {
   expect_type(fit4$acceptance_rates, "list")
   expect_length(fit4$acceptance_rates, 2)
   expect_type(fit4$acceptance_rates$acc_rate_loc, "double")
