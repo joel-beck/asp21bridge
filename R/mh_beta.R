@@ -6,7 +6,7 @@ log_full_cond <- function(beta, beta_var, W, u) {
 
 ################ Beta Update #########################################
 
-mh_beta <- function(y, X, Z, beta, gamma, g_gamma, tau_squared, prop_var_loc) {
+mh_beta <- function(y, X, Z, beta, g_gamma, tau_squared, prop_var_loc) {
 
   n <- length(y)
   K <- length(beta) - 1
