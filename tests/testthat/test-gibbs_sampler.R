@@ -14,11 +14,11 @@ gamma <- c(0.003, 0.002)
 # matrix to cause errors
 testmat <- matrix(rnorm(600, 0, 1), ncol = 6)
 
-# model-only input
+# model-only input, mh_location = FALSE
 fit1 <- gibbs_sampler(m = fit, num_sim = 50)
 invisible(capture.output(summary_fit1 <- summary(fit1, type = "mcmc_ridge")))
 
-# by-hand input only
+# by-hand input only, mh_location = FALSE
 fit2 <- gibbs_sampler(
   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
   Z = cbind(toy_data$z1, toy_data$z2),
@@ -27,7 +27,7 @@ fit2 <- gibbs_sampler(
   num_sim = 50
 )
 
-# mixed model
+# mixed model, mh_location = FALSE
 fit3 <- gibbs_sampler(
   m = fit,
   Z = cbind(rep(1, times = length(toy_data$z1)), toy_data$z1, toy_data$z2),
@@ -46,6 +46,19 @@ fit4 <- gibbs_sampler(
   num_sim = 50
 )
 
+# mixed input with mh_location = TRUE
+fit5 <- gibbs_sampler(
+  m = fit,
+  Z = cbind(rep(1, times = length(toy_data$z1)), toy_data$z1, toy_data$z2),
+  beta_start = c(1, 2, 5, 3, 2),
+  mh_location = TRUE,
+  num_sim = 50
+)
+invisible(capture.output(summary_fit5 <- summary(fit5, type = "mcmc_ridge")))
+
+# model-only input with mh_location = TRUE
+fit6 <- gibbs_sampler(m = fit, mh_location = TRUE, num_sim = 50)
+invisible(capture.output(summary_fit6 <- summary(fit6, type = "mcmc_ridge")))
 
 
 #   ____________________________________________________________________________
@@ -57,6 +70,11 @@ test_that("Using Model Matrices extends lslm-model summary() function", {
     fit1$mcmc_ridge
   )
   expect_s3_class(fit1, "lslm")
+  expect_equal(
+    summary_fit6$mcmc_ridge,
+    fit6$mcmc_ridge
+  )
+  expect_s3_class(fit6, "lslm")
 })
 
 test_that("Output list contains each parameter, each simulation and acceptance rate", {
@@ -71,6 +89,8 @@ test_that("Output list contains each parameter, each simulation and acceptance r
 test_that("Using by-hand-assigned-input does not extend the model, but gives a list", {
   expect_type(fit2$mcmc_ridge, "NULL")
   expect_type(fit2, "list")
+  expect_type(fit4$mcmc_ridge, "NULL")
+  expect_type(fit4, "list")
 })
 
 test_that("Using mixed input extends lslm-model summary() function", {
@@ -79,6 +99,35 @@ test_that("Using mixed input extends lslm-model summary() function", {
     fit3$mcmc_ridge
   )
   expect_s3_class(fit3, "lslm")
+  expect_equal(
+    summary_fit5$mcmc_ridge,
+    fit5$mcmc_ridge
+  )
+  expect_s3_class(fit5, "lslm")
+})
+
+test_that("Using by-hand-assigned-input and sampling beta with M-H Algorithm extends output by
+          location acc_rate", {
+  expect_type(fit4$acceptance_rates, "list")
+  expect_length(fit4$acceptance_rates, 2)
+  expect_type(fit4$acceptance_rates$acc_rate_loc, "double")
+  expect_type(fit4$acceptance_rates$acc_rate_scale, "double")
+})
+
+test_that("Using mixed model input and sampling beta with M-H Algorithm extends output by
+          location acc_rate", {
+  expect_type(fit5$mcmc_ridge$acceptance_rates, "list")
+  expect_length(fit5$mcmc_ridge$acceptance_rates, 2)
+  expect_type(fit5$mcmc_ridge$acceptance_rates$acc_rate_loc, "double")
+  expect_type(fit5$mcmc_ridge$acceptance_rates$acc_rate_scale, "double")
+})
+
+test_that("Using Model Matrices and sampling beta with M-H Algorithm extends output by
+          location acc_rate", {
+  expect_type(fit6$mcmc_ridge$acceptance_rates, "list")
+  expect_length(fit6$mcmc_ridge$acceptance_rates, 2)
+  expect_type(fit6$mcmc_ridge$acceptance_rates$acc_rate_loc, "double")
+  expect_type(fit6$mcmc_ridge$acceptance_rates$acc_rate_scale, "double")
 })
 
 test_that("Independent of input type, the summary_complete() function can be called", {

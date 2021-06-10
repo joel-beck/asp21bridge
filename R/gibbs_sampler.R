@@ -46,7 +46,8 @@
 #' @param prop_var_scale Variance of proposal distribution for `gamma` sampling, \cr
 #'                       Default: 3
 #' @param mh_location If TRUE, location parameter is sampled with
-#'                    Metropolis - Hastings Algorithm, \cr
+#'                    Metropolis - Hastings Algorithm. Can be used
+#'                    with every kind of model input, \cr
 #'                    Default: FALSE
 #' @param prop_var_loc Variance of proposal distribution for `beta` sampling, \cr
 #'                     Default: 1
@@ -54,12 +55,12 @@
 #' @return Depending on the input structure, different output types are available.
 #'         In each case a a Markov Chain of samples for the parameters is generated. \cr
 #'         If matrices and parameters are only assigned by hand, a list containing the
-#'         parameters with their according iterations is available via the `print()`
-#'         command. \cr
+#'         parameters with their according iterations and the acceptance rate of a
+#'         Metropolis-Hastings algorithm is available via the `print()` command. \cr
 #'         In case a model object is used at any stage, the output extends the model by
 #'         the same list, that can be obtained via `model$mcmc_ridge` or outputs the last
 #'         iteration as model parameters via `summary(model, type = "mcmc_ridge)`. \cr
-#'         In both cases the package comes with the `summary_complete(model)` function,
+#'         In both cases, the package comes with the `summary_complete(model)` function,
 #'         which gives additional information about the Markov Chain's results. For more
 #'         see `?summary_complete()`.
 #'
@@ -77,8 +78,9 @@
 #' summary(fit, type = "mcmc_ridge")
 #' summary_complete(fit)
 #'
-#' # Gibbs sampling with input by hand.
-#' # Outputs list with each parameter and iteration.
+#' # Sampling with by-hand-assigned-input and using Metropolis Hastings for location
+#' # and scale parameter.
+#' # Outputs list with each parameter and iteration as well as accuracy rates.
 #' beta <- c(2, -4, 5, 1)
 #' gamma <- c(0.003, 0.002)
 #' fit <- gibbs_sampler(
@@ -87,7 +89,8 @@
 #'   y = toy_data$y,
 #'   beta_start = beta, gamma_start = gamma,
 #'   tau_start = 3, xi_start = 0.5,
-#'   prop_var_scale = 2.3
+#'   prop_var_scale = 2.3,
+#'   mh_location = TRUE
 #' )
 #' print(fit)
 #' summary_complete(fit)
