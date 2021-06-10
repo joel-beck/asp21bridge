@@ -177,9 +177,8 @@ gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000
     if (mh_location) {
       # sampling beta with metropolis-hastings
       beta_list <- mh_beta(
-        y = y, X = X, Z = Z, beta = beta_samples[i, ],
-        gamma = gamma_samples[i - 1, ], g_gamma = g_gamma,
-        xi_squared = xi_samples[i - 1, ], prop_var_loc = prop_var_loc
+        beta = beta_samples[i - 1, ], W = W, u = u,
+        tau_squared = tau_samples[i - 1, ], n = n, prop_var_loc = prop_var_loc
       )
       beta_samples[i, ] <- beta_list$beta
       acc_count_loc <- acc_count_loc + beta_list$accepted
