@@ -36,6 +36,16 @@ fit3 <- gibbs_sampler(
 )
 invisible(capture.output(summary_fit3 <- summary(fit3, type = "mcmc_ridge")))
 
+# by hand input with mh_location = TRUE
+fit4 <- gibbs_sampler(
+  X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
+  Z = cbind(toy_data$z1, toy_data$z2),
+  y = toy_data$y,
+  beta_start = beta, gamma_start = gamma,
+  mh_location = TRUE,
+  num_sim = 50
+)
+
 
 
 #   ____________________________________________________________________________
