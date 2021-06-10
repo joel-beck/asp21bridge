@@ -14,7 +14,7 @@ mh_beta <- function(beta, W, u, tau_squared, n, prop_var_loc) {
 
   # Proposal für Beta
   Sigma <- beta_var * prop_var_loc / (n * length(beta))
-  beta_proposal <- mvtnorm::rmvnorm(n = 1, mean = beta, sigma = Sigma)
+  beta_proposal <- drop(mvtnorm::rmvnorm(n = 1, mean = beta, sigma = Sigma))
 
   # Auswertung Full Conditional Densities
   log_full_cond_curr <- log_full_cond(
