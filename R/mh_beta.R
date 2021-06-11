@@ -1,7 +1,7 @@
 
 # Log Full Conditional für Beta
-log_full_cond <- function(beta, beta_var, W, u) {
-  -0.5 * (t(beta) %*% beta_var %*% beta - 2 * t(beta) %*% t(W) %*% u)
+log_full_cond <- function(beta, beta_var_inv, W, u) {
+  -0.5 * (sum(crossprod(beta, beta_var_inv) * beta)) - 2 * sum(beta * crossprod(W, u))
 }
 
 ################ Beta Update #########################################
@@ -9,8 +9,8 @@ log_full_cond <- function(beta, beta_var, W, u) {
 mh_beta <- function(beta, W, u, tau_squared, n, prop_var_loc) {
 
   K <- length(beta) - 1
-
-  beta_var <- solve(crossprod(W) + (1 / tau_squared) * diag(c(0, rep(1, times = K))))
+  beta_var_inv <- crossprod(W) + (1 / tau_squared) * diag(c(0, rep(1, times = K)))
+  beta_var <- solve(beta_var_inv)
 
   # Proposal für Beta
   Sigma <- beta_var * prop_var_loc / (n * length(beta))
@@ -18,11 +18,11 @@ mh_beta <- function(beta, W, u, tau_squared, n, prop_var_loc) {
 
   # Auswertung Full Conditional Densities
   log_full_cond_curr <- log_full_cond(
-    beta = beta, beta_var = beta_var, W = W, u = u
+    beta = beta, beta_var_inv = beta_var_inv, W = W, u = u
   )
 
   log_full_cond_proposal <- log_full_cond(
-    beta = beta_proposal, beta_var = beta_var, W = W, u = u
+    beta = beta_proposal, beta_var_inv = beta_var_inv, W = W, u = u
   )
 
   # Berechnung Acceptance Probability
