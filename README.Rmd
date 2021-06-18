@@ -14,11 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-# asp21bridge 
+# asp21bridge
 
-The goal of `asp21bridge` is to extend the [lmls](https://gitlab.gwdg.de/asp21/lslm) package by implementing a Markov Chain Monte Carlo Sampler with Ridge penalization. 
+The goal of `asp21bridge` is to extend the [lmls](https://gitlab.gwdg.de/asp21/lmls) package by implementing a Markov Chain Monte Carlo Sampler with Ridge penalization.
 
-## Underlying Model 
+## Underlying Model
 
 The observation model in consideration is given by
 <!--  -->
@@ -33,7 +33,7 @@ where the *location* parameter $\beta$ and the *scale* parameter $\gamma$ are th
 ## The Data
 
 In the following examples the built-in simulated `toy_data` is used, which consists of a column `y` representing a vector of observed values and the explanatory variables `x1`, `x2`, `z1` and `z2`.
-The data is constructed according to the mathematical model in the previous section, 
+The data is constructed according to the mathematical model in the previous section,
 where all explanatory variables predict the mean of `y` and only the latter two model the variance.
 
 ```{r}
@@ -43,14 +43,14 @@ head(toy_data)
 
 ## Sampling Process
 
-We first fit the frequentist `lslm` regression model and extend this approach by adding the MCMC samples of the posterior distributions.
-For later use, we also apply the MCMC sampler without Ridge - regularization from the `lslm` package:
+We first fit the frequentist `lmls` regression model and extend this approach by adding the MCMC samples of the posterior distributions.
+For later use, we also apply the MCMC sampler without Ridge - regularization from the `lmls` package:
 
 ```{r}
 set.seed(1234)
 
 fit <- toy_data %>%
-  lslm(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
+  lmls(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
   mcmc(nsim = 1000) %>%
   gibbs_sampler(num_sim = 1000)
 ```
@@ -80,7 +80,7 @@ A particularly interesting use case is the comparison of the coefficient estimat
 
 - Posterior Mean estimates with Ridge penalty (`mcmc_ridge` column)
 
-Both the `mcmc()` function as well as the `gibbs_sampler()` function simply add their results to the existing model. 
+Both the `mcmc()` function as well as the `gibbs_sampler()` function simply add their results to the existing model.
 Therefore all relevant information is contained in the `fit` object from above:
 
 ```{r}
@@ -101,7 +101,7 @@ The results for the scale parameter $\gamma$ show a greater variation between th
 The Maximum Likelihood approach is able to recover the true / data generating value of $\gamma_2$, while the MCMC sampler with Ridge penalty performs best for estimating $\gamma_1$.
 All three models fail to identify the correct intercept parameter $\gamma_0$, which, however, is often of minor interest.
 
-Simulations across different data sets and sample sizes show similar patterns: 
+Simulations across different data sets and sample sizes show similar patterns:
 If the data is generated according to the mathematical model introduced in the first section, i.e. the estimation model using Maximum Likelihood is correctly specified, the `mle` and the `mcmc_ridge` estimates tend to be closest to the true values.
 If, however, the underlying model used for simulation deviates from the Gaussian location-scale regression model, the `mle` results are, unsurprisingly, worse than both of the more flexible MCMC methods.
 
@@ -111,7 +111,7 @@ The Markov Chain Monte Carlo samples for $\gamma$ based on the Metropolis - Hast
 fit$mcmc_ridge$acceptance_rate
 ```
 
-This value of roughly `r 100 * round(fit$mcmc_ridge$acceptance_rate, 2)`% indicates that the variance of the proposal distribution is chosen appropriately. 
+This value of roughly `r 100 * round(fit$mcmc_ridge$acceptance_rate, 2)`% indicates that the variance of the proposal distribution is chosen appropriately.
 
 ## Graphical Analysis
 
@@ -144,7 +144,7 @@ Thus, we increase the number of simulations to $10000$, which also allows the in
 ```{r}
 set.seed(4321)
 
-fit <- fit %>% 
+fit <- fit %>%
   gibbs_sampler(num_sim = 10000)
 ```
 
@@ -154,12 +154,12 @@ We drop the first $1000$ samples for $\gamma_2$ and show the three most common d
 samples <- fit$mcmc_ridge$sampling_matrices
 
 samples$scale[, 3, drop = FALSE] %>%
-  burnin(num_burn = 1000) %>% 
+  burnin(num_burn = 1000) %>%
   thinning(freq = 30) %>%
   diagnostic_plots(lag_max = 30, latex = TRUE)
 ```
 
-Even a thinning factor of $30$, i.e. only every $30$th observation is kept in the sample, does not get rid of the autocorrelation. 
+Even a thinning factor of $30$, i.e. only every $30$th observation is kept in the sample, does not get rid of the autocorrelation.
 Yet, the posterior density seems to be approximately normal and the time plot indicates a decent exploration of the posterior space.
 
 These findings serve as a great starting point for a more in-depth analysis, which is beyond the scope of this brief introduction to the `asp21bridge` package.

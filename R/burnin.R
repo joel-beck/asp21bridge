@@ -48,7 +48,7 @@ burn_element <- function(samples, num_burn) {
 #'          matrix or list of matrices with removed elements at the beginning.
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%

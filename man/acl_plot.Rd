@@ -34,7 +34,7 @@ This type of plot can be used to analyze the dependence of the
 collected samples i.e. from a posterior distribution.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

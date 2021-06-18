@@ -1,4 +1,4 @@
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) %>%
@@ -87,7 +87,7 @@ test_that("input is matrix with arguments", {
 ### Tests for invalid input                                                 ####
 
 input_message <- paste(
-  "Input 'samples' must be a model object of the class 'lslm',",
+  "Input 'samples' must be a model object of the class 'lmls',",
   "a numeric matrix or a list of vectors and matrices!"
 )
 logical_message <- paste(

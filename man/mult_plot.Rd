@@ -14,7 +14,7 @@ mult_plot(
 )
 }
 \arguments{
-\item{samples}{Model object of the class 'lslm', list or matrix
+\item{samples}{Model object of the class 'lmls', list or matrix
 containing samples of the MCMC sampler.}
 
 \item{type}{One of the values "time", "density" or "both". \cr
@@ -54,7 +54,7 @@ Time plots are displayed separately in facets, density plots
 are shown in a ridgeline plot.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

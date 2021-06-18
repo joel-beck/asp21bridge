@@ -27,7 +27,7 @@ Monte-Carlo sampling to obtain uncorrelated samples of the
 posterior distribution.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

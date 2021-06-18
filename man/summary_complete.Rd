@@ -7,7 +7,7 @@
 summary_complete(samples, include_plot = FALSE)
 }
 \arguments{
-\item{samples}{Model object of the class 'lslm', list, matrix or numeric
+\item{samples}{Model object of the class 'lmls', list, matrix or numeric
 vector containing samples of the MCMC sampler.}
 
 \item{include_plot}{If TRUE, an additional column containing diagnostic plots
@@ -35,7 +35,7 @@ serves as an informative visual display, each entry of the data
 frame output can be easily accessed and saved in a variable.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

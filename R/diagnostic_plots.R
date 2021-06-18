@@ -30,7 +30,7 @@
 #' @returns Plot object of the class "ggplot".
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
@@ -151,7 +151,7 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @returns Plot object of the class "ggplot".
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
@@ -268,7 +268,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' @returns Plot object of the class "ggplot".
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
@@ -386,7 +386,7 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #' @returns Plot object of the classes "patchwork" and "ggplot".
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%

@@ -66,7 +66,7 @@ collect_results <- function(samples, include_plot = FALSE) {
 #'              serves as an informative visual display, each entry of the data
 #'              frame output can be easily accessed and saved in a variable.
 #'
-#' @param samples Model object of the class 'lslm', list, matrix or numeric
+#' @param samples Model object of the class 'lmls', list, matrix or numeric
 #'                vector containing samples of the MCMC sampler.
 #'
 #' @param include_plot If TRUE, an additional column containing diagnostic plots
@@ -83,7 +83,7 @@ collect_results <- function(samples, include_plot = FALSE) {
 #'         summary statistic.
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
@@ -118,7 +118,7 @@ summary_complete <- function(samples, include_plot = FALSE) {
   if (is.matrix(samples) || is.vector(samples, mode = "numeric")) {
     # if input is a matrix or a numeric vector
     collect_results(samples = samples, include_plot = include_plot)
-  } else if (class(samples) == "lslm") {
+  } else if (class(samples) == "lmls") {
     # if input is model object
     purrr::map_dfr(
       .x = samples$mcmc_ridge[[1]], .f = collect_results,
@@ -141,7 +141,7 @@ summary_complete <- function(samples, include_plot = FALSE) {
     }
   } else {
     stop(paste(
-      "Input 'samples' must be a model object of the class 'lslm',",
+      "Input 'samples' must be a model object of the class 'lmls',",
       "a numeric vector or matrix or a list of vectors and matrices!"
     ))
   }

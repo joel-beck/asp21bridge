@@ -83,7 +83,7 @@ mult_density <- function(data, log, robust, latex) {
 #'              Time plots are displayed separately in facets, density plots
 #'              are shown in a ridgeline plot.
 #'
-#' @param samples Model object of the class 'lslm', list or matrix
+#' @param samples Model object of the class 'lmls', list or matrix
 #'                containing samples of the MCMC sampler.
 #'
 #' @param type One of the values "time", "density" or "both". \cr
@@ -115,7 +115,7 @@ mult_density <- function(data, log, robust, latex) {
 #' @returns Plot object of the class "ggplot".
 #'
 #' @examples
-#' fit <- lslm(
+#' fit <- lmls(
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
@@ -159,7 +159,7 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   if (is.matrix(samples)) {
     data <- as.data.frame(samples)
-  } else if (class(samples) == "lslm") {
+  } else if (class(samples) == "lmls") {
     # if input is model object
     data <- purrr::map_dfc(.x = samples$mcmc_ridge[[1]], .f = as.data.frame)
   } else if (is.list(samples)) {
@@ -173,7 +173,7 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     }
   } else {
     stop(paste(
-      "Input 'samples' must be a model object of the class 'lslm',",
+      "Input 'samples' must be a model object of the class 'lmls',",
       "a numeric matrix or a list of vectors and matrices!"
     ))
   }

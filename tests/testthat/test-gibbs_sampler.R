@@ -1,7 +1,7 @@
 #   ____________________________________________________________________________
 #   Setup                                                                   ####
 
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 )
@@ -64,17 +64,17 @@ invisible(capture.output(summary_fit6 <- summary(fit6, type = "mcmc_ridge")))
 #   ____________________________________________________________________________
 #   Tests                                                                   ####
 
-test_that("Using Model Matrices extends lslm-model summary() function", {
+test_that("Using Model Matrices extends lmls-model summary() function", {
   expect_equal(
     summary_fit1$mcmc_ridge,
     fit1$mcmc_ridge
   )
-  expect_s3_class(fit1, "lslm")
+  expect_s3_class(fit1, "lmls")
   expect_equal(
     summary_fit6$mcmc_ridge,
     fit6$mcmc_ridge
   )
-  expect_s3_class(fit6, "lslm")
+  expect_s3_class(fit6, "lmls")
 })
 
 test_that("Output list contains each parameter, each simulation and acceptance rate", {
@@ -93,17 +93,17 @@ test_that("Using by-hand-assigned-input does not extend the model, but gives a l
   expect_type(fit4, "list")
 })
 
-test_that("Using mixed input extends lslm-model summary() function", {
+test_that("Using mixed input extends lmls-model summary() function", {
   expect_equal(
     summary_fit3$mcmc_ridge,
     fit3$mcmc_ridge
   )
-  expect_s3_class(fit3, "lslm")
+  expect_s3_class(fit3, "lmls")
   expect_equal(
     summary_fit5$mcmc_ridge,
     fit5$mcmc_ridge
   )
-  expect_s3_class(fit5, "lslm")
+  expect_s3_class(fit5, "lmls")
 })
 
 test_that("Using by-hand-assigned-input and sampling beta with M-H Algorithm extends

@@ -38,7 +38,7 @@ The individual data points are displayed by gray points on the
 x - axis to get a more detailed overview of the distribution.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

@@ -26,7 +26,7 @@ Monte-Carlo sampling to obtain samples of the posterior
 distribution after a converging phase.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

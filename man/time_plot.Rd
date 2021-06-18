@@ -39,7 +39,7 @@ This type of plot is typically used to evaluate the convergence
 of the chain, possibly towards a posterior distribution.
 }
 \examples{
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%

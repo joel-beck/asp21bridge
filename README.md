@@ -48,16 +48,16 @@ head(toy_data)
 
 ## Sampling Process
 
-We first fit the frequentist `lslm` regression model and extend this
+We first fit the frequentist `lmls` regression model and extend this
 approach by adding the MCMC samples of the posterior distributions. For
 later use, we also apply the MCMC sampler without Ridge - regularization
-from the `lslm` package:
+from the `lmls` package:
 
 ``` r
 set.seed(1234)
 
 fit <- toy_data %>%
-  lslm(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
+  lmls(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
   mcmc(nsim = 1000) %>%
   gibbs_sampler(num_sim = 1000)
 ```
@@ -72,14 +72,14 @@ with specification of the `type` argument:
 
 ``` r
 summary(fit, type = "mcmc_ridge")
-## 
+##
 ## Call:
-## lslm(location = y ~ ., scale = ~z1 + z2, data = ., light = FALSE)
-## 
+## lmls(location = y ~ ., scale = ~z1 + z2, data = ., light = FALSE)
+##
 ## Pearson residuals:
-##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-## -3.29800 -0.38660  0.11770 -0.01354  0.57410  2.54600 
-## 
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
+## -3.29800 -0.38660  0.11770 -0.01354  0.57410  2.54600
+##
 ## Location coefficients (identity link function):
 ##              Mean       2.5%        50%  97.5%
 ## beta_0  0.0005254 -0.1298878  0.0020753  0.147
@@ -87,16 +87,16 @@ summary(fit, type = "mcmc_ridge")
 ## beta_2 -1.0042277 -1.0175582 -1.0042374 -0.992
 ## beta_3  1.0013344  0.9815021  1.0010179  1.019
 ## beta_4  2.0080190  2.0022642  2.0079843  2.014
-## 
+##
 ## Scale coefficients (log link function):
 ##            Mean    2.5%     50%  97.5%
 ## gamma_0  0.7107 -0.5013  0.7849  1.489
 ## gamma_1 -1.1340 -1.2722 -1.1628 -0.917
 ## gamma_2  0.9822  0.8154  0.9734  1.149
-## 
-## Residual degrees of freedom: 42 
-## Log-likelihood: 32.28 
-## AIC: -48.57 
+##
+## Residual degrees of freedom: 42
+## Log-likelihood: 32.28
+## AIC: -48.57
 ## BIC: -33.27
 ```
 
@@ -109,15 +109,15 @@ summary_complete(fit)
 ##    Parameter `5% Quantile` `Posterior Mean` `Posterior Median` `95% Quantile`
 ##    <chr>             <dbl>            <dbl>              <dbl>          <dbl>
 ##  1 beta_0           -0.108         0.000525            0.00208          0.117
-##  2 beta_1           -2.01         -2.00               -2.00            -2.00 
+##  2 beta_1           -2.01         -2.00               -2.00            -2.00
 ##  3 beta_2           -1.01         -1.00               -1.00            -0.994
-##  4 beta_3            0.986         1.00                1.00             1.02 
-##  5 beta_4            2.00          2.01                2.01             2.01 
-##  6 gamma_0          -0.339         0.711               0.785            1.44 
+##  4 beta_3            0.986         1.00                1.00             1.02
+##  5 beta_4            2.00          2.01                2.01             2.01
+##  6 gamma_0          -0.339         0.711               0.785            1.44
 ##  7 gamma_1          -1.26         -1.13               -1.16            -0.935
-##  8 gamma_2           0.834         0.982               0.973            1.13 
-##  9 tau^2             0.967         3.13                2.23             7.80 
-## 10 xi^2              0.457         2.14                1.30             5.75 
+##  8 gamma_2           0.834         0.982               0.973            1.13
+##  9 tau^2             0.967         3.13                2.23             7.80
+## 10 xi^2              0.457         2.14                1.30             5.75
 ## # ... with 1 more variable: Standard Deviation <dbl>
 ```
 
@@ -243,7 +243,7 @@ quantities:
 ``` r
 set.seed(4321)
 
-fit <- fit %>% 
+fit <- fit %>%
   gibbs_sampler(num_sim = 10000)
 ```
 
@@ -254,7 +254,7 @@ most common diagnostic plots for the thinned sample:
 samples <- fit$mcmc_ridge$sampling_matrices
 
 samples$scale[, 3, drop = FALSE] %>%
-  burnin(num_burn = 1000) %>% 
+  burnin(num_burn = 1000) %>%
   thinning(freq = 30) %>%
   diagnostic_plots(lag_max = 30, latex = TRUE)
 ```

@@ -21,11 +21,11 @@ Authors@R: c(
              )
 Description: The asp21bridge package adds a Markov Chain Monte Carlo Sampler with
              Ridge Regularization to the Gaussian location-scale regression
-             model implemented in the lslm package.
+             model implemented in the lmls package.
 Imports:
     dplyr,
     forcats,
-    generics,
+    generics (>= 0.1.0),
     ggplot2,
     ggridges,
     invgamma,
@@ -38,12 +38,18 @@ Imports:
     stringr,
     tidyr
 Suggests:
+    bookdown,
+    knitr,
     numDeriv,
+    rmarkdown,
     testthat (>= 3.0.0)
 Depends:
-    R (>= 2.10)
+    R (>= 3.5.0)
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+

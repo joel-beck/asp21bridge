@@ -13,6 +13,7 @@
 /*.Rcheck/
 # RStudio files
 .Rproj.user/
+asp21bridge.Rproj
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
@@ -30,4 +31,6 @@ vignettes/*.pdf
 docs/
 # translation temp files
 po/*~
-asp21bridge.Rproj
+# inst/doc
+inst/doc
+

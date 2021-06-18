@@ -106,9 +106,9 @@ ridge-regularization can be obtained through the variance of the
 corresponding prior distributions.
 }
 \examples{
-# Gibbs sampling with lslm model input.
+# Gibbs sampling with lmls model input.
 # Output extends model by Ridge-part.
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 )
@@ -140,7 +140,7 @@ summary_complete(fit)
 # hand on first stage and takes missing parameters out of the model.
 # Output extends model by Ridge-part, since model objects were used.
 gamma <- c(0.003, 0.002)
-fit <- lslm(
+fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 )
