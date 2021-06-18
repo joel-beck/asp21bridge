@@ -3,8 +3,9 @@
 
 # asp21bridge
 
-The goal of `asp21bridge` is to extend the `lslm` package by
-implementing a Markov Chain Monte Carlo Sampler with Ridge penalization.
+The goal of `asp21bridge` is to extend the
+[lmls](https://gitlab.gwdg.de/asp21/lslm) package by implementing a
+Markov Chain Monte Carlo Sampler with Ridge penalization.
 
 ## Underlying Model
 
