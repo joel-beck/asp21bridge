@@ -7,13 +7,12 @@ log_full_cond <- function(beta, beta_var_inv, W, u) {
 ################ Beta Update #########################################
 
 mh_beta <- function(beta, W, u, tau_squared, n, prop_var_loc) {
-
   K <- length(beta) - 1
   beta_var_inv <- crossprod(W) + (1 / tau_squared) * diag(c(0, rep(1, times = K)))
   beta_var <- solve(beta_var_inv)
 
   # Proposal für Beta
-  Sigma <- beta_var * prop_var_loc / (n * length(beta))
+  Sigma <- beta_var * prop_var_loc / ((2 * n) * length(beta))
   beta_proposal <- drop(mvtnorm::rmvnorm(n = 1, mean = beta, sigma = Sigma))
 
   # Auswertung Full Conditional Densities

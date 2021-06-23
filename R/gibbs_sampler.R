@@ -117,7 +117,7 @@
 gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
                           a_tau = 1, b_tau = 1, a_xi = 1, b_xi = 1,
-                          prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200) {
+                          prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 400) {
   mod <- FALSE
   mcmc_ridge_m <- m
 
