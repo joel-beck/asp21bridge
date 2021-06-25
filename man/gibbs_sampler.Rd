@@ -20,7 +20,7 @@ gibbs_sampler(
   b_xi = 1,
   prop_var_scale = 3,
   mh_location = FALSE,
-  prop_var_loc = 1
+  prop_var_loc = 200
 )
 }
 \arguments{
@@ -81,7 +81,7 @@ with every kind of model input, \cr
 Default: FALSE}
 
 \item{prop_var_loc}{Variance of proposal distribution for \code{beta} sampling, \cr
-Default: 1}
+Default: 200}
 }
 \value{
 Depending on the input structure, different output types are available.

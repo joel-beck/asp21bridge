@@ -20,13 +20,13 @@ test_that("input is model object", {
 
 test_that("input is model object with arguments", {
   expect_error(mult_plot(
-    samples = fit, type = "density", robust = TRUE, latex = TRUE
+    samples = fit, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
     samples = fit, type = "time", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
-    samples = fit, type = "both", robust = TRUE, free_scale = TRUE,
+    samples = fit, type = "both", free_scale = TRUE,
     latex = TRUE
   ), NA)
 })
@@ -42,23 +42,23 @@ test_that("input is list, but not a model object", {
 
 test_that("input is list with arguments, but not a model object", {
   expect_error(mult_plot(
-    samples = samples_list1, type = "density", robust = TRUE, latex = TRUE
+    samples = samples_list1, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
     samples = samples_list1, type = "time", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
-    samples = samples_list1, type = "both", robust = TRUE, free_scale = TRUE,
+    samples = samples_list1, type = "both", free_scale = TRUE,
     latex = TRUE
   ), NA)
   expect_error(mult_plot(
-    samples = samples_list2, type = "density", robust = TRUE, latex = TRUE
+    samples = samples_list2, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
     samples = samples_list2, type = "time", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
-    samples = samples_list2, type = "both", robust = TRUE, free_scale = TRUE,
+    samples = samples_list2, type = "both", free_scale = TRUE,
     latex = TRUE
   ), NA)
 })
@@ -71,13 +71,13 @@ test_that("input is matrix", {
 
 test_that("input is matrix with arguments", {
   expect_error(mult_plot(
-    samples = samples_matrix1, type = "density", robust = TRUE, latex = TRUE
+    samples = samples_matrix1, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
     samples = samples_matrix1, type = "time", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
-    samples = samples_matrix2, type = "both", log = TRUE, robust = TRUE,
+    samples = samples_matrix2, type = "both", log = TRUE,
     free_scale = TRUE, latex = TRUE
   ), NA)
 })
@@ -91,13 +91,13 @@ input_message <- paste(
   "a numeric matrix or a list of vectors and matrices!"
 )
 logical_message <- paste(
-  "Inputs 'log', 'robust', 'free_scale' and 'latex'",
+  "Inputs 'log', 'free_scale' and 'latex'",
   "must be either 'TRUE' or 'FALSE'!"
 )
 
 test_that("correct error messages are produced", {
   expect_error(mult_plot(samples = samples_matrix1[, 1]), input_message)
-  expect_error(mult_plot(samples = samples_matrix2, robust = 1), logical_message)
+  expect_error(mult_plot(samples = samples_matrix2, log = 1), logical_message)
   expect_error(mult_plot(samples = samples_matrix2, latex = 0), logical_message)
 })
 

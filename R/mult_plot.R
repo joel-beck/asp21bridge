@@ -13,7 +13,7 @@ mult_time <- function(data, log, free_scale, latex) {
     ggplot2::geom_line() +
     ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plots") +
     ggplot2::facet_wrap(facets = ggplot2::vars(.data$Parameter), scales = free_scale) +
-    ggplot2::guides(color = FALSE) +
+    ggplot2::guides(color = "none") +
     ggplot2::theme_minimal() +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
@@ -35,14 +35,14 @@ mult_time <- function(data, log, free_scale, latex) {
 
 #' @importFrom rlang .data
 
-mult_density <- function(data, log, robust, latex) {
+mult_density <- function(data, log, latex) {
   density_p <- data %>%
     ggplot2::ggplot(mapping = ggplot2::aes(x = .data$vals, fill = .data$Parameter)) +
     ggridges::geom_density_ridges(
       mapping = ggplot2::aes(y = .data$Parameter %>% forcats::fct_rev()), alpha = 0.5
     ) +
     ggplot2::labs(x = "Values", y = NULL, title = "Density Estimates") +
-    ggplot2::guides(fill = FALSE) +
+    ggplot2::guides(fill = "none") +
     ggplot2::theme_minimal() +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5),
@@ -61,12 +61,18 @@ mult_density <- function(data, log, robust, latex) {
       )
   }
 
-  if (robust) {
-    bounds <- data %>%
-      dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
-    density_p <- density_p +
-      ggplot2::coord_cartesian(xlim = bounds$bounds)
-  }
+  # robust parameter not compatible with filling densities of geom_density_ridges()
+  # reinclusion with commands
+  
+  # mult_density <- function(data, log, robust, latex){}
+  
+  # if (robust) {
+  #   bounds <- data %>%
+  #     dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
+  #   density_p <- density_p +
+  #     ggplot2::coord_cartesian(xlim = bounds$bounds)
+  # }
+  
   return(density_p)
 }
 
@@ -95,11 +101,11 @@ mult_density <- function(data, log, robust, latex) {
 #'            density plots are transformed to the logarithmic scale. \cr
 #'            Default: FALSE
 #'
-#' @param robust Logical. If TRUE, the first and last percentile of the samples'
-#'               distributions are omitted from density plots to avoid a strong
-#'               influence of outliers on the x - axis scale. \cr
-#'               Default: FALSE
-#'
+# @param robust Logical. If TRUE, the first and last percentile of the samples'
+#               distributions are omitted from density plots to avoid a strong
+#               influence of outliers on the x - axis scale. \cr
+#               Default: FALSE
+#
 #' @param free_scale Logical. If TRUE, the y - axis scale in time plots is
 #'                   chosen differently for all facets. \cr
 #'                   Default: FALSE
@@ -125,7 +131,7 @@ mult_density <- function(data, log, robust, latex) {
 #' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # plots all output list elements together for quick overview
-#' mult_plot(samples, type = "both", robust = TRUE, free_scale = TRUE, latex = TRUE)
+#' mult_plot(samples, type = "both", free_scale = TRUE, latex = TRUE)
 #'
 #' # time plot of location coefficients
 #' mult_plot(samples$location, type = "time", free_scale = TRUE, latex = TRUE)
@@ -142,17 +148,15 @@ mult_density <- function(data, log, robust, latex) {
 #' @import patchwork
 
 mult_plot <- function(samples, type = c("time", "density", "both"),
-                      log = FALSE, robust = FALSE, free_scale = FALSE,
-                      latex = FALSE) {
+                      log = FALSE, free_scale = FALSE, latex = FALSE) {
 
   # validate input ----------------------------------------------------------
 
   type <- rlang::arg_match(type)
 
-  if (!(is.logical(robust) && is.logical(free_scale) && is.logical(log) &&
-    is.logical(latex))) {
+  if (!(is.logical(free_scale) && is.logical(log) && is.logical(latex))) {
     stop(paste(
-      "Inputs 'log', 'robust', 'free_scale' and 'latex'",
+      "Inputs 'log', 'free_scale' and 'latex'",
       "must be either 'TRUE' or 'FALSE'!"
     ))
   }
@@ -202,9 +206,13 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
 
   # density plot ------------------------------------------------------------
 
-  density_p <- mult_density(
-    data = data, log = log, robust = robust, latex = latex
-    )
+  # see comments regarding robust parameter in mult_density()
+  
+  # density_p <- mult_density(
+  #   data = data, log = log, robust = robust, latex = latex
+  #   )
+  
+  density_p <- mult_density(data = data, log = log, latex = latex)
 
   # output depending on type ------------------------------------------------
 

@@ -8,7 +8,6 @@ mult_plot(
   samples,
   type = c("time", "density", "both"),
   log = FALSE,
-  robust = FALSE,
   free_scale = FALSE,
   latex = FALSE
 )
@@ -24,11 +23,6 @@ The option "both" stacks time plots on top of the density plots.}
 
 \item{log}{Logical. If TRUE, the y - axis in time plots and the x - axis in
 density plots are transformed to the logarithmic scale. \cr
-Default: FALSE}
-
-\item{robust}{Logical. If TRUE, the first and last percentile of the samples'
-distributions are omitted from density plots to avoid a strong
-influence of outliers on the x - axis scale. \cr
 Default: FALSE}
 
 \item{free_scale}{Logical. If TRUE, the y - axis scale in time plots is
@@ -64,7 +58,7 @@ fit <- lmls(
 samples <- fit$mcmc_ridge$sampling_matrices
 
 # plots all output list elements together for quick overview
-mult_plot(samples, type = "both", robust = TRUE, free_scale = TRUE, latex = TRUE)
+mult_plot(samples, type = "both", free_scale = TRUE, latex = TRUE)
 
 # time plot of location coefficients
 mult_plot(samples$location, type = "time", free_scale = TRUE, latex = TRUE)

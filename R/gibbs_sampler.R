@@ -50,7 +50,7 @@
 #'                    with every kind of model input, \cr
 #'                    Default: FALSE
 #' @param prop_var_loc Variance of proposal distribution for `beta` sampling, \cr
-#'                     Default: 1
+#'                     Default: 200
 #'
 #' @return Depending on the input structure, different output types are available.
 #'         In each case a a Markov Chain of samples for the parameters is generated. \cr
