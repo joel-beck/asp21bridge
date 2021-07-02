@@ -227,7 +227,7 @@ summary.lmls <- function(object,
       }
 
       if (is.null(object[[type]][[1]]$location) || is.null(object[[type]][[1]]$scale)) {
-        stop("Model does not include samples, run gibbs_sampler() first")
+        stop("Model does not include samples, run mcmc_ridge() first")
       }
 
     } else {

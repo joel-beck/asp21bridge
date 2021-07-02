@@ -87,7 +87,7 @@ collect_results <- function(samples, include_plot = FALSE) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices
@@ -127,7 +127,7 @@ summary_complete <- function(samples, include_plot = FALSE) {
   } else if (is.list(samples)) {
     # if input is a list but not a model object
     if (any(names(samples) == "sampling_matrices")) {
-      # if input is gibbs_sampler() output in list format with two entries
+      # if input is mcmc_ridge() output in list format with two entries
       purrr::map_dfr(
         .x = samples[["sampling_matrices"]],
         .f = collect_results, include_plot = include_plot

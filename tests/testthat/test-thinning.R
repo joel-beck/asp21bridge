@@ -2,7 +2,7 @@ fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) %>%
-  gibbs_sampler(num_sim = 50)
+  mcmc_ridge(num_sim = 50)
 
 samples <- fit$mcmc_ridge$sampling_matrices
 

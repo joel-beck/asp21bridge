@@ -1,6 +1,6 @@
 #' @title Gibbs sampling algorithm
 #'
-#' @description The `gibbs_sampler()` function is a Markov chain Monte Carlo (MCMC)
+#' @description The `mcmc_ridge()` function is a Markov chain Monte Carlo (MCMC)
 #'              algorithm allowing to simulate from parameters of a location scale
 #'              regression model or from matrices and parameters that are assigned by
 #'              hand. \cr
@@ -71,7 +71,7 @@
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' )
-#' fit <- gibbs_sampler(
+#' fit <- mcmc_ridge(
 #'   m = fit,
 #'   num_sim = 1000
 #' )
@@ -83,7 +83,7 @@
 #' # Outputs list with each parameter and iteration as well as accuracy rates.
 #' beta <- c(2, -4, 5, 1)
 #' gamma <- c(0.003, 0.002)
-#' fit <- gibbs_sampler(
+#' fit <- mcmc_ridge(
 #'   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
 #'   Z = cbind(toy_data$z1, toy_data$z2),
 #'   y = toy_data$y,
@@ -103,7 +103,7 @@
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' )
-#' fit <- gibbs_sampler(
+#' fit <- mcmc_ridge(
 #'   m = fit,
 #'   Z = cbind(toy_data$z1, toy_data$z2),
 #'   gamma_start = gamma,
@@ -114,7 +114,7 @@
 #' @export
 
 
-gibbs_sampler <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
+mcmc_ridge <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
                           beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
                           a_tau = 1, b_tau = 1, a_xi = 1, b_xi = 1,
                           prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200) {

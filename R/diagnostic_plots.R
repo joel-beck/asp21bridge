@@ -23,7 +23,7 @@
 #'              in the plot title with subscripts and superscripts are properly
 #'              rendered.
 #'              This option requires the column of the input matrix to be
-#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              labeled accordingly (as in the output of the `mcmc_ridge()`
 #'              function). \cr
 #'              Default: FALSE
 #'
@@ -34,7 +34,7 @@
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices
@@ -144,7 +144,7 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'              in the plot title with subscripts and superscripts are properly
 #'              rendered.
 #'              This option requires the column of the input matrix to be
-#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              labeled accordingly (as in the output of the `mcmc_ridge()`
 #'              function). \cr
 #'              Default: FALSE
 #'
@@ -155,7 +155,7 @@ time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices
@@ -261,7 +261,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'              in the plot title with subscripts and superscripts are properly
 #'              rendered.
 #'              This option requires the column of the input matrix to be
-#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              labeled accordingly (as in the output of the `mcmc_ridge()`
 #'              function). \cr
 #'              Default: FALSE
 #'
@@ -272,7 +272,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices
@@ -379,7 +379,7 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #'              in the plot title with subscripts and superscripts are properly
 #'              rendered.
 #'              This option requires the column of the input matrix to be
-#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              labeled accordingly (as in the output of the `mcmc_ridge()`
 #'              function). \cr
 #'              Default: FALSE
 #'
@@ -390,7 +390,7 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices

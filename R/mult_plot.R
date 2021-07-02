@@ -63,16 +63,16 @@ mult_density <- function(data, log, latex) {
 
   # robust parameter not compatible with filling densities of geom_density_ridges()
   # reinclusion with commands
-  
+
   # mult_density <- function(data, log, robust, latex){}
-  
+
   # if (robust) {
   #   bounds <- data %>%
   #     dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
   #   density_p <- density_p +
   #     ggplot2::coord_cartesian(xlim = bounds$bounds)
   # }
-  
+
   return(density_p)
 }
 
@@ -114,7 +114,7 @@ mult_density <- function(data, log, latex) {
 #'              plots can be labeled by rendered mathematical symbols such as
 #'              greek letters in combination with subscripts and superscripts.
 #'              This option requires the columns of the input matrices to be
-#'              labeled accordingly (as in the output of the `gibbs_sampler()`
+#'              labeled accordingly (as in the output of the `mcmc_ridge()`
 #'              function). \cr
 #'              Default: FALSE
 #'
@@ -125,7 +125,7 @@ mult_density <- function(data, log, latex) {
 #'   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
 #'   data = toy_data, light = FALSE
 #' ) %>%
-#'   gibbs_sampler(num_sim = 1000)
+#'   mcmc_ridge(num_sim = 1000)
 #'
 #' # list of 4 matrices with 1000 rows each
 #' samples <- fit$mcmc_ridge$sampling_matrices
@@ -169,7 +169,7 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   } else if (is.list(samples)) {
     # if input is a list but not a model object
     if (any(names(samples) == "sampling_matrices")) {
-      # if input is gibbs_sampler() output in list format with two entries
+      # if input is mcmc_ridge() output in list format with two entries
       data <- purrr::map_dfc(.x = samples[["sampling_matrices"]], .f = as.data.frame)
     } else {
       # if input is list with just the sampling matrices
@@ -207,11 +207,11 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   # density plot ------------------------------------------------------------
 
   # see comments regarding robust parameter in mult_density()
-  
+
   # density_p <- mult_density(
   #   data = data, log = log, robust = robust, latex = latex
   #   )
-  
+
   density_p <- mult_density(data = data, log = log, latex = latex)
 
   # output depending on type ------------------------------------------------

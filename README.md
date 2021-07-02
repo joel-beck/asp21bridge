@@ -4,7 +4,7 @@
 # asp21bridge
 
 The goal of `asp21bridge` is to extend the
-[lmls](https://gitlab.gwdg.de/asp21/lslm) package by implementing a
+[lmls](https://gitlab.gwdg.de/asp21/lmls) package by implementing a
 Markov Chain Monte Carlo Sampler with Ridge penalization.
 
 ## Underlying Model
@@ -59,7 +59,7 @@ set.seed(1234)
 fit <- toy_data %>%
   lmls(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
   mcmc(nsim = 1000) %>%
-  gibbs_sampler(num_sim = 1000)
+  mcmc_ridge(num_sim = 1000)
 ```
 
 ## Numerical Analysis
@@ -72,31 +72,31 @@ with specification of the `type` argument:
 
 ``` r
 summary(fit, type = "mcmc_ridge")
-##
+## 
 ## Call:
 ## lmls(location = y ~ ., scale = ~z1 + z2, data = ., light = FALSE)
-##
+## 
 ## Pearson residuals:
-##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
-## -3.29800 -0.38660  0.11770 -0.01354  0.57410  2.54600
-##
+##     Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+## -3.29800 -0.38660  0.11770 -0.01354  0.57410  2.54600 
+## 
 ## Location coefficients (identity link function):
-##              Mean       2.5%        50%  97.5%
-## beta_0  0.0005254 -0.1298878  0.0020753  0.147
-## beta_1 -2.0015219 -2.0071807 -2.0015440 -1.996
-## beta_2 -1.0042277 -1.0175582 -1.0042374 -0.992
-## beta_3  1.0013344  0.9815021  1.0010179  1.019
-## beta_4  2.0080190  2.0022642  2.0079843  2.014
-##
+##            Mean     2.5%      50%  97.5%
+## beta_0 -0.01120 -0.14065 -0.01112  0.128
+## beta_1 -2.00116 -2.00687 -2.00117 -1.995
+## beta_2 -1.00388 -1.01704 -1.00368 -0.992
+## beta_3  1.00306  0.98431  1.00290  1.021
+## beta_4  2.00800  2.00261  2.00795  2.014
+## 
 ## Scale coefficients (log link function):
 ##            Mean    2.5%     50%  97.5%
-## gamma_0  0.7107 -0.5013  0.7849  1.489
-## gamma_1 -1.1340 -1.2722 -1.1628 -0.917
-## gamma_2  0.9822  0.8154  0.9734  1.149
-##
-## Residual degrees of freedom: 42
-## Log-likelihood: 32.28
-## AIC: -48.57
+## gamma_0  1.1131 -0.1638  1.1506  2.021
+## gamma_1 -1.1902 -1.3266 -1.2032 -0.991
+## gamma_2  0.9449  0.7761  0.9413  1.158
+## 
+## Residual degrees of freedom: 42 
+## Log-likelihood: 32.28 
+## AIC: -48.57 
 ## BIC: -33.27
 ```
 
@@ -108,16 +108,16 @@ summary_complete(fit)
 ## # A tibble: 10 x 6
 ##    Parameter `5% Quantile` `Posterior Mean` `Posterior Median` `95% Quantile`
 ##    <chr>             <dbl>            <dbl>              <dbl>          <dbl>
-##  1 beta_0           -0.108         0.000525            0.00208          0.117
-##  2 beta_1           -2.01         -2.00               -2.00            -2.00
-##  3 beta_2           -1.01         -1.00               -1.00            -0.994
-##  4 beta_3            0.986         1.00                1.00             1.02
-##  5 beta_4            2.00          2.01                2.01             2.01
-##  6 gamma_0          -0.339         0.711               0.785            1.44
-##  7 gamma_1          -1.26         -1.13               -1.16            -0.935
-##  8 gamma_2           0.834         0.982               0.973            1.13
-##  9 tau^2             0.967         3.13                2.23             7.80
-## 10 xi^2              0.457         2.14                1.30             5.75
+##  1 beta_0          -0.120           -0.0112            -0.0111          0.103
+##  2 beta_1          -2.01            -2.00              -2.00           -2.00 
+##  3 beta_2          -1.01            -1.00              -1.00           -0.994
+##  4 beta_3           0.987            1.00               1.00            1.02 
+##  5 beta_4           2.00             2.01               2.01            2.01 
+##  6 gamma_0          0.0862           1.11               1.15            1.93 
+##  7 gamma_1         -1.31            -1.19              -1.20           -1.01 
+##  8 gamma_2          0.783            0.945              0.941           1.11 
+##  9 tau^2            0.967            3.13               2.21            7.93 
+## 10 xi^2             0.459            2.19               1.33            5.97 
 ## # ... with 1 more variable: Standard Deviation <dbl>
 ```
 
@@ -135,8 +135,8 @@ approaches:
 
 -   Posterior Mean estimates with Ridge penalty (`mcmc_ridge` column)
 
-Both the `mcmc()` function as well as the `gibbs_sampler()` function
-simply add their results to the existing model. Therefore all relevant
+Both the `mcmc()` function as well as the `mcmc_ridge()` function simply
+add their results to the existing model. Therefore all relevant
 information is contained in the `fit` object from above:
 
 ``` r
@@ -151,14 +151,14 @@ summary_complete(fit) %>%
 ## # A tibble: 8 x 5
 ##   Parameter mcmc_ridge     mcmc     mle truth
 ##   <chr>          <dbl>    <dbl>   <dbl> <dbl>
-## 1 beta_0      0.000525 -0.00369 -0.0217     0
-## 2 beta_1     -2.00     -2.00    -2.00      -2
-## 3 beta_2     -1.00     -1.00    -1.00      -1
-## 4 beta_3      1.00      1.00     1.00       1
-## 5 beta_4      2.01      2.01     2.01       2
-## 6 gamma_0     0.711     1.07     1.44       0
-## 7 gamma_1    -1.13     -1.17    -1.31      -1
-## 8 gamma_2     0.982     0.933    0.999      1
+## 1 beta_0       -0.0112 -0.00762 -0.0217     0
+## 2 beta_1       -2.00   -2.00    -2.00      -2
+## 3 beta_2       -1.00   -1.00    -1.00      -1
+## 4 beta_3        1.00    1.00     1.00       1
+## 5 beta_4        2.01    2.01     2.01       2
+## 6 gamma_0       1.11    1.17     1.44       0
+## 7 gamma_1      -1.19   -1.18    -1.31      -1
+## 8 gamma_2       0.945   0.920    0.999      1
 ```
 
 The estimates for *β*<sub>1</sub> up to *β*<sub>4</sub> are identical in
@@ -185,13 +185,13 @@ location-scale regression model, the `mle` results are, unsurprisingly,
 worse than both of the more flexible MCMC methods.
 
 The Markov Chain Monte Carlo samples for *γ* based on the Metropolis -
-Hastings algorithm implemented in the `gibbs_sampler()` function are
+Hastings algorithm implemented in the `mcmc_ridge()` function are
 strongly correlated, even though the acceptance rate of the proposed
 values is reasonable:
 
 ``` r
 fit$mcmc_ridge$acceptance_rate
-## [1] 0.432
+## [1] 0.427
 ```
 
 This value of roughly 43% indicates that the variance of the proposal
@@ -208,7 +208,7 @@ A quick overview can be gained by collecting the corresponding time
 plots for all posterior coefficients.
 
 ``` r
-mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE, robust = TRUE)
+mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
@@ -244,7 +244,7 @@ quantities:
 set.seed(4321)
 
 fit <- fit %>%
-  gibbs_sampler(num_sim = 10000)
+  mcmc_ridge(num_sim = 10000)
 ```
 
 We drop the first 1000 samples for *γ*<sub>2</sub> and show the three

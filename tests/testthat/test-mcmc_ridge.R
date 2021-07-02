@@ -15,11 +15,11 @@ gamma <- c(0.003, 0.002)
 testmat <- matrix(rnorm(600, 0, 1), ncol = 6)
 
 # model-only input, mh_location = FALSE
-fit1 <- gibbs_sampler(m = fit, num_sim = 50)
+fit1 <- mcmc_ridge(m = fit, num_sim = 50)
 invisible(capture.output(summary_fit1 <- summary(fit1, type = "mcmc_ridge")))
 
 # by-hand input only, mh_location = FALSE
-fit2 <- gibbs_sampler(
+fit2 <- mcmc_ridge(
   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
   Z = cbind(toy_data$z1, toy_data$z2),
   y = toy_data$y,
@@ -28,7 +28,7 @@ fit2 <- gibbs_sampler(
 )
 
 # mixed model, mh_location = FALSE
-fit3 <- gibbs_sampler(
+fit3 <- mcmc_ridge(
   m = fit,
   Z = cbind(rep(1, times = length(toy_data$z1)), toy_data$z1, toy_data$z2),
   beta_start = c(1, 2, 5, 3, 2),
@@ -37,7 +37,7 @@ fit3 <- gibbs_sampler(
 invisible(capture.output(summary_fit3 <- summary(fit3, type = "mcmc_ridge")))
 
 # by hand input with mh_location = TRUE
-fit4 <- gibbs_sampler(
+fit4 <- mcmc_ridge(
   X = cbind(toy_data$x1, toy_data$x2, toy_data$z1, toy_data$z2),
   Z = cbind(toy_data$z1, toy_data$z2),
   y = toy_data$y,
@@ -47,7 +47,7 @@ fit4 <- gibbs_sampler(
 )
 
 # mixed input with mh_location = TRUE
-fit5 <- gibbs_sampler(
+fit5 <- mcmc_ridge(
   m = fit,
   Z = cbind(rep(1, times = length(toy_data$z1)), toy_data$z1, toy_data$z2),
   beta_start = c(1, 2, 5, 3, 2),
@@ -57,7 +57,7 @@ fit5 <- gibbs_sampler(
 invisible(capture.output(summary_fit5 <- summary(fit5, type = "mcmc_ridge")))
 
 # model-only input with mh_location = TRUE
-fit6 <- gibbs_sampler(m = fit, mh_location = TRUE, num_sim = 50)
+fit6 <- mcmc_ridge(m = fit, mh_location = TRUE, num_sim = 50)
 invisible(capture.output(summary_fit6 <- summary(fit6, type = "mcmc_ridge")))
 
 
@@ -141,11 +141,11 @@ test_that("Independent of input type, the summary_complete() function can be cal
 
 test_that("Error Code of not matching dimensions is thrown", {
   expect_error(
-    gibbs_sampler(m = fit, X = testmat, num_sim = 50),
+    mcmc_ridge(m = fit, X = testmat, num_sim = 50),
     "Dimensions of design matrices do not match with length of coefficients."
   )
   expect_error(
-    gibbs_sampler(
+    mcmc_ridge(
       X = testmat, Z = cbind(toy_data$z1, toy_data$z2),
       y = toy_data$y,
       beta_start = beta, gamma_start = gamma,
@@ -157,7 +157,7 @@ test_that("Error Code of not matching dimensions is thrown", {
 
 test_that("Error Code of missing input data is thrown", {
   expect_error(
-    gibbs_sampler(
+    mcmc_ridge(
       Z = cbind(toy_data$z1, toy_data$z2),
       y = toy_data$y,
       beta_start = beta, gamma_start = gamma,

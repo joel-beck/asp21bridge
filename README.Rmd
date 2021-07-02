@@ -52,7 +52,7 @@ set.seed(1234)
 fit <- toy_data %>%
   lmls(location = y ~ ., scale = ~ z1 + z2, light = FALSE) %>%
   mcmc(nsim = 1000) %>%
-  gibbs_sampler(num_sim = 1000)
+  mcmc_ridge(num_sim = 1000)
 ```
 
 ## Numerical Analysis
@@ -80,7 +80,7 @@ A particularly interesting use case is the comparison of the coefficient estimat
 
 - Posterior Mean estimates with Ridge penalty (`mcmc_ridge` column)
 
-Both the `mcmc()` function as well as the `gibbs_sampler()` function simply add their results to the existing model.
+Both the `mcmc()` function as well as the `mcmc_ridge()` function simply add their results to the existing model.
 Therefore all relevant information is contained in the `fit` object from above:
 
 ```{r}
@@ -105,7 +105,7 @@ Simulations across different data sets and sample sizes show similar patterns:
 If the data is generated according to the mathematical model introduced in the first section, i.e. the estimation model using Maximum Likelihood is correctly specified, the `mle` and the `mcmc_ridge` estimates tend to be closest to the true values.
 If, however, the underlying model used for simulation deviates from the Gaussian location-scale regression model, the `mle` results are, unsurprisingly, worse than both of the more flexible MCMC methods.
 
-The Markov Chain Monte Carlo samples for $\gamma$ based on the Metropolis - Hastings algorithm implemented in the `gibbs_sampler()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
+The Markov Chain Monte Carlo samples for $\gamma$ based on the Metropolis - Hastings algorithm implemented in the `mcmc_ridge()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
 
 ```{r}
 fit$mcmc_ridge$acceptance_rate
@@ -120,7 +120,7 @@ The building blocks for monitoring the convergence of the posterior chains as we
 A quick overview can be gained by collecting the corresponding time plots for all posterior coefficients.
 
 ```{r}
-mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE, robust = TRUE)
+mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE)
 ```
 
 The time plots for the $\beta$ coefficients indicate convergence and confirm the stable posterior estimates from the previous section.
@@ -145,7 +145,7 @@ Thus, we increase the number of simulations to $10000$, which also allows the in
 set.seed(4321)
 
 fit <- fit %>%
-  gibbs_sampler(num_sim = 10000)
+  mcmc_ridge(num_sim = 10000)
 ```
 
 We drop the first $1000$ samples for $\gamma_2$ and show the three most common diagnostic plots for the thinned sample:

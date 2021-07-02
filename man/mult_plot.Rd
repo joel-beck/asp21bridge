@@ -33,7 +33,7 @@ Default: FALSE}
 plots can be labeled by rendered mathematical symbols such as
 greek letters in combination with subscripts and superscripts.
 This option requires the columns of the input matrices to be
-labeled accordingly (as in the output of the \code{gibbs_sampler()}
+labeled accordingly (as in the output of the \code{mcmc_ridge()}
 function). \cr
 Default: FALSE}
 }
@@ -52,7 +52,7 @@ fit <- lmls(
   location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
   data = toy_data, light = FALSE
 ) \%>\%
-  gibbs_sampler(num_sim = 1000)
+  mcmc_ridge(num_sim = 1000)
 
 # list of 4 matrices with 1000 rows each
 samples <- fit$mcmc_ridge$sampling_matrices
