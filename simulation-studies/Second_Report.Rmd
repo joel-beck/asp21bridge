@@ -1,0 +1,104 @@
+---
+title: "Bayesian Ridge Regression - Second Report"
+author: "Dominik Strache, Nicolai Bäuerle & Joel Beck"
+output:
+  bookdown::pdf_document2:
+    highlight: tango
+    toc: FALSE
+    number_sections: TRUE
+    df_print: tibble
+    latex_engine: pdflatex
+    keep_tex: FALSE
+urlcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
+  dpi = 300, collapse = TRUE
+)
+```
+
+```{r, include=FALSE}
+pacman::p_load(
+  dplyr,
+  readr,
+  ggplot2
+)
+
+library(asp21bridge)
+```
+
+# Introduction {-}
+
+```{r, include=FALSE}
+# include = FALSE
+x <- mean(rnorm(100))
+x
+```
+
+The value of `x` is `r round(x, 2)`.
+
+```{r, echo=FALSE}
+# echo = FALSE
+y <- mean(rnorm(100))
+y
+```
+
+```{r, eval=FALSE}
+# eval = FALSE
+z <- mean(rnorm(100))
+z
+```
+
+
+# Simulation Studies
+
+
+
+## Correlated Predictor Variables
+
+```{r, include=FALSE}
+corr_regressors_list <- readr::read_rds(
+  file = here::here("simulation-studies", "regressor-correlation.rds")
+)
+```
+
+```{r, echo=FALSE, out.width="100%"}
+corr_regressors_list$plot_single_sim
+```
+
+```{r, echo=FALSE, out.width="100%"}
+corr_regressors_list$plot_many_sims
+```
+
+## Challenging the Model Assumptions
+
+```{r, include=FALSE}
+outcome_dist_list <- readr::read_rds(
+  file = here::here("simulation-studies", "outcome-distribution.rds")
+)
+```
+
+```{r, echo=FALSE, out.width="100%"}
+outcome_dist_list$plot_single_sim
+```
+
+```{r, echo=FALSE, out.width="100%"}
+outcome_dist_list$plot_many_sims
+```
+
+
+## Sample Size
+
+
+
+## Number of Simulations
+
+
+## Hyperparameters
+
+
+
+# Next Steps {-}
+
