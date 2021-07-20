@@ -11,7 +11,7 @@ library(asp21bridge)
 
 ### Data generation
 
-set.seed(3)
+set.seed(10)
 
 rep <- 100
 
@@ -55,7 +55,7 @@ squared_error_array <- array(0, dim = c(6,number_of_n,rep))
       Z <- cbind(z0, z1, z2)
 
       beta <- c(1, -1, 4) # True: beta_0 = 1, beta_1 = -1, beta_2 = 4,
-      gamma <- c(0, -0.5, 1) # True: gamma_0 = 2, gamma_1 = -0.5, gamma_2 = 1
+      gamma <- c(0, -0.5, 1) # True: gamma_0 = 0, gamma_1 = -0.5, gamma_2 = 1
 
       y <- vector(mode = "numeric", length = n)
       for (i in seq_along(y)) {
@@ -112,3 +112,17 @@ squared_error_array <- array(0, dim = c(6,number_of_n,rep))
           xlab = "Sample size", ylab = "")
   legend(x = "topright",legend = rownames(mean_squared_error),
          col=1:6, pch=1, bty = "n")
+
+  #   ____________________________________________________________________________
+  #   Data for Second Report                                                  ####
+
+  readr::write_rds(
+    x = list(
+      mean_mean = mean_mean,
+      mean_absolute_error = mean_absolute_error,
+      mean_squared_error = mean_squared_error,
+      n_data = n_data
+    ),
+    file = here::here("simulation-studies", "samplesize_1.rds")
+  )
+

@@ -91,7 +91,42 @@ outcome_dist_list$plot_many_sims
 
 ## Sample Size
 
+```{r, include=FALSE}
+plot_data <- readr::read_rds(
+  file = here::here("simulation-studies", "samplesize_1.rds")
+)
+```
 
+```{r, echo=FALSE, out.width="100%"}
+mean_mean <- plot_data$mean_mean
+n_data <- plot_data$n_data
+
+matplot(t(mean_mean), x = n_data, type = "b",pch=1,col = 1:6,
+          main = " Mean of Posterior Means",
+          xlab = "Sample size", ylab = "")
+  legend(x = "topright",legend = rownames(mean_mean),
+         col=1:6, pch=1, bty = "n")
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_absolute_error <- plot_data$mean_absolute_error
+
+matplot(t(mean_absolute_error), x = n_data, type = "b",pch=1,col = 1:6,
+          main = " MAE of Posterior Means",
+          xlab = "Sample size", ylab = "")
+  legend(x = "topright",legend = rownames(mean_absolute_error),
+         col=1:6, pch=1, bty = "n")
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_squared_error <- plot_data$mean_squared_error
+
+matplot(t(mean_squared_error), x = n_data, type = "b",pch=1,col = 1:6,
+          main = " MSE of Posterior Means",
+          xlab = "Sample size", ylab = "")
+  legend(x = "topright",legend = rownames(mean_squared_error),
+         col=1:6, pch=1, bty = "n")
+```
 
 ## Number of Simulations
 
