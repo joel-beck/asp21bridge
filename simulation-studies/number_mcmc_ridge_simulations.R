@@ -11,7 +11,7 @@ library(asp21bridge)
 
 ### Data generation
 
-set.seed(10)
+set.seed(11)
 
 rep <- 100
 
@@ -130,4 +130,18 @@ matplot(t(mean_of_variances_within), x = array_num_sim, type = "b",pch=1,col = 1
         xlab = "Number of MCMC Ridge Simulations", ylab = "")
 legend(x = "topright",legend = rownames(mean_of_variances_within),
        col=1:6, pch=1, bty = "n")
+
+#   ____________________________________________________________________________
+#   Data for Second Report                                                  ####
+
+readr::write_rds(
+  x = list(
+    mean_mean = mean_mean,
+    mean_absolute_error = mean_absolute_error,
+    mean_squared_error = mean_squared_error,
+    mean_of_variances_within = mean_of_variances_within,
+    array_num_sim = array_num_sim
+  ),
+  file = here::here("simulation-studies", "number_mcmc_ridge_simulations.rds")
+)
 

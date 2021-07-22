@@ -130,6 +130,57 @@ matplot(t(mean_squared_error), x = n_data, type = "b",pch=1,col = 1:6,
 
 ## Number of Simulations
 
+```{r, include=FALSE}
+num_sim_data <- readr::read_rds(
+  file = here::here("simulation-studies", "number_mcmc_ridge_simulations.rds")
+)
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_mean_num_sim <- num_sim_data$mean_mean
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_mean_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
+          main = " Mean of Posterior Means",
+          xlab = "Number of MCMC Ridge Simulations", ylab = "")
+  legend(x = "topright",legend = rownames(mean_mean_num_sim),
+         col=1:6, pch=1, bty = "n")
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_absolute_error_num_sim <- num_sim_data$mean_absolute_error
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_absolute_error_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
+          main = " MAE of Posterior Means",
+          xlab = "Number of MCMC Ridge Simulations", ylab = "")
+  legend(x = "topright",legend = rownames(mean_absolute_error_num_sim),
+         col=1:6, pch=1, bty = "n")
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_squared_error_num_sim <- num_sim_data$mean_squared_error
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_squared_error_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
+          main = " MSE of Posterior Means",
+          xlab = "Number of MCMC Ridge Simulations", ylab = "")
+  legend(x = "topright",legend = rownames(mean_squared_error_num_sim),
+         col=1:6, pch=1, bty = "n")
+```
+
+```{r, echo=FALSE, out.width="100%"}
+mean_of_variances_within <- num_sim_data$mean_of_variances_within
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_of_variances_within), x = array_num_sim, type = "b",pch=1,col = 1:6,
+          main = " Mean of Variances within the Samples",
+          xlab = "Number of MCMC Ridge Simulations", ylab = "")
+  legend(x = "topright",legend = rownames(mean_of_variances_within),
+         col=1:6, pch=1, bty = "n")
+```
+
+
 
 ## Hyperparameters
 
