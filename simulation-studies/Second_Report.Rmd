@@ -52,11 +52,7 @@ z
 ```
 
 
-# Simulation Studies
-
-
-
-## Correlated Predictor Variables
+# Correlated Predictor Variables
 
 ```{r, include=FALSE}
 corr_regressors_list <- readr::read_rds(
@@ -64,15 +60,75 @@ corr_regressors_list <- readr::read_rds(
 )
 ```
 
+Up to this point, we have often illustrated the usage and results of the `mcmc_ridge()` sampler with simulated data from the built-in `toy_data` set.
+There, each regressor variable is independently sampled from a normal distribution and the outcome variable is simulated based on a correctly specified location-scale regression model $y_i \sim \mathcal{N}_{} \left( \mathbf{x}^T_i \boldsymbol{\beta}, \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2 \right)$.
+All these conditions lead to an excellent performance of the MCMC sampler, but might arguably not represent the most challenging task.
+
+The next two sections analyze the sampler's performance on simulated data, which might be closer to data found in the real world.
+First, we will induce correlation among the predictor variables, whereas in the following section the distributional assumptions are considerably changed.
+Further, the `mcmc_ridge()` performance is compared to the Maximum Likelihood based `lmls()` estimator and the Markov Chain Monte Carlo `mcmc()` sampler from the `lmls` package.
+
+## Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{x}_3 \end{pmatrix}$ is simulated from a three dimensional normal distribution $\mathcal{N}_{3} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} -5 & 2 & 0 \end{pmatrix}^T$ and covariance matrix $\begin{pmatrix} 1 & \rho & \rho \\ \rho & 3 & \rho \\ \rho & \rho & 5 \end{pmatrix}$.
+Hence, the dependence among the regressors is fully determined by the parameter $\rho$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ consists of linear combinations of the regressors $\mathbf{x}_1$ up to $\mathbf{x}_3$, more specifically $\mathbf{ z}_1 = 0.8 \cdot \mathbf{x}_1 + 0.2 \cdot \mathbf{x}_2$ and $\mathbf{ z}_2 = \mathbf{x}_2 - 0.5 \cdot \mathbf{x}_3$.
+
+- In both design matrices intercept columns are added for estimation purposes. 
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_4 \end{pmatrix}^T = \begin{pmatrix} 0 & 3 & -1 & 1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 2 & 0 \end{pmatrix}^T$.
+
+- Three different values ($0$, $-0.5$ and $0.9$) were chosen for $\rho$ to compare the 'nice' case of uncorrelated predictors with the performance for negative and positive dependence.
+For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted.
+
+- Moreover, we compared the performance of the usual `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
+The latter is initiated by the `mcmc_ridge()` argument `mh_location = TRUE`. 
+The variance of the corresponding proposal distribution is set to a carefully chosen default value, but can be manually changed by means of the `prop_var_loc` argument.
+
+## Simulation Results
+
+The following plot displays the posterior mean estimates for the MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete iteration of the simulation.
+For a better visual comparison the true values for each coefficient are indicated by grey circles, whereas the acceptance rate(s) of the Metropolis-Hastings sampling process are provided in grey boxes:
+
 ```{r, echo=FALSE, out.width="100%"}
 corr_regressors_list$plot_single_sim
 ```
+
+The scaling of the $x$ - axis is dominated by one outlier in the lower panel for each correlation structure.
+While the Metropolis-Hastings approach for $\boldsymbol{\beta}$ performs moderately well for most of the coefficients, it massively overestimates the intercept $\beta_0$.
+This observation can be made across many different data sets: In some special cases the performance is close to (but never better) than sampling directly from a multivariate normal distribution, however, most of the time the performance is significantly worse and the samples show (obviously) much larger correlation requiring a higher number of simulations for stable estimation. 
+For that reason, we limit the Metropolis-Hastings sampling process for $\boldsymbol{\beta}$ to this one illustration and will focus on the classical `mcmc_ridge()` implementation in the remaining parts of the report.
+
+The upper panel indicates a very good performance by all three estimation procedures in consideration.
+Further, all acceptance probabilities are in a reasonable range supporting a fast convergence of all Markov Chains.
+
+It is important to remember, that each point in the plot only represents exactly one measurement.
+In order to make any conclusions about bias and variance of the estimation procedures, the above procedure is repeated $50$ times.
+The black points represent the mean of these $50$ posterior mean estimates.
+Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
+
+Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
+For that reason only the results of the `mcmc_ridge()` sampler are shown in the following plot:
 
 ```{r, echo=FALSE, out.width="100%"}
 corr_regressors_list$plot_many_sims
 ```
 
-## Challenging the Model Assumptions
+There are three conclusions from this first simulation study:
+
+1. The correlation structure does not have a significant impact of the sampling results.
+The three plot facets look almost identical.
+
+2. The `mcmc_ridge()` sampler (as well as the `mcmc()` and `lmls()` functions) are very robust towards correlated data and perform extremely well. 
+In particular, all three approaches (visually) provide close to unbiased estimates.
+
+3. The variability among the $\boldsymbol{\beta}$ estimates is almost nonexistent, such that results from a single simulation are already reliable and representative.
+While the estimates for the $\boldsymbol{\gamma}$ vector are still correct on average, the variability across different simulations is significant (particularly for $\gamma_0$).
+Thus, averaging the results from multiple repetitions of the sampling process is advisable.
+
+
+
+# Challenging the Model Assumptions
 
 ```{r, include=FALSE}
 outcome_dist_list <- readr::read_rds(
@@ -89,7 +145,7 @@ outcome_dist_list$plot_many_sims
 ```
 
 
-## Sample Size
+# Sample Size
 
 ```{r, include=FALSE}
 plot_data <- readr::read_rds(
@@ -101,34 +157,46 @@ plot_data <- readr::read_rds(
 mean_mean <- plot_data$mean_mean
 n_data <- plot_data$n_data
 
-matplot(t(mean_mean), x = n_data, type = "b",pch=1,col = 1:6,
-          main = " Mean of Posterior Means",
-          xlab = "Sample size", ylab = "")
-  legend(x = "topright",legend = rownames(mean_mean),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_mean),
+  x = n_data, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Posterior Means",
+  xlab = "Sample size", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_mean),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 ```{r, echo=FALSE, out.width="100%"}
 mean_absolute_error <- plot_data$mean_absolute_error
 
-matplot(t(mean_absolute_error), x = n_data, type = "b",pch=1,col = 1:6,
-          main = " MAE of Posterior Means",
-          xlab = "Sample size", ylab = "")
-  legend(x = "topright",legend = rownames(mean_absolute_error),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_absolute_error),
+  x = n_data, type = "b", pch = 1, col = 1:6,
+  main = " MAE of Posterior Means",
+  xlab = "Sample size", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_absolute_error),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 ```{r, echo=FALSE, out.width="100%"}
 mean_squared_error <- plot_data$mean_squared_error
 
-matplot(t(mean_squared_error), x = n_data, type = "b",pch=1,col = 1:6,
-          main = " MSE of Posterior Means",
-          xlab = "Sample size", ylab = "")
-  legend(x = "topright",legend = rownames(mean_squared_error),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_squared_error),
+  x = n_data, type = "b", pch = 1, col = 1:6,
+  main = " MSE of Posterior Means",
+  xlab = "Sample size", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_squared_error),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
-## Number of Simulations
+# Number of Simulations
 
 ```{r, include=FALSE}
 num_sim_data <- readr::read_rds(
@@ -140,51 +208,66 @@ num_sim_data <- readr::read_rds(
 mean_mean_num_sim <- num_sim_data$mean_mean
 array_num_sim <- num_sim_data$array_num_sim
 
-matplot(t(mean_mean_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
-          main = " Mean of Posterior Means",
-          xlab = "Number of MCMC Ridge Simulations", ylab = "")
-  legend(x = "topright",legend = rownames(mean_mean_num_sim),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_mean_num_sim),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Posterior Means",
+  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_mean_num_sim),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 ```{r, echo=FALSE, out.width="100%"}
 mean_absolute_error_num_sim <- num_sim_data$mean_absolute_error
 array_num_sim <- num_sim_data$array_num_sim
 
-matplot(t(mean_absolute_error_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
-          main = " MAE of Posterior Means",
-          xlab = "Number of MCMC Ridge Simulations", ylab = "")
-  legend(x = "topright",legend = rownames(mean_absolute_error_num_sim),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_absolute_error_num_sim),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " MAE of Posterior Means",
+  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_absolute_error_num_sim),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 ```{r, echo=FALSE, out.width="100%"}
 mean_squared_error_num_sim <- num_sim_data$mean_squared_error
 array_num_sim <- num_sim_data$array_num_sim
 
-matplot(t(mean_squared_error_num_sim), x = array_num_sim, type = "b",pch=1,col = 1:6,
-          main = " MSE of Posterior Means",
-          xlab = "Number of MCMC Ridge Simulations", ylab = "")
-  legend(x = "topright",legend = rownames(mean_squared_error_num_sim),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_squared_error_num_sim),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " MSE of Posterior Means",
+  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_squared_error_num_sim),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 ```{r, echo=FALSE, out.width="100%"}
 mean_of_variances_within <- num_sim_data$mean_of_variances_within
 array_num_sim <- num_sim_data$array_num_sim
 
-matplot(t(mean_of_variances_within), x = array_num_sim, type = "b",pch=1,col = 1:6,
-          main = " Mean of Variances within the Samples",
-          xlab = "Number of MCMC Ridge Simulations", ylab = "")
-  legend(x = "topright",legend = rownames(mean_of_variances_within),
-         col=1:6, pch=1, bty = "n")
+matplot(t(mean_of_variances_within),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Variances within the Samples",
+  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+)
+legend(
+  x = "topright", legend = rownames(mean_of_variances_within),
+  col = 1:6, pch = 1, bty = "n"
+)
 ```
 
 
 
-## Hyperparameters
+# Hyperparameters
 
 
 
 # Next Steps {-}
-
