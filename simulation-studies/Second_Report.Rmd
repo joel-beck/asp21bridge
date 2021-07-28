@@ -27,6 +27,8 @@ pacman::p_load(
 library(asp21bridge)
 ```
 
+
+
 # Introduction {-}
 
 Our first report was focused on the underlying mathematical model of Bayesian Ridge Regression and provided a brief introduction of the `asp21bridge` package. 
@@ -37,13 +39,13 @@ After an introductory exploration phase, we decided for a subset of all possible
 
 As a result, the simulation studies of this report will be conducted on the following components:
 
-- The **data** input, which is captured by the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
+- The **data** input (sections \@ref(corr) and \@ref(outcome)), which is captured by the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
 Here, the sampler's *robustness* is tested across various scenarios.
 
-- The **sample size** `n` and the **number of simulations** `num_sim`.
+- The **sample size** `n` (section \@ref(n)) and the **number of simulations** `num_sim` (section \@ref(numsim)).
 These sections investigate, if a stabilization process happens with increasing either of these two input parameters hinting at *asymptotic*/*convergence* properties.
 
-- The **hyperparameters** `a_tau`, `b_tau`, `a_xi` and `b_xi` of the Inverse Gamma prior distribution of the variance parameters $\tau$ and $\xi$, as specified in the first report.
+- The **hyperparameters** `a_tau`, `b_tau`, `a_xi` and `b_xi` (section \@ref(hyper)) of the Inverse Gamma prior distribution of the variance parameters $\tau$ and $\xi$, as specified in the first report.
 The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
 Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
 
@@ -51,7 +53,14 @@ Since the resulting simulation studies serve different purposes (e.g. diagnostic
 For that reason, we decided against forcing all of the following sections into one common rigid framework.
 Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
 
-# Correlated Predictor Variables
+
+
+
+
+
+
+
+# Correlated Predictor Variables {#corr}
 
 ```{r, include=FALSE}
 corr_regressors_list <- readr::read_rds(
@@ -86,10 +95,10 @@ The variance of the corresponding proposal distribution is set to a carefully ch
 
 ## Simulation Results
 
-The following plot displays the posterior mean estimates for the MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete iteration of the simulation.
+Figure \@ref(fig:corr-plot-single) displays the posterior mean estimates for the MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete iteration of the simulation.
 For a better visual comparison the true values for each coefficient are indicated by grey circles, whereas the acceptance rate(s) of the Metropolis-Hastings sampling process are provided in grey boxes:
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, corr-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - one Simulation", fig.pos="t"}
 corr_regressors_list$plot_single_sim
 ```
 
@@ -107,9 +116,9 @@ The black points represent the mean of these $50$ posterior mean estimates.
 Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
 
 Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
-For that reason only the results of the `mcmc_ridge()` sampler are shown in the following plot:
+For that reason only the results of the `mcmc_ridge()` sampler are shown in figure \@ref(fig:corr-plot-many):
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulations", fig.pos="t"}
 corr_regressors_list$plot_many_sims
 ```
 
@@ -127,7 +136,12 @@ Thus, averaging the results from multiple repetitions of the sampling process is
 
 
 
-# Challenging the Model Assumptions
+
+
+
+
+
+# Challenging the Model Assumptions {#outcome}
 
 ```{r, include=FALSE}
 outcome_dist_list <- readr::read_rds(
@@ -180,8 +194,6 @@ outcome_dist_list$plot_many_sims
 ```
 
 
-
-
 ```{r, echo=FALSE}
 outcome_dist_list$data_many_sims %>%
   filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
@@ -226,7 +238,9 @@ outcome_dist_list$data_many_sims %>%
 
 
 
-# Sample Size
+
+
+# Sample Size {#n}
 
 ```{r, include=FALSE}
 plot_data <- readr::read_rds(
@@ -277,7 +291,13 @@ legend(
 )
 ```
 
-# Number of Simulations
+
+
+
+
+
+
+# Number of Simulations {#numsim}
 
 ```{r, include=FALSE}
 num_sim_data <- readr::read_rds(
@@ -347,7 +367,9 @@ legend(
 
 
 
-# Hyperparameters
+
+
+# Hyperparameters {#hyper}
 
 
 
