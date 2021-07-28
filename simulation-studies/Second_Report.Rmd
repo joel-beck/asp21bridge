@@ -452,6 +452,41 @@ legend(
 
 # Hyperparameters {#hyper}
 
+```{r, include=FALSE}
+corr_regressors_list <- readr::read_rds(
+  file = here::here("simulation-studies", "hyperparameters.rds")
+)
+```
+
+In the past, we have been sampling data by our `mcmc_ridge` function without having a closer look on the effect of the hyperparameters `a_tau`, `b_tau`, `a_xi` and `b_xi`. However, they affect the full conditionals of $\tau^2$ and $\xi^2$, which are Inverse Gamma distributed, directly as stated here again for convenience:
+<!--  -->
+$$
+\begin{aligned}
+\tau^2 \mid \cdot \sim IG(a_{\tau} + \frac{ K}{ 2}, \, b_{\tau} + \frac{ 1}{ 2} \tilde{\boldsymbol{\beta}}^T \tilde{\boldsymbol{\beta}}).
+\end{aligned}
+$$
+<!--  -->
+$$
+\begin{aligned}
+\xi^2 \mid \cdot \sim IG(a_{\xi} + \frac{ J}{ 2}, \, b_{\xi} + \frac{ 1}{ 2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}}).
+\end{aligned}
+$$
+Simulating data samples for different hyperparameters values is therefore inevitable. 
+
+## Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ is simulated from a two dimensional normal distribution $\mathcal{N}_{2} \left( \boldsymbol{\mu}, \mathbf{\sigma^2 I} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 1 & 2 \end{pmatrix}^T$ and unit variance $\boldsymbol{\sigma^2_1 = \sigma^2_2 = 1}$. Same as the design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 5 & 3 \end{pmatrix}^T$ also having a unit variance.
+
+- In both design matrices intercept columns are added for estimation purposes. 
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -2 & 1 \end{pmatrix}^T$.
+
+- For simulating the influence of the hyperparameters, nine different values are chosen for $\boldsymbol{a_{\tau} = b_{_\tau} =  a_{\xi} = b_{xi} = \begin{pmatrix} -1 & 0 & 0.5 & 1 & 2 & 10 & 50 & 100 & 200 \end{pmatrix}}$. Since for statistical properties like the mean of an Inverse Gamma distribution, values for $\boldsymbol{a_{\tau} = a_{\xi} > 0}$ are required, particular attention is focused on larger values. Anyway, it is an aim to inspect the performance of the sampler for values $\boldsymbol{\le 1}$ as well.
+
+## Simulation Results
+
+```{r, hyppar-tau-values, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations over beta and gamma parameters- a_tau", fig.pos="t"}
+corr_regressors_list$plot_single_sim
+```
 
 
 # Next Steps {-}

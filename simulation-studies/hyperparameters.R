@@ -307,7 +307,7 @@ p2 <- deviation_a_tau_data %>%
   theme(panel.grid.minor = element_blank()) +
   geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
               se = FALSE) +
-  scale_x_continuous(trans = pseudo_log_trans(), breaks = cc(-1, 0, 1, 2, 10, 50, 100, 200))
+  scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p3 <- deviation_b_tau_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "beta")) %>%
