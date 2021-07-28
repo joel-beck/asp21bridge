@@ -21,7 +21,7 @@ options(knitr.table.format = "latex")
 ```
 
 ```{r, include=FALSE}
-pacman::p_load(dplyr, readr, ggplot2, tidyr)
+pacman::p_load(dplyr, readr, ggplot2, tidyr, kableExtra)
 library(asp21bridge)
 ```
 
