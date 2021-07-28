@@ -32,8 +32,8 @@ library(asp21bridge)
 
 # Introduction {-}
 
-Our first report was focused on the underlying mathematical model of Bayesian Ridge Regression and provided a brief introduction of the `asp21bridge` package. 
-Since then, the central `mcmc_ridge()` function, which implements the Markov Chain Monte Carlo sampler and whose name has been adapted to meet implicit naming conventions of other groups, has been slightly extended as well as fully unit tested and now shows a stable and reliable performance.
+Our first report was focused on the underlying mathematical model of Bayesian Ridge Regression and provided a brief introduction to the `asp21bridge` package. 
+Since then, the central `mcmc_ridge()` function, which implements the Markov Chain Monte Carlo sampler and whose name has been adapted to meet existing naming conventions of other groups, has been slightly extended as well as fully unit tested and now shows a stable and reliable performance.
 
 This report investigates the effect of manipulating some of the sampling parameters in a controlled environment, such that changes in the estimation outcome can be directly linked to respective changes in the model inputs.
 After an introductory exploration phase, we decided for a subset of all possible model variations that indicated the greatest potential for interesting and relevant findings.
@@ -50,9 +50,13 @@ These sections investigate, if a stabilization process happens with increasing e
 The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
 Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
 
-Since the resulting simulation studies serve different purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, implementation as well as analysis and presentation of the results.
+Since the resulting simulation studies serve different purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
 For that reason, we decided against forcing all of the following sections into one common rigid framework.
 Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
+
+In order to keep the analysis compact and succinct, there will be almost no code included.
+It it worth noting though that the `R Markdown` document generating this report as well as all `R Scripts` used for simulation are included in the `simulation-studies` folder inside the `asp21bridge` package.
+Thus, each figure as well as all numerical results are fully reproducible and can be repeated and extended by the reader.
 
 
 
@@ -99,7 +103,7 @@ The variance of the corresponding proposal distribution is set to a carefully ch
 Figure \@ref(fig:corr-plot-single) displays the posterior mean estimates for the MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete iteration of the simulation.
 For a better visual comparison the true values for each coefficient are indicated by grey circles, whereas the acceptance rate(s) of the Metropolis-Hastings sampling process are provided in grey boxes.
 
-```{r, corr-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - one Simulation", fig.pos="t"}
+```{r, corr-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - One Simulation Cycle", fig.pos="t"}
 corr_regressors_list$plot_single_sim
 ```
 
@@ -117,9 +121,9 @@ The black points represent the mean of these $50$ posterior mean estimates.
 Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
 
 Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
-For that reason only the results of the `mcmc_ridge()` sampler are shown in figure \@ref(fig:corr-plot-many).
+For that reason only the results of the `mcmc_ridge()` sampler are shown in Figure \@ref(fig:corr-plot-many).
 
-```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulations", fig.pos="t"}
+```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
 corr_regressors_list$plot_many_sims
 ```
 
@@ -161,7 +165,7 @@ Instead of varying the correlation structure among the regressors in the underly
     + $\mathbf{x}_3 \stackrel{ iid}{ \sim} \mathcal{U}_{} \left( \left[ -2, \; 12 \right] \right)$
     + $\mathbf{x}_4 \stackrel{ iid}{ \sim} \mathrm{Ber}(0.3)$
 
-- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{z}_3 \end{pmatrix}^T$ contains the additional regressor variable $\mathbf{x}_3 \stackrel{ iid}{ \sim} \mathcal{t}_{10}$, which is independently sampled from all other columns.
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{z}_3 \end{pmatrix}^T$ contains the additional regressor variable $\mathbf{x}_3 \stackrel{ iid}{ \sim} t_{10}$, which is independently sampled from all other columns.
 
 - The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_3 & \beta_4 \end{pmatrix}^T = \begin{pmatrix} 0 & -3 & -1 & -1 & 2 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 & \gamma_3 \end{pmatrix}^T = \begin{pmatrix} 0 & 1 & 2 & 3 \end{pmatrix}^T$.
 
@@ -169,6 +173,7 @@ Instead of varying the correlation structure among the regressors in the underly
     + $y_i \sim \mathcal{N}_{} \left( \mu, \sigma^2 \right)$
     + $y_i \sim \mu + \left(\sigma \cdot \sqrt{ \frac{ 3}{ 5}}\right) T$, where $T \sim t_{5}$
     + $y_i \sim \mu + \sigma \cdot U$, where $U \sim \mathcal{U}_{} \left( \left[ 0, \; 1 \right] \right)$
+    
 In order to isolate the impact of the different shapes of the three probability distributions, the mean $\mu = \mathbf{x}_i^T \boldsymbol{\beta}$ and the variance $\sigma^2 = \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2$ are held constant across the models.
 
 Note that the `lmls()`, `mcmc()` and `mcmc_ridge()` models are built upon the assumption $y_i \sim \mathcal{N}_{} \left( \mu, \sigma^2 \right)$.
@@ -177,26 +182,34 @@ The remaining two cases analyze the performance in presence of a mild ($t$ distr
 
 ## Simulation Results
 
-Just as in section \@ref(corr) the results of one complete iteration (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in figure \@ref(fig:outcome-plot-single).
+Just as in section \@ref(corr) the results of one complete iteration (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
 Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$ distributed random variable, which does not follow an exact $t$ distribution.
 
-```{r, outcome-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - one Simulation", fig.pos="t"}
+```{r, outcome-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - One Simulation Cycle", fig.pos="t"}
 outcome_dist_list$plot_single_sim
 ```
 
 The differences within each facet as well as between the facets are significant.
 All three models seem to estimate the $\boldsymbol{\beta}$ vector well, when there are no or only mild violations of the normal assumption for $y$. 
-If $y$ is sampled from a uniform distribution there are major differences for $\beta_0$, $\beta_2$ and $\beta_4$ (notice the extended $x$-scale in the third facet).
-Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the latter case with more deviations when $y$ is based on the $t$ distribution.
+If $y$ is sampled from a uniform distribution, there are major differences for $\beta_0$, $\beta_2$ and $\beta_4$ (notice the extended $x$-scale in the third facet).
+Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the latter case with more deviations in the setting, where $y$ is based on the $t$ distribution.
 
 To gain insights beyond this single simulation cycle, which could well be disturbed by random noise, we repeat the sampling process $50$ times.
-The means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in figure \@ref(fig:outcome-plot-many).
+The resulting means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in Figure \@ref(fig:outcome-plot-many).
 
-```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulations", fig.pos="t"}
+```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
 outcome_dist_list$plot_many_sims
 ```
 
-Estimates of the bias and the standard error of the Posterior Mean / Maximum Likelihood estimates can be more distinctly compared by their numerical values provided by tables \@ref(tab:bias) and \@ref(tab:se).
+This plot (literally) paints a drastically different picture, emphasizing the necessity of repeating experiments multiple times whenever possible.
+Across all $50$ simulations the deviation of the estimates for $\beta_2$ (corresponding to the regressor variable from the exponential distribution) is huge for all three distributional specifications of $y$.
+The small bias induced by all three models is negligible compared to the wide confidence intervals, which is particularly interesting when $y$ stems from a normal distribution. 
+In this case all models should perform well, however the `lmls()` and the `mcmc()` Posterior Mean / Maximum Likelihood estimates vary wildly across the simulation cycles.
+A similar effect can be observed for $\beta_0$ in case of the uniform distribution.
+Here, all models overestimate the true value on average, while the `mcmc_ridge()` function again shows the smallest variability.
+
+In contrast, the estimates for $\gamma_0$ in the right facet are fairly stable across simulation cycles, but also consistently wrong at the same time.
+Estimates of the bias and the standard error of the Posterior Mean / Maximum Likelihood estimates can be more distinctly compared by their numerical values provided in Tables \@ref(tab:bias) and \@ref(tab:se).
 In order to emphasize the interesting/differing entries, both tables only include a subset of the estimated coefficients.
 
 ```{r, bias, echo=FALSE}
@@ -220,6 +233,11 @@ outcome_dist_list$data_many_sims %>%
   )
 ```
 
+Considering the bias estimates first, there are no obvious patterns that would suggest the superiority of one model.
+Further, none of the three models tend to only over- or underestimate the true coefficient values.
+The most interesting entries are the bias estimates for $\beta_0$ and $\gamma_0$ in the uniform case, where all three models agree to significantly overestimate.
+However, the intercept coefficients are often of minor interest.
+
 ```{r, se, echo=FALSE}
 outcome_dist_list$data_many_sims %>%
   filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
@@ -241,16 +259,42 @@ outcome_dist_list$data_many_sims %>%
   )
 ```
 
+The standard error estimates displayed in Table \@ref(tab:se) clearly indicate the worst performance of the `lmls()` and the `mcmc()` model for $\beta_2$.
+
+In almost all cases (and sometimes very significantly), the `mcmc_ridge()` sampler has the smallest standard error.
+This finding nicely confirms the underlying mathematical theory:
+The present prior specifications in the Bayesian setting, which induces the equivalent form of a frequentist Ridge penalty, can lead to biased estimation.
+
+However, this loss in accuracy can be (as it is in this case) dominated by the gain in precision by the shrinkage effect of the penalty.
+Note that (except for $\gamma_0$ in the most right facet in \@ref(fig:outcome-plot-many)) the `mcmc_ridge()` sampler slightly *overestimates* coefficients with true *negative* values and *underestimates* those with true *positive* values. 
+This again is caused by the Ridge penalty leading to estimated coefficients close to zero.
+
+In summary, the following conclusions can be drawn:
+
+1. All three models are affected by changes in the regressor and/or outcome distributions.
+In the former case the regressor variables sampled from the Exponential and the Bernoulli distributions were the greatest challenge, in the latter case the outcome variable from the Uniform distribution.
+This is generally not surprising, since these distributions deviate most from the nicely behaved normally distributed case.
+
+1. As expected, the `lmls()` function is affected strongly by violating the model assumptions, since its estimation process is based on the normal likelihood.
+Surprisingly, the `mcmc()` sampler without penalty often did not perform much better.
+
+1. While the `mcmc_ridge()` function does not excel at estimation accuracy, it does lead to the most stable estimation with smallest standard errors in the vast majority of cases.
+As emphasized above, this behaviour nicely agrees with the mathematical theory of Ridge penalization.
+
+1. Had we not conducted repeated experiments, our conclusions would have been quite different.
+Simulation results are therefore always worth repeating many times to consolidate the correct interpretation.
+
+
 
 ## Technical Aspects
 
 As outlined in the previous paragraph, a total of $50 \cdot 3 \cdot 3 = 450$ models were fitted to analyze the performance differences.
-In order to speed up the involved computations of this specific and some of the other simulation studies illustrated in this report, we used the *parallel computing* capabilities of `R`.
+In order to speed up the involved computations of this specific and some of the other simulation studies in this report, we used the *parallel computing* capabilities of `R`.
 
 There are many options from various packages to choose from.
-We decided to use the [furrr](https://furrr.futureverse.org/) package which is built on top of the `future` package specialized on parallel processing.
-As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package while using multiple cores at the same time. 
-This *functional programming* based approach (similar to the `apply()` family in 'base R') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach, which, however, are beyond the scope of this report.
+We decided to use the [furrr](https://furrr.futureverse.org/) package, which is built on top of the `future` package specialized on parallel processing.
+As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package, while using multiple cores at the same time. 
+This *functional programming* based approach (similar to the `apply()` family in 'base `R`') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach.
 
 The following (slightly modified) code snippet provides a brief insight into the implementation:
 
@@ -265,10 +309,11 @@ full_results <- tibble(id = 1:50) %>%
   ))
 ```
 
-The `plan()` function borrowed from the `future` package initializes the parallel computing process and the number of cores available for computation.
-The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single iteration.
-This procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
-This new column of the data frame contains complete information about all simulations such that any required element for the further analysis can be easily extracted and post processed.
+The `plan()` function borrowed from the `future` package initializes the parallel computing process and the number of cores/workers available for computation.
+The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single simulation cycle.
+
+This entire procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
+This new column of the data frame contains complete information about all simulations, such that any required element for the further analysis can be easily extracted and post processed.
 
 Finally, the `.options()` argument allows the specification of a random seed.
 Random number generation in the context of parallel computing is slightly more involved than in the sequential approach.
