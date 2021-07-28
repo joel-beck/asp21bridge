@@ -1,7 +1,7 @@
 #   ____________________________________________________________________________
 #   Setup                                                                   #####
 
-pacman::p_load(dplyr, ggplot2, forcats, purrr, furrr)
+pacman::p_load(dplyr, ggplot2, forcats, purrr, furrr, tidyr)
 library(asp21bridge)
 
 create_data <- function(outcome_dist = c("norm", "t", "unif"), n) {
@@ -193,6 +193,7 @@ data_many_sims <- bind_rows(many_sims$result) %>%
   summarise(bias = mean(error), se = sd(value), .groups = "drop") %>%
   tidyr::pivot_wider(names_from = name, values_from = c(bias, se))
 
+
 plot_data_many_sims <- bind_rows(many_sims$result) %>%
   mutate(outcome_dist = factor(outcome_dist) %>%
     fct_recode(
@@ -224,15 +225,10 @@ plot_many_sims <- plot_data_many_sims %>%
     size = 6, shape = 21
   ) +
   geom_errorbar(
-    mapping = aes(
-      # xmin = mean_estimate - 1.96 * se, xmax = mean_estimate + 1.96 * se,
-      xmin = lower, xmax = upper, color = name
-    ),
+    mapping = aes(xmin = lower, xmax = upper, color = name),
     linetype = "dashed", width = 0.5, position = position_dodge(width = 0.5),
     show.legend = FALSE
   ) +
-  # geom_boxplot(mapping = aes(x = value), data = boxplot_data_many_sims,
-  #              position = position_dodge(width = 0.5)) +
   geom_point(
     mapping = aes(x = mean_estimate), size = 1,
     position = position_dodge(width = 0.5)

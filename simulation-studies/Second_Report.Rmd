@@ -17,39 +17,15 @@ knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
   dpi = 300, collapse = TRUE
 )
+options(knitr.table.format = "latex")
 ```
 
 ```{r, include=FALSE}
-pacman::p_load(
-  dplyr,
-  readr,
-  ggplot2
-)
-
+pacman::p_load(dplyr, readr, ggplot2, tidyr)
 library(asp21bridge)
 ```
 
 # Introduction {-}
-
-```{r, include=FALSE}
-# include = FALSE
-x <- mean(rnorm(100))
-x
-```
-
-The value of `x` is `r round(x, 2)`.
-
-```{r, echo=FALSE}
-# echo = FALSE
-y <- mean(rnorm(100))
-y
-```
-
-```{r, eval=FALSE}
-# eval = FALSE
-z <- mean(rnorm(100))
-z
-```
 
 
 # Correlated Predictor Variables
@@ -143,6 +119,49 @@ outcome_dist_list$plot_single_sim
 ```{r, echo=FALSE, out.width="100%"}
 outcome_dist_list$plot_many_sims
 ```
+
+```{r, echo=FALSE}
+outcome_dist_list$data_many_sims %>%
+  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
+  select(-contains("se")) %>%
+  pivot_longer(cols = contains("bias")) %>%
+  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
+  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
+  tibble::column_to_rownames(var = "Parameter") %>%
+  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
+  kableExtra::kbl(
+    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "Bias of Coefficient Estimates"
+  ) %>%
+  kableExtra::kable_styling(
+    latex_options = "HOLD_position", position = "center", full_width = FALSE
+  ) %>%
+  kableExtra::add_header_above(
+    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3)
+  )
+```
+
+```{r, echo=FALSE}
+outcome_dist_list$data_many_sims %>%
+  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
+  select(-contains("bias")) %>%
+  pivot_longer(cols = contains("se")) %>%
+  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
+  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
+  tibble::column_to_rownames(var = "Parameter") %>%
+  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
+  kableExtra::kbl(
+    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "Standard Errors of Coefficient Estimates"
+  ) %>%
+  kableExtra::kable_styling(
+    latex_options = "HOLD_position", position = "center", full_width = FALSE
+  ) %>%
+  kableExtra::add_header_above(
+    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3), escape = FALSE
+  )
+```
+
 
 
 # Sample Size
