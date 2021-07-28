@@ -453,7 +453,7 @@ legend(
 # Hyperparameters {#hyper}
 
 ```{r, include=FALSE}
-corr_regressors_list <- readr::read_rds(
+hyperparameters_list <- readr::read_rds(
   file = here::here("simulation-studies", "hyperparameters.rds")
 )
 ```
@@ -480,12 +480,12 @@ Simulating data samples for different hyperparameters values is therefore inevit
 - In both design matrices intercept columns are added for estimation purposes. 
 The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -2 & 1 \end{pmatrix}^T$.
 
-- For simulating the influence of the hyperparameters, nine different values are chosen for $\boldsymbol{a_{\tau} = b_{_\tau} =  a_{\xi} = b_{xi} = \begin{pmatrix} -1 & 0 & 0.5 & 1 & 2 & 10 & 50 & 100 & 200 \end{pmatrix}}$. Since for statistical properties like the mean of an Inverse Gamma distribution, values for $\boldsymbol{a_{\tau} = a_{\xi} > 0}$ are required, particular attention is focused on larger values. Anyway, it is an aim to inspect the performance of the sampler for values $\boldsymbol{\le 1}$ as well.
+- For simulating the influence of the hyperparameters, nine different values are chosen for $\boldsymbol{a_{\tau}} = \boldsymbol{b_{_\tau}} =  \boldsymbol{a_{\xi}} = \boldsymbol{b_{xi}} = \begin{pmatrix} -1 & 0 & 0.5 & 1 & 2 & 10 & 50 & 100 & 200 \end{pmatrix}$. Since for statistical properties like the mean of an Inverse Gamma distribution, values for $\boldsymbol{a_{\tau} = a_{\xi} > 0}$ are required, particular attention is focused on larger values. Anyway, it is an aim to inspect the performance of the sampler for values $\boldsymbol{\le 1}$ as well.
 
 ## Simulation Results
 
 ```{r, hyppar-tau-values, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations over beta and gamma parameters- a_tau", fig.pos="t"}
-corr_regressors_list$plot_single_sim
+hyperparameters_list$tau_dev_plot
 ```
 
 
