@@ -29,6 +29,27 @@ library(asp21bridge)
 
 # Introduction {-}
 
+Our first report was focused on the underlying mathematical model of Bayesian Ridge Regression and provided a brief introduction of the `asp21bridge` package. 
+Since then, the central `mcmc_ridge()` function, which implements the Markov Chain Monte Carlo sampler and whose name has been adapted to meet implicit naming conventions of other groups, has been slightly extended as well as fully unit tested and now shows a stable and reliable performance.
+
+This report investigates the effect of manipulating some of the sampling parameters in a controlled environment, such that changes in the estimation outcome can be directly linked to respective changes in the model inputs.
+After an introductory exploration phase, we decided for a subset of all possible model variations that indicated the greatest potential for interesting and relevant findings.
+
+As a result, the simulation studies of this report will be conducted on the following components:
+
+- The **data** input, which is captured by the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
+Here, the sampler's *robustness* is tested across various scenarios.
+
+- The **sample size** `n` and the **number of simulations** `num_sim`.
+These sections investigate, if a stabilization process happens with increasing either of these two input parameters hinting at *asymptotic*/*convergence* properties.
+
+- The **hyperparameters** `a_tau`, `b_tau`, `a_xi` and `b_xi` of the Inverse Gamma prior distribution of the variance parameters $\tau$ and $\xi$, as specified in the first report.
+The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
+Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
+
+Since the resulting simulation studies serve different purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, implementation as well as analysis and presentation of the results.
+For that reason, we decided against forcing all of the following sections into one common rigid framework.
+Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
 
 # Correlated Predictor Variables
 
@@ -335,6 +356,9 @@ legend(
 In the process of writing the first and second report, the main work of developing both the mathematical foundation as well as the code base of the `asp21bridge` package has been done.
 Thus, the following weeks will focus on filling remaining gaps and working out details that were left open due to time constraints. 
 This includes taking a closer look at code efficiency and possible code refactoring for the sake of modularity.
+
+Further, we will reach out to other groups with similar topics (the Bayesian Lasso Regression group in particular) in order to initiate a collaboration. 
+In addition to exploring similarities and differences between our own sampler and the procedures from the `lmls` package, this would allow for an interesting comparison between different penalization approaches.
 
 The final step consists of combining all pieces of the project into a single structured and consistent final report.
 Aside of the work shown in the first two reports, some new elements like a brief discussion of design and implementation choices during the development stage will be added with the aim of providing the reader a solid understanding of the underlying ideas as well as the practical usage of the package.
