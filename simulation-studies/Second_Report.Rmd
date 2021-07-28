@@ -21,7 +21,9 @@ options(knitr.table.format = "latex")
 ```
 
 ```{r, include=FALSE}
-pacman::p_load(dplyr, readr, ggplot2, tidyr, kableExtra)
+pacman::p_load(
+  dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
+)
 library(asp21bridge)
 ```
 
@@ -55,7 +57,7 @@ Hence, the dependence among the regressors is fully determined by the parameter 
 The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_4 \end{pmatrix}^T = \begin{pmatrix} 0 & 3 & -1 & 1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 2 & 0 \end{pmatrix}^T$.
 
 - Three different values ($0$, $-0.5$ and $0.9$) were chosen for $\rho$ to compare the 'nice' case of uncorrelated predictors with the performance for negative and positive dependence.
-For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted.
+For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted, where each Posterior Mean estimate from both of the Markov Chain Monte Carlo samplers is based on $1000$ samples.
 
 - Moreover, we compared the performance of the usual `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
 The latter is initiated by the `mcmc_ridge()` argument `mh_location = TRUE`. 
@@ -95,10 +97,10 @@ There are three conclusions from this first simulation study:
 1. The correlation structure does not have a significant impact of the sampling results.
 The three plot facets look almost identical.
 
-2. The `mcmc_ridge()` sampler (as well as the `mcmc()` and `lmls()` functions) are very robust towards correlated data and perform extremely well. 
+1. The `mcmc_ridge()` sampler (as well as the `mcmc()` and `lmls()` functions) are very robust towards correlated data and perform extremely well. 
 In particular, all three approaches (visually) provide close to unbiased estimates.
 
-3. The variability among the $\boldsymbol{\beta}$ estimates is almost nonexistent, such that results from a single simulation are already reliable and representative.
+1. The variability among the $\boldsymbol{\beta}$ estimates is almost nonexistent, such that results from a single simulation are already reliable and representative.
 While the estimates for the $\boldsymbol{\gamma}$ vector are still correct on average, the variability across different simulations is significant (particularly for $\gamma_0$).
 Thus, averaging the results from multiple repetitions of the sampling process is advisable.
 
@@ -112,6 +114,42 @@ outcome_dist_list <- readr::read_rds(
 )
 ```
 
+## Simulation Setting
+
+## Technical Aspects
+
+As outlined in the previous paragraph, a total of $50 \cdot 3 \cdot 3 = 450$ models were fitted to analyze the performance differences.
+In order to speed up the involved computations of this specific and some of the other simulation studies illustrated in this report, we used the *parallel computing* capabilities of `R`.
+
+There are many options from various packages to choose from.
+We decided to use the [furrr](https://furrr.futureverse.org/) package which is built on top of the `future` package specialized on parallel processing.
+As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package while using multiple cores at the same time. 
+This *functional programming* based approach (similar to the `apply()` family in 'base R') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach, which, however, are beyond the scope of this report.
+
+The following (slightly modified) code snippet provides a brief insight into the implementation:
+
+```{r, eval=FALSE}
+plan(multisession, workers = 8)
+
+full_results <- tibble(id = 1:50) %>%
+  mutate(samples = future_map(
+    .x = id,
+    .f = ~ show_results(n = 50, num_sim = 1000),
+    .options = furrr_options(seed = 1)
+  ))
+```
+
+The `plan()` function borrowed from the `future` package initializes the parallel computing process and the number of cores available for computation.
+The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single iteration.
+This procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
+This new column of the data frame contains complete information about all simulations such that any required element for the further analysis can be easily extracted and post processed.
+
+Finally, the `.options()` argument allows the specification of a random seed.
+Random number generation in the context of parallel computing is slightly more involved than in the sequential approach.
+This additional complexity is automatically handled by the `future_map()` function, such that all results are sampled in a statistically valid and fully reproducible manner.
+
+## Simulation Results
+
 ```{r, echo=FALSE, out.width="100%"}
 outcome_dist_list$plot_single_sim
 ```
@@ -119,6 +157,9 @@ outcome_dist_list$plot_single_sim
 ```{r, echo=FALSE, out.width="100%"}
 outcome_dist_list$plot_many_sims
 ```
+
+
+
 
 ```{r, echo=FALSE}
 outcome_dist_list$data_many_sims %>%
@@ -290,3 +331,10 @@ legend(
 
 
 # Next Steps {-}
+
+In the process of writing the first and second report, the main work of developing both the mathematical foundation as well as the code base of the `asp21bridge` package has been done.
+Thus, the following weeks will focus on filling remaining gaps and working out details that were left open due to time constraints. 
+This includes taking a closer look at code efficiency and possible code refactoring for the sake of modularity.
+
+The final step consists of combining all pieces of the project into a single structured and consistent final report.
+Aside of the work shown in the first two reports, some new elements like a brief discussion of design and implementation choices during the development stage will be added with the aim of providing the reader a solid understanding of the underlying ideas as well as the practical usage of the package.
