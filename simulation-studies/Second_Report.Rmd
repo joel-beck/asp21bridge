@@ -513,7 +513,7 @@ Anyway, it is an aim to inspect the performance of the sampler for values less t
 
 ## Simulation Results
 
-Figures \@ref(fig:hyppar-tau-beta) and \@ref(fig:hyppar-tau-gamma) display the absolute deviation of the posterior mean estimates of the `mcmc_ridge()` sampler and the true parameters with the stated different values for `a_tau` and `b_tau`. 
+Figures \@ref(fig:hyppar-tau-beta) and \@ref(fig:hyppar-tau-gamma) display the absolute deviations of the posterior mean estimates from the true parameters with the stated different values for `a_tau` and `b_tau`. 
 For each estimate, the posterior mean averages over 1000 simulations of the `mcmc_ridge()` sampler. 
 Note, that the plot splits parameters by location and scale, according to the relationship mentioned above. 
 For a better overview, the dotted line displays the linear trend of all estimate's deviations.
@@ -542,7 +542,7 @@ Nevertheless, this outcome is not clearly visible in the upper panel and is assu
 It is remarkable, that the deviation of both estimates is the smallest for $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
 For values of $a_\tau \leq 1$ one obtains wide variances of absolute deviations, since the posterior mean required values larger than one.
 
-In the lower panel, there is no clear effect of $\boldsymbol{\tau^2}$ and its parameters. 
+In the lower panel, there is no clear effect of $\tau^2$ and its parameters. 
 Rooted in no direct effect of $\tau^2$ on $\gamma$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of our `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
 Anyway, our sampler performs the best for $a_\tau, b_\tau \in \{0.5, 200\}$, where $0.5$ is chosen by coincidence here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
 [EFFECT OF XI ON BETA, KREUZEFFEKTE?] 
