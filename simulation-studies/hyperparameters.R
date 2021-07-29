@@ -448,7 +448,23 @@ a_tau_data %>%
   select(hyppar, hyppar_val, acc_rate) %>%
   slice_min(order_by = acc_rate, n = 3)
 
+b_tau_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_max(order_by = acc_rate, n = 3)
+
+b_tau_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_min(order_by = acc_rate, n = 3)
+
 # highest and lowest acceptance rates for b_xi
+a_xi_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_max(order_by = acc_rate, n = 3)
+
+a_xi_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_min(order_by = acc_rate, n = 3)
+
 b_xi_data %>%
   select(hyppar, hyppar_val, acc_rate) %>%
   slice_max(order_by = acc_rate, n = 3)
