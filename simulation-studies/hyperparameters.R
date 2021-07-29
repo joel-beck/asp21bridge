@@ -330,7 +330,7 @@ p3 <- deviation_b_tau_data %>%
     # title = "Absolute deviations from true beta (1000 simulations)",
     x = "b_tau", y = "Absolute Deviation", color = NULL
   ) +
-  guides(color = "none") + 
+  guides(color = "none") +
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
@@ -352,7 +352,7 @@ p4 <- deviation_b_tau_data %>%
     # title = "Absolute deviations from true gamma (1000 simulations)",
     x = "b_tau", y = "Absolute Deviation", color = NULL
   ) +
-  guides(color = "none") + 
+  guides(color = "none") +
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
@@ -525,8 +525,8 @@ readr::write_rds(
     p6 = p6,
     p7 = p7,
     p8 = p8,
-    beta0_cor_plot = beta0_cor_plot,
-    gamma0_cor_plot = gamma0_cor_plot
+    #beta0_cor_plot = beta0_cor_plot,
+    #gamma0_cor_plot = gamma0_cor_plot
   ),
   file = here::here(
     "simulation-studies",

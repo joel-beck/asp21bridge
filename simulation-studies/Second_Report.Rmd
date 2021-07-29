@@ -483,7 +483,24 @@ $$
 \end{aligned}
 $$
 <!--  -->
-while $\xi^2$ directly affects the full conditional of $\boldsymbol{\beta}$:
+with
+<!--  -->
+$$
+\begin{aligned}
+\mathbf{ w}_i := \frac{ \mathbf{x}_i}{ \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)} \in \mathbb{R}^{K+1}, \qquad
+\mathbf{ W} := \begin{pmatrix} \mathbf{ w}_1^T \\ \vdots \\ \mathbf{ w}_n^T \end{pmatrix} \in \mathbb{R}^{n \, \times \, (K + 1)}
+\end{aligned}
+$$
+<!--  -->
+and
+<!--  -->
+$$
+\begin{aligned}
+u_i := \frac{ y_i}{ \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)} \in \mathbb{R}, \qquad
+\mathbf{ u} := \begin{pmatrix} u_1 \\ \vdots \\ u_n \end{pmatrix} \in \mathbb{R}^n,
+\end{aligned}
+$$
+while $\xi^2$ directly affects the full conditional of $\boldsymbol{\gamma}$:
 <!--  -->
 $$
 \begin{aligned}
@@ -493,6 +510,7 @@ f( \boldsymbol{\gamma} \mid \cdot )
 \end{aligned}
 $$
 <!--  -->
+where $\boldsymbol{\gamma}$ is sampled by a Metropolis Hastings algorithm.
 Simulating data samples for different hyperparameters values is therefore inevitable for the whole model. 
 
 
@@ -515,15 +533,15 @@ Anyway, it is an aim to inspect the performance of the sampler for values less t
 
 Figures \@ref(fig:hyppar-tau-beta) and \@ref(fig:hyppar-tau-gamma) display the absolute deviations of the posterior mean estimates from the true parameters with the stated different values for `a_tau` and `b_tau`. 
 For each estimate, the posterior mean averages over 1000 simulations of the `mcmc_ridge()` sampler. 
-Note, that the plot splits parameters by location and scale, according to the relationship mentioned above. 
+Note, that location and scale parameters are plotted separately, according to the relationship mentioned above. 
 For a better overview, the dotted line displays the linear trend of all estimate's deviations.
 
 The scaling of the $x$ - axis is transformed by a pseudo logarithm to clearly visualize the deviations between $-1$ and $10$, which would not be possible on original scales. 
 Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_trans()` of the `scales` package is applied, log-transforming only positive values. 
 
 It can be observed, that the intercept estimates in each plot show the largest deviations from their true value. 
-In the upper panel, however, deviations of `beta` estimates are small in absolute value and can be considered to not affect the performance of the sampler unambiguously. 
-On the contrary, deviations of the `gamma` estimates in the lower panel are absolutely remarkable, especially for `gamma_0`.
+In Figure \@ref(fig:hyppar-tau-beta), however, deviations of `beta` estimates are small in absolute value and can be considered to not affect the performance of the sampler unambiguously. 
+On the contrary, deviations of the `gamma` estimates in Figure \@ref(fig:hyppar-tau-gamma) are absolutely remarkable, especially for `gamma_0`.
 
 ```{r, hyppar-tau-beta, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
 hyperparameters_list$p1 / hyperparameters_list$p3
@@ -537,17 +555,33 @@ hyperparameters_list$p2 / hyperparameters_list$p4
 The functional chain that applies to the estimates of $\boldsymbol{\beta}$ can be described by the effect of the mean of the inverse gamma distribution on $\tau^2$. 
 A larger value for $b_\tau$ leads to larger values of $\tau^2$, which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and by this the absolute deviation of the corresponding estimates from their true value to be larger. 
 $b_\tau$ causes the opposite effect. 
-Nevertheless, this outcome is not clearly visible in the upper panel and is assumed to be surpassed by the overall small deviation. 
+Nevertheless, this outcome is not clearly visible in Figure \@ref(fig:hyppar-tau-beta) and is assumed to be surpassed by the overall small deviation. 
 
-It is remarkable, that the deviation of both estimates is the smallest for $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
-For values of $a_\tau \leq 1$ one obtains wide variances of absolute deviations, since the posterior mean required values larger than one.
+It is remarkable, that the deviation of ${\boldsymbol{\beta}}$ estimates is the smallest for both, $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
+For values of $a_\tau \leq 1$ one obtains wider variances of absolute deviations, since the posterior mean required values larger than one.
 
-In the lower panel, there is no clear effect of $\tau^2$ and its parameters. 
-Rooted in no direct effect of $\tau^2$ on $\gamma$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of our `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
-Anyway, our sampler performs the best for $a_\tau, b_\tau \in \{0.5, 200\}$, where $0.5$ is chosen by coincidence here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
-[EFFECT OF XI ON BETA, KREUZEFFEKTE?] 
+In Figure \@ref(fig:hyppar-tau-gamma), there is no clear impact of $\tau^2$ and its parameters. 
+Rooted in no direct effect of $\tau^2$ on $\gamma$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of our `mcmc_ridge` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
+Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ estimates  for $a_\tau, b_\tau \in \{0.5, 200\}$, where $0.5$ is chosen by coincidence here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
+
+Figures \@ref(fig:hyppar-xi-beta) and \@ref(fig:hyppar-xi-gamma) are constructed analogously, but showing the impact of `a_xi` and `b_xi` on the location and scale parameters respectively.
+
+Again, absolute deviations for the `beta` estimates from their true values are unambiguously small, where these for the `gamma` estimates are considerably larger. Once more, also the intercepts display the largest deviations.
+
+```{r, hyppar-xi-beta, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
+hyperparameters_list$p5 / hyperparameters_list$p6
+```
 
 
+```{r, hyppar-xi-gamma, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
+hyperparameters_list$p7 / hyperparameters_list$p8
+```
+
+Comparably, arguing with the mean of the Inverse Gamma distribution of ${\boldsymbol{\xi^2}}$, one obtains larger mean values for ${\boldsymbol{b_\xi}}$, while ${\boldsymbol{a_\xi}}$ lowers them. The impact of ${\boldsymbol{\xi^2}}$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \boldsymbol{\gamma} \mid \cdot )$ according to our underlying model. This effect is indicated by the linear trend lines in Figure \@ref(fig:hyppar-xi-gamma). In general, one obtains smaller deviations for larger values of ${\boldsymbol{b_\xi}}$ and lower ones of ${\boldsymbol{a_\xi}}$, where especially lots of randomness occurs in the deviations of `gamma_0`. Therefore, the impact of the ${\boldsymbol{a_\xi}}$ and ${\boldsymbol{b_\xi}}$ on the scale intercepts becoming indistinct through the underlying Metropolis Hastings algorithm. Moreover, the same wide variations only for ${\boldsymbol{a_\xi} < 1}$ cannot be obtained like for ${\boldsymbol{a_\tau}}$
+
+The sampler exhibits the best results for the scale estimates for $a_\xi \in \left\{2\right\}$, $b_\xi \in \left\{100\right\}$. Anyhow, due to the wide overall variation one must take this result with care.
+
+The effect of 
 
 # Next Steps {-}
 
