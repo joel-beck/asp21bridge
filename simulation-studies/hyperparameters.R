@@ -286,7 +286,7 @@ p1 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true beta (1000 simulations)",
-    x = "Values for a_tau", y = "Absolute Deviation", color = NULL
+    x = "a_tau", y = "Absolute Deviation", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -307,7 +307,7 @@ p2 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "Values for a_tau", y = "Absolute Deviation", color = NULL
+    x = "a_tau", y = "Absolute Deviation", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -327,9 +327,10 @@ p3 <- deviation_b_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Absolute deviations from true beta (1000 simulations)",
-    x = "Values for b_tau", y = "Absolute Deviation", color = NULL
+    # title = "Absolute deviations from true beta (1000 simulations)",
+    x = "b_tau", y = "Absolute Deviation", color = NULL
   ) +
+  guides(color = "none") + 
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
@@ -348,9 +349,10 @@ p4 <- deviation_b_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "Values for b_tau", y = "Absolute Deviation", color = NULL
+    # title = "Absolute deviations from true gamma (1000 simulations)",
+    x = "b_tau", y = "Absolute Deviation", color = NULL
   ) +
+  guides(color = "none") + 
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
