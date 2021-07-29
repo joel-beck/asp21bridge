@@ -511,7 +511,7 @@ f( \boldsymbol{\gamma} \mid \cdot )
 $$
 <!--  -->
 where $\boldsymbol{\gamma}$ is sampled by a Metropolis Hastings algorithm.
-Simulating data samples for different hyperparameters values is therefore inevitable for the whole model. 
+Simulating data samples for different hyperparameter values is therefore inevitable for the whole model. 
 
 
 ## Simulation Setting
@@ -585,7 +585,7 @@ The effect of ${\boldsymbol{a_\xi}}$ and ${\boldsymbol{b_\xi}}$ on ${\boldsymbol
 
 The smallest deviations of the location estimates are observable for $a_\xi \in \left\{1\right\}$, and $b_\xi \in \left\{200\right\}$. 
 
-Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. For the value range of ${\boldsymbol{a_\tau}}$, ${\boldsymbol{b_\tau}}$ and ${\boldsymbol{a_\xi}}$, no distinct pattern is observable. With growing values of ${\boldsymbol{a_\xi}}$, the rate is more likely to grow. Since the acceptance rates are in reasonable ranges for the underlying data and for space-saving reasons, these results are not further revealed here.
+Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. For the value range of ${\boldsymbol{a_\tau}}$, ${\boldsymbol{b_\tau}}$ and ${\boldsymbol{a_\xi}}$, no distinct pattern is observable. With growing values of ${\boldsymbol{b_\xi}}$, rates are more likely to grow. Since the acceptance rates are in reasonable ranges for the underlying data and for space-saving reasons, these results are not further revealed here.
 
 # Next Steps {-}
 

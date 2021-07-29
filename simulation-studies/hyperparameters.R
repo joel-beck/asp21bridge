@@ -375,11 +375,16 @@ p5 <- deviation_a_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "Values for a_xi", y = "Absolute Deviation"
+    # title = "Absolute deviations from true gamma (1000 simulations)",
+    x = "a_xi", y = "Absolute Deviation", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -392,11 +397,16 @@ p6 <- deviation_a_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
+    #title = "Abs. dev. from true gamma (#sim = 1000)",
     x = "Values for a_xi", y = "Absolute Deviation"
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -409,11 +419,16 @@ p7 <- deviation_b_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
+    #title = "Abs. dev. from true beta (#sim = 1000)",
     x = "Values for b_xi", y = "Absolute Deviation"
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -426,11 +441,17 @@ p8 <- deviation_b_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
+    #title = "Abs. dev. from true gamma (#sim = 1000)",
     x = "Values for b_xi", y = "Absolute Deviation"
   ) +
   theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
