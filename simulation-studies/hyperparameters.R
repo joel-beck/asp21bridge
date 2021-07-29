@@ -27,8 +27,8 @@ gamma <- c(-2, 1) # True: gamma_0 = 0, gamma_1 = -2, gamma_2 = 1
 
 y <- vector(mode = "numeric", length = 50)
 for (i in seq_along(y)) {
-  mu <- sum(X[i,] * beta)
-  sigma <- exp(sum(Z[i,] * gamma))
+  mu <- sum(X[i, ] * beta)
+  sigma <- exp(sum(Z[i, ] * gamma))
   y[i] <- rnorm(n = 1, mean = mu, sd = sigma)
 }
 
@@ -285,13 +285,19 @@ p1 <- deviation_a_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "Values for a_tau", y = "Absolute Deviation"
+    title = "Absolute deviations from true beta (1000 simulations)",
+    x = "Values for a_tau", y = "Absolute Deviation", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p2 <- deviation_a_tau_data %>%
@@ -300,13 +306,19 @@ p2 <- deviation_a_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "Values for a_tau", y = "Absolute Deviation"
+    title = "Absolute deviations from true gamma (1000 simulations)",
+    x = "Values for a_tau", y = "Absolute Deviation", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p3 <- deviation_b_tau_data %>%
@@ -315,13 +327,19 @@ p3 <- deviation_b_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "Values for b_tau", y = "Absolute Deviation"
+    title = "Absolute deviations from true beta (1000 simulations)",
+    x = "Values for b_tau", y = "Absolute Deviation", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p4 <- deviation_b_tau_data %>%
@@ -330,16 +348,22 @@ p4 <- deviation_b_tau_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "Values for b_tau", y = "Absolute Deviation"
+    title = "Absolute deviations from true gamma (1000 simulations)",
+    x = "Values for b_tau", y = "Absolute Deviation", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
-(tau_dev_plot <- grid.arrange(p1, p3, p2, p4, nrow = 2))
+# tau_dev_plot <- grid.arrange(p1, p3, p2, p4, nrow = 2)
 
 # plot deviations for beta vs gamma Parameter for hypperparams of xi
 # largest influence in b_xi / gamma plot
@@ -354,8 +378,10 @@ p5 <- deviation_a_xi_data %>%
   ) +
   theme_light() +
   theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p6 <- deviation_a_xi_data %>%
@@ -369,8 +395,10 @@ p6 <- deviation_a_xi_data %>%
   ) +
   theme_light() +
   theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p7 <- deviation_b_xi_data %>%
@@ -384,8 +412,10 @@ p7 <- deviation_b_xi_data %>%
   ) +
   theme_light() +
   theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
 p8 <- deviation_b_xi_data %>%
@@ -399,11 +429,13 @@ p8 <- deviation_b_xi_data %>%
   ) +
   theme_light() +
   theme(panel.grid.minor = element_blank()) +
-  geom_smooth(method = "lm", aes(colour = 'linear trend'), linetype = "dashed",
-              se = FALSE) +
+  geom_smooth(
+    method = "lm", aes(colour = "linear trend"), linetype = "dashed",
+    se = FALSE
+  ) +
   scale_x_continuous(trans = pseudo_log_trans(), breaks = c(-1, 0, 1, 2, 10, 50, 100, 200))
 
-(xi_dev_plot <- grid.arrange(p5, p7, p6, p8, nrow = 2))
+# xi_dev_plot <- grid.arrange(p5, p7, p6, p8, nrow = 2)
 
 # highest and lowest acceptance rates for a_tau
 a_tau_data %>%
@@ -430,36 +462,39 @@ plot_cor <- function(covariate) {
   covariate <- as.character(covariate)
 
   deviation_binded <- tibble(a_tau = deviation_a_tau_data %>%
-                               filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
-                               select(deviation)) %>%
+    filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
+    select(deviation)) %>%
     mutate(b_tau = deviation_b_tau_data %>%
-             filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
-             select(deviation)) %>%
+      filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
+      select(deviation)) %>%
     mutate(a_xi = deviation_a_xi_data %>%
-             filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
-             select(deviation)) %>%
+      filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
+      select(deviation)) %>%
     mutate(b_xi = deviation_b_xi_data %>%
-             filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
-             select(deviation))
+      filter(stringr::str_detect(string = Parameter, pattern = covariate)) %>%
+      select(deviation))
 
   panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) # helper function from pairs() help-page
   {
-    usr <- par("usr"); on.exit(par(usr))
+    usr <- par("usr")
+    on.exit(par(usr))
     par(usr = c(0, 1, 0, 1))
     r <- cor(x, y)
     txt <- format(c(r, 0.123456789), digits = digits)[1]
     txt <- paste0(prefix, txt)
-    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    if (missing(cex.cor)) cex.cor <- 0.8 / strwidth(txt)
     text(0.5, 0.5, txt, cex = 2)
   }
 
   return(pairs(as.matrix(deviation_binded),
-               upper.panel = panel.cor,
-               lower.panel = panel.smooth,
-               main = paste("Correlation plot of hyperparameters for", covariate)))
+    upper.panel = panel.cor,
+    lower.panel = panel.smooth,
+    main = paste("Correlation plot of hyperparameters for", covariate)
+  ))
 }
-(beta0_cor_plot <- plot_cor("beta_0"))
-(gamma0_cor_plot <- plot_cor("gamma_0"))
+
+# beta0_cor_plot <- plot_cor("beta_0")
+# gamma0_cor_plot <- plot_cor("gamma_0")
 
 #   ____________________________________________________________________________
 #   Save data for Second Report                                             ####
@@ -478,11 +513,21 @@ readr::write_rds(
     deviation_b_tau_data = deviation_b_tau_data,
     deviation_a_xi_data = deviation_a_xi_data,
     deviation_b_xi_data = deviation_b_xi_data,
-    tau_dev_plot = tau_dev_plot,
-    xi_dev_plot = xi_dev_plot,
+    # tau_dev_plot = tau_dev_plot,
+    # xi_dev_plot = xi_dev_plot,
+    p1 = p1,
+    p2 = p2,
+    p3 = p3,
+    p4 = p4,
+    p5 = p5,
+    p6 = p6,
+    p7 = p7,
+    p8 = p8,
     beta0_cor_plot = beta0_cor_plot,
     gamma0_cor_plot = gamma0_cor_plot
   ),
-  file = here::here("simulation-studies",
-                    "hyperparameters.rds")
+  file = here::here(
+    "simulation-studies",
+    "hyperparameters.rds"
+  )
 )

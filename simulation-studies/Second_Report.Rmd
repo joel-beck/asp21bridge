@@ -458,20 +458,17 @@ hyperparameters_list <- readr::read_rds(
 )
 ```
 
-In the past, we have been sampling data by our `mcmc_ridge` function without having a closer look on the effect of the hyperparameters `a_tau`, `b_tau`, `a_xi` and `b_xi`. However, they affect the full conditionals of $\tau^2$ and $\xi^2$, which are Inverse Gamma distributed, directly as stated here again for convenience:
+In the past, we have been sampling data by our `mcmc_ridge` function without having a closer look on the effect of the hyperparameters `a_tau`, `b_tau`, `a_xi` and `b_xi`. 
+However, they affect the full conditionals of $\tau^2$ and $\xi^2$, which are Inverse Gamma distributed, directly as stated here again for convenience:
 <!--  -->
 $$
 \begin{aligned}
-\tau^2 \mid \cdot \sim IG(a_{\tau} + \frac{ K}{ 2}, \, b_{\tau} + \frac{ 1}{ 2} \tilde{\boldsymbol{\beta}}^T \tilde{\boldsymbol{\beta}}).
+\tau^2 &\mid \cdot \sim IG(a_{\tau} + \frac{ K}{ 2}, \, b_{\tau} + \frac{ 1}{ 2} \tilde{\boldsymbol{\beta}}^T \tilde{\boldsymbol{\beta}}) \\
+\xi^2 &\mid \cdot \sim IG(a_{\xi} + \frac{ J}{ 2}, \, b_{\xi} + \frac{ 1}{ 2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}}).
 \end{aligned}
 $$
 <!--  -->
-$$
-\begin{aligned}
-\xi^2 \mid \cdot \sim IG(a_{\xi} + \frac{ J}{ 2}, \, b_{\xi} + \frac{ 1}{ 2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}}).
-\end{aligned}
-$$
-In a next step mean and variance of the full conditional of $\boldsymbol{\beta}$ following a normal distribution are assumed to be positively affected by $\boldsymbol{\tau^2}$:
+In a next step, mean and variance of the full conditional of $\boldsymbol{\beta}$ following a normal distribution are assumed to be positively affected by $\tau^2$:
 <!--  -->
 $$
 \begin{aligned}
@@ -482,44 +479,75 @@ $$
     \end{array}
     \right) \right) ^{-1}
 \qquad \text{and} \qquad
-\boldsymbol{\mu}_{\beta} = \mathbf{\Sigma}_{\beta} \mathbf{ W}^T \mathbf{ u}.
+\boldsymbol{\mu}_{\beta} = \mathbf{\Sigma}_{\beta} \mathbf{ W}^T \mathbf{ u},
 \end{aligned}
 $$
-while $\boldsymbol{\xi^2}$ directly affects the full conditional of $\boldsymbol{\beta}$:
+<!--  -->
+while $\xi^2$ directly affects the full conditional of $\boldsymbol{\beta}$:
 <!--  -->
 $$
 \begin{aligned}
 f( \boldsymbol{\gamma} \mid \cdot )
 & \propto \exp \left( - \frac{ 1}{ 2} \cdot \left[ \frac{ 1}{ \xi^2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}} + \sum_{i=1}^{n} \left( \frac{ 1}{ \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)^2} \left( y_i - \mathbf{x}_i^T \boldsymbol{\beta} \right)^2 + 2 \cdot \mathbf{ z}_i^T \boldsymbol{\gamma} \right) \right] \right) \\
-&= \exp \left( - \frac{ 1}{ 2} \cdot \left[ \frac{ 1}{ \xi^2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}} + 2 \cdot \mathbf{1}_{n}^T \mathbf{Z} \boldsymbol{\gamma} + \sum_{i=1}^{n} \left( \frac{ y_i - \mathbf{x}_i^T \boldsymbol{\beta}}{ \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)} \right)^2 \right] \right)
+&= \exp \left( - \frac{ 1}{ 2} \cdot \left[ \frac{ 1}{ \xi^2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}} + 2 \cdot \mathbf{1}_{n}^T \mathbf{Z} \boldsymbol{\gamma} + \sum_{i=1}^{n} \left( \frac{ y_i - \mathbf{x}_i^T \boldsymbol{\beta}}{ \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)} \right)^2 \right] \right).
 \end{aligned}
 $$
+<!--  -->
 Simulating data samples for different hyperparameters values is therefore inevitable for the whole model. 
+
 
 ## Simulation Setting
 
-- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ is simulated from a two dimensional normal distribution $\mathcal{N}_{2} \left( \boldsymbol{\mu}, \mathbf{\sigma^2 I} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 1 & 2 \end{pmatrix}^T$ and unit variance $\boldsymbol{\sigma^2_1 = \sigma^2_2 = 1}$. Same as the design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 5 & 3 \end{pmatrix}^T$ also having a unit variance.
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ is simulated from a two dimensional normal distribution $\mathcal{N}_{2} \left( \boldsymbol{\mu}, \mathbf{\sigma^2 I} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 1 & 2 \end{pmatrix}^T$ and unit variance $\sigma^2_1 = \sigma^2_2 = 1$. 
+The same holds true for the design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 5 & 3 \end{pmatrix}^T$ also having unit variance.
 
 - In both design matrices intercept columns are added for estimation purposes. 
 The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -2 & 1 \end{pmatrix}^T$.
 
-- For sampling the location parameter, the full posterior, that follows a normal distribution is chosen (`mcmc_ridge(..., mh_location = FALSE)` is used). Therefore, at least the location estimate is more directly affected by the hyperparameters.
+- For sampling the location parameter, the full conditional multivariate normal distribution of $\boldsymbol{\beta}$ is chosen, i.e. `mcmc_ridge(..., mh_location = FALSE)` is used. 
+Therefore, at least the location estimate is more directly affected by the hyperparameters.
 
-- For simulating the influence of the hyperparameters, nine different values are chosen for $\boldsymbol{a_{\tau}} = \boldsymbol{b_{_\tau}} =  \boldsymbol{a_{\xi}} = \boldsymbol{b_{xi}} = \begin{pmatrix} -1 & 0 & 0.5 & 1 & 2 & 10 & 50 & 100 & 200 \end{pmatrix}$. Since for statistical properties like the mean of an Inverse Gamma distribution $\boldsymbol{\frac{ b}{ a-1}}$, values for $\boldsymbol{a > 0}$ are required, particular attention is focused on larger values. Anyway, it is an aim to inspect the performance of the sampler for values $\boldsymbol{\le 1}$ as well.
+- For simulating the influence of the hyperparameters, nine different values are chosen: $a_{\tau}, b_{_\tau}, a_{\xi}, b_{xi} \in \left\{ -1, 0, 0.5, 1, 2, 10, 50, 100, 200  \right\}$. 
+Since for statistical properties like the mean of an Inverse Gamma distribution $\frac{ b}{ a-1}$, the condition $a > 1$ is required, particular attention is focused on larger values. 
+Anyway, it is an aim to inspect the performance of the sampler for values less than $1$ as well.
 
 ## Simulation Results
 
-Figure \@ref(fig:hyppar-tau-values) displays the absolute deviation of the posterior mean estimates of the `mcmc_ridge()` sampler and the true parameters with the stated different values for `a_tau` and `b_tau`. For each estimate, the posterior mean averages over 1000 simulations of the `mcmc_ridge()` sampler. Note, that the plot splits parameters by location and scale, according to the relationship mentioned above. For a better overview, the dotted line displays the linear trend of all estimate's deviations.
+Figures \@ref(fig:hyppar-tau-beta) and \@ref(fig:hyppar-tau-gamma) display the absolute deviation of the posterior mean estimates of the `mcmc_ridge()` sampler and the true parameters with the stated different values for `a_tau` and `b_tau`. 
+For each estimate, the posterior mean averages over 1000 simulations of the `mcmc_ridge()` sampler. 
+Note, that the plot splits parameters by location and scale, according to the relationship mentioned above. 
+For a better overview, the dotted line displays the linear trend of all estimate's deviations.
 
-The scaling of the $x$ - axis is transformed by a pseudo logarithm to clearly visualize the deviations between $-1$ and $10$, which would not be possible on original scales. Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_trans()` of the `scales` package is applied logarithmizing only positive values. It can be obtained, that the intercept estimates in each plot show the largest deviations from their true value. In the upper panel, however, deviations of `beta` estimates are absolutely small and can be considered to not affect the performance of the sampler unambiguously. On the contrary, deviations of the `gamma` estimates in the lower panel are absolutely remarkable, especially for `gamma_0`.
+The scaling of the $x$ - axis is transformed by a pseudo logarithm to clearly visualize the deviations between $-1$ and $10$, which would not be possible on original scales. 
+Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_trans()` of the `scales` package is applied, log-transforming only positive values. 
 
-```{r, hyppar-tau-values, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations over beta and gamma parameters- a_tau", fig.pos="t"}
-hyperparameters_list$tau_dev_plot
+It can be observed, that the intercept estimates in each plot show the largest deviations from their true value. 
+In the upper panel, however, deviations of `beta` estimates are small in absolute value and can be considered to not affect the performance of the sampler unambiguously. 
+On the contrary, deviations of the `gamma` estimates in the lower panel are absolutely remarkable, especially for `gamma_0`.
+
+```{r, hyppar-tau-beta, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
+hyperparameters_list$p1 / hyperparameters_list$p3
 ```
 
-The functional chain that applies to the `beta` estimates can be described by the effect of the mean of the inverse gamma distribution on $\boldsymbol{\tau^2}$. A larger value for $\boldsymbol{b_\tau}$ leads to larger values of $\boldsymbol{\tau^2}$ which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and by this the absolute deviation of the `beta` estimates from their true value to be larger. $\boldsymbol{b_\tau}$ causes the opposite effect. Nevertheless, this outcome is not clearly visible in the upper panel and is assumed to be surpassed by the overall small deviation. It is remarkable, that the deviation of both estimates is the smallest for $\boldsymbol{a_\tau, b_\tau \in [50, 100]}$. For values of $\boldsymbol{a_\tau \le 1}$ one obtains wide variances of absolute deviations, since the posterior mean required values larger than one.
-In the lower panel, there is no clear effect of $\boldsymbol{\tau^2}$ and its parameters. Rooted in no direct effect of $\boldsymbol{\tau^2}$ on $\boldsymbol{\gamma}$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of our `mcmc_ridge()` sampler, where the full posterior $\boldsymbol{f( \boldsymbol{\gamma} \mid \cdot )}$ depends on $\boldsymbol{\beta}$. Anyway, our sampler performs the best for $\boldsymbol{a_\tau, b_\tau \in \{0.5, 200\}}$, where $0.5$ is chosen by coincidence here, since wide variations for $\boldsymbol{a_\tau \le 1}$ of absolute deviations are observable again.
+
+```{r, hyppar-tau-gamma, echo=FALSE, out.width="100%", fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
+hyperparameters_list$p2 / hyperparameters_list$p4
+```
+
+The functional chain that applies to the estimates of $\boldsymbol{\beta}$ can be described by the effect of the mean of the inverse gamma distribution on $\tau^2$. 
+A larger value for $b_\tau$ leads to larger values of $\tau^2$, which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and by this the absolute deviation of the corresponding estimates from their true value to be larger. 
+$b_\tau$ causes the opposite effect. 
+Nevertheless, this outcome is not clearly visible in the upper panel and is assumed to be surpassed by the overall small deviation. 
+
+It is remarkable, that the deviation of both estimates is the smallest for $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
+For values of $a_\tau \leq 1$ one obtains wide variances of absolute deviations, since the posterior mean required values larger than one.
+
+In the lower panel, there is no clear effect of $\boldsymbol{\tau^2}$ and its parameters. 
+Rooted in no direct effect of $\tau^2$ on $\gamma$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of our `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
+Anyway, our sampler performs the best for $a_\tau, b_\tau \in \{0.5, 200\}$, where $0.5$ is chosen by coincidence here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
 [EFFECT OF XI ON BETA, KREUZEFFEKTE?] 
+
+
 
 # Next Steps {-}
 
