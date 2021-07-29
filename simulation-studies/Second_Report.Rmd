@@ -579,9 +579,13 @@ hyperparameters_list$p7 / hyperparameters_list$p8
 
 Comparably, arguing with the mean of the Inverse Gamma distribution of ${\boldsymbol{\xi^2}}$, one obtains larger mean values for ${\boldsymbol{b_\xi}}$, while ${\boldsymbol{a_\xi}}$ lowers them. The impact of ${\boldsymbol{\xi^2}}$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \boldsymbol{\gamma} \mid \cdot )$ according to our underlying model. This effect is indicated by the linear trend lines in Figure \@ref(fig:hyppar-xi-gamma). In general, one obtains smaller deviations for larger values of ${\boldsymbol{b_\xi}}$ and lower ones of ${\boldsymbol{a_\xi}}$, where especially lots of randomness occurs in the deviations of `gamma_0`. Therefore, the impact of the ${\boldsymbol{a_\xi}}$ and ${\boldsymbol{b_\xi}}$ on the scale intercepts becoming indistinct through the underlying Metropolis Hastings algorithm. Moreover, the same wide variations only for ${\boldsymbol{a_\xi} < 1}$ cannot be obtained like for ${\boldsymbol{a_\tau}}$
 
-The sampler exhibits the best results for the scale estimates for $a_\xi \in \left\{2\right\}$, $b_\xi \in \left\{100\right\}$. Anyhow, due to the wide overall variation one must take this result with care.
+The sampler exhibits the best results for the scale estimates for $a_\xi \in \left\{2\right\}$, $b_\xi \in \left\{100\right\}$. Anyhow, due to the wide overall variation, these results must be taken with care.
 
-The effect of 
+The effect of ${\boldsymbol{a_\xi}}$ and ${\boldsymbol{b_\xi}}$ on ${\boldsymbol{\beta}}$ can be explained through the cross-effects of matrix $\mathbf{ W}_i$ and vector $\mathbf{ u}_i$ both containing ${\boldsymbol{\gamma}}$. These diminish with rising ${\boldsymbol{\gamma}}$. $\mathbf{ W}_i$ affecting the variance of the full conditional of $\boldsymbol{\beta}$ negatively, while the mean is positively affected. Hence, larger values of ${\boldsymbol{a_\xi}}$ causing higher posterior means of the location parameters, larger values for ${\boldsymbol{a_\xi}}$ vice versa. Especially, the positive linear trend in Figure \@ref(fig:hyppar-xi-beta) for values of `a_xi` is remarkable. For values of `b_xi`, the trend comes of inferior. The wider variations of deviations for ${\boldsymbol{a_\xi} < 1}$ is again not observable here. Nevertheless, the randomness observable for scale estimates does not show up for location estimates anymore. [BEGRÜNDUNG: EVTL DURCH MCMC "GEGLÄTTET"? ODER OHNE BEGRÜNDUNG]
+
+The smallest deviations of the location estimates are observable for $a_\xi \in \left\{1\right\}$, and $b_\xi \in \left\{200\right\}$. 
+
+Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. For the value range of ${\boldsymbol{a_\tau}}$, ${\boldsymbol{b_\tau}}$ and ${\boldsymbol{a_\xi}}$, no distinct pattern is observable. With growing values of ${\boldsymbol{a_\xi}}$, the rate is more likely to grow. Since the acceptance rates are in reasonable ranges for the underlying data and for space-saving reasons, these results are not further revealed here.
 
 # Next Steps {-}
 
