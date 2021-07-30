@@ -341,7 +341,7 @@ This simulation study analyzes the effect of the sample size $n$ on the means of
 
 - In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with $nsim = 500$ `mcmc_ridge()` simulations.
 
-- To make the results more stable, above procedure is repeated 100 times. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) and the mean squared error ($MSE$), both with respect to the true values of $\beta$ and $\gamma$.
+- To make the results more stable, above procedure is repeated 100 times. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) with respect to the true values of $\beta$ and $\gamma$.
 
 ## Simulation Results
 
@@ -373,7 +373,7 @@ For larger sample sizes ($n \geq 200)$, none of the six parameters are extremely
 
 Moreover, for $n = 30$, $\beta_0$ and $\beta_0$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
 
-After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the $MAE$ and the $MSE$ based on the results of the 100 repetitions.
+After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the $MAE$ based on the results of the 100 repetitions.
 
 ```{r, echo=FALSE, out.width="80%"}
 
@@ -389,22 +389,11 @@ legend(
   col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 
-mean_squared_error <- plot_data$mean_squared_error
-
-matplot(t(mean_squared_error),
-  x = n_data, type = "b", pch = 1, col = 1:6,
-  main = " MSE of Posterior Means",
-  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
-)
-legend(
-  x = "right", legend = rownames(mean_squared_error),
-  col = 1:6, pch = 1, bty = "o", title = "Parameter"
-)
 ```
 
-Both plots point out that the posterior means of $\beta_0$ have a significantly larger errors than the posterior means of $\beta_2$ for $n = 30$. However, this might also be explained by the fact that for $n = 30$, $\beta_0$ have a greater empirical bias than $\beta_2$ according to the first plot of this chapter.
+The plot points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for $n = 30$. However, this might also be explained by the fact that for $n = 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ according to the first plot of this chapter.
 
-In addition, for increasing sample sizes both the $MAE$ and the $MSE$ of the posterior means tend to zero for all coefficients except $\beta_0$. Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
+In addition, for increasing sample sizes the $MAE$ of the posterior means tend to zero for all coefficients except $\beta_0$. Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
 
 # Number of Simulations {#numsim}
 
@@ -430,7 +419,7 @@ This simulation study shall analyze the effect of the $nsim$ parameter on the po
 
 - The posterior means are analyzed with respect to 4 different values for $nsim$: $nsim = 100, 300, 500, 1000.$
 
-- Similar as in the simulation study corcerning the sample size, above procedure is repeated 100 times to make the results more stable. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) and the mean squared error ($MSE$), both with respect to the true values of $\beta$ and $\gamma$. In addition, the variance within the Markov Chains are analyzed.
+- Similar as in the simulation study corcerning the sample size, above procedure is repeated 100 times to make the results more stable. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) with respect to the true values of $\beta$ and $\gamma$. In addition, the variance within the Markov Chains are analyzed.
 
 ## Simulation Results
 
@@ -462,7 +451,7 @@ The result is quite clearly: In the range between $nsim = 100$ and $nsim = 1000$
 
 Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in chapter 3).
 
-We also analyzed the $MSE$ and the $MAE$ for different values of $nsim$:
+We also analyzed the $MAE$ for different values of $nsim$:
 
 
 ```{r, echo=FALSE, out.width="80%"}
@@ -480,22 +469,7 @@ legend(
 )
 ```
 
-```{r, echo=FALSE, out.width="80%"}
-mean_squared_error_num_sim <- num_sim_data$mean_squared_error
-array_num_sim <- num_sim_data$array_num_sim
-
-matplot(t(mean_squared_error_num_sim),
-  x = array_num_sim, type = "b", pch = 1, col = 1:6,
-  main = " MSE of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
-)
-legend(
-  x = "topright", legend = rownames(mean_squared_error_num_sim),
-  col = 1:6, pch = 1, bty = "n"
-)
-```
-
-These two plots provide interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ and $MSE$ values for all $\gamma$ coefficients.
+This plot provides interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ values for all $\gamma$ coefficients.
 
 In the last step, we analyzed whether the value of $nsim$ has any impact on the variance within the Markov chains, the results can be obtained in the following plot:
 
@@ -518,7 +492,7 @@ Again, one obtains that the $nsim$ parameter has no impact on the variances with
 
 This result is not really surprising, because the Markov chain typically jumps to points which are quite close to the previous points. As a consequence, if the number of jumps increases, also the variance of the samples might increase.
 
-In combination with the lower $MAE$ and $MSE$ for the $\gamma$ parameters, one can conclude that the Posterior distributions of the $\gamma$ parameters might be squeezed for small values of $nsim$ and converge to the true distributions if the number of simulations increases.
+In combination with the lower $MAE$ for the $\gamma$ parameters, one can conclude that the Posterior distributions of the $\gamma$ parameters might be squeezed for small values of $nsim$ and converge to the true distributions if the number of simulations increases.
 
 
 # Hyperparameters {#hyper}
