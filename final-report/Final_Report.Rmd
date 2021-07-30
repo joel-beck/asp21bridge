@@ -1,0 +1,45 @@
+---
+title: "Bayesian Ridge Regression - Final Report"
+author: "Dominik Strache, Nicolai Bäuerle & Joel Beck"
+output:
+  bookdown::pdf_document2:
+    highlight: tango
+    toc: TRUE
+    number_sections: TRUE
+    df_print: tibble
+    latex_engine: pdflatex
+    keep_tex: FALSE
+urlcolor: blue
+linkcolor: blue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
+  dpi = 300, collapse = TRUE
+)
+options(knitr.table.format = "latex")
+```
+
+```{r, include=FALSE}
+pacman::p_load(
+  dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
+)
+library(asp21bridge)
+```
+
+```{r child=here::here("final-report", "introduction.Rmd")}
+
+```
+
+```{r child=here::here("final-report", "chapter-1_mathematical-model.Rmd")}
+
+```
+
+```{r child=here::here("final-report", "chapter-2_r-package.Rmd")}
+
+```
+
+```{r child=here::here("final-report", "chapter-3_simulation-studies.Rmd")}
+
+```

@@ -479,7 +479,7 @@ legend(
 )
 ```
 
-```{r, nsim-varmean, echo=FALSE, out.width="80%", fig.cap="Mean value of 100 Posterior Variance Estimates", fig.pos="t"}
+```{r, nsim-var, echo=FALSE, out.width="80%", fig.cap="Mean value of 100 Posterior Variance Estimates", fig.pos="t"}
 mean_of_variances_within <- num_sim_data$mean_of_variances_within
 array_num_sim <- num_sim_data$array_num_sim
 
@@ -497,16 +497,20 @@ legend(
 Similar as in the sample size simulation study, Figure \@ref(fig:nsim-mean) contains the means of the posterior means for the different values of the $nsim$ parameter.
 The result is quite clearly: In the range between $nsim = 100$ and $nsim = 1000$, the $nsim$ parameter has no significant impact on the mean of the posterior means.
 
-Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in chapter 3).
+Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. 
+However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in section \@ref(n)).
 
 We also analyzed the $MAE$ for different values of $nsim$. 
-Figure \@ref(fig:nsim-mae) provides interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ values for all $\gamma$ coefficients.
+Figure \@ref(fig:nsim-mae) provides interesting results for the errors of the $\beta$ and $\gamma$ coefficients: 
+On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. 
+But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ values for all $\gamma$ coefficients.
 
 In the last step, we analyzed whether the value of $nsim$ has any impact on the variance within the Markov chains.
-The results can be obtained in Figure \@ref(fig:nsim-varmean).
+The results can be obtained in Figure \@ref(fig:nsim-var).
 Again, one obtains that the $nsim$ parameter has no impact on the variances within the $\beta$ samples of the Markov chain, whereas the variance within the $\gamma$ samples increases with increasing value of $nsim$. 
 
-This result is not really surprising, because the Markov chain typically jumps to points which are quite close to the previous points. As a consequence, if the number of jumps increases, also the variance of the samples might increase.
+This result is not really surprising, because the Markov chain typically jumps to points which are quite close to the previous points. 
+As a consequence, if the number of jumps increases, also the variance of the samples might increase.
 
 In combination with the lower $MAE$ for the $\gamma$ parameters, one can conclude that the Posterior distributions of the $\gamma$ parameters might be squeezed for small values of $nsim$ and converge to the true distributions if the number of simulations increases.
 
