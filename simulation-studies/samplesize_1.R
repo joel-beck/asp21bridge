@@ -98,31 +98,31 @@ for (i in 1:6) {
 matplot(t(mean_mean),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,600)
 )
 legend(
-  x = "topright", legend = rownames(mean_mean),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_mean),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 
 matplot(t(mean_absolute_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,600)
 )
 legend(
-  x = "topright", legend = rownames(mean_absolute_error),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_absolute_error),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 
 matplot(t(mean_squared_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MSE of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,600)
 )
 legend(
-  x = "topright", legend = rownames(mean_squared_error),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_squared_error),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 
 #   ____________________________________________________________________________

@@ -323,62 +323,119 @@ This additional complexity is automatically handled by the `future_map()` functi
 
 # Sample Size {#n}
 
+This simulation study analyzes the effect of the sample size $n$ on the means of the posterior distribution for the coefficients of $\beta$ and $\gamma$. There are two main goals of this simulation study: On the one hand, we want to investigate whether the posterior means of large samples are closer to the true values than the posterior means of small samples. On the other hand, we want to analyze whether the `mcmc_ridge()` penalty affects the location of the posterior means.
+
+## Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column:
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{1_n}, \mathbf{I_n} \right)$.
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{2*1_n}, \mathbf{I_n} \right)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column:
+    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{1_n}, \mathbf{I_n} \right)$.
+    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{2*1_n}, \mathbf{I_n} \right)$.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
+
+- The posterior means are analyzed with respect to 6 different sample sizes: $n = 30, 50, 100, 200, 300, 500.$
+
+- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with $nsim = 500$ `mcmc_ridge()` simulations.
+
+- To make the results more stable, above procedure is repeated 100 times. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) and the mean squared error ($MSE$), both with respect to the true values of $\beta$ and $\gamma$.
+
+## Simulation Results
+
+The means of the posterior means are displayed in the following plot:
+
+
 ```{r, include=FALSE}
 plot_data <- readr::read_rds(
   file = here::here("simulation-studies", "samplesize_1.rds")
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=FALSE, out.width="80%"}
 mean_mean <- plot_data$mean_mean
 n_data <- plot_data$n_data
 
 matplot(t(mean_mean),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
 )
 legend(
-  x = "topright", legend = rownames(mean_mean),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_mean),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+For larger sample sizes ($n \geq 200)$, none of the six parameters are extremely biased.
+
+Moreover, for $n = 30$, $\beta_0$ and $\beta_0$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
+
+After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the $MAE$ and the $MSE$ based on the results of the 100 repetitions.
+
+```{r, echo=FALSE, out.width="80%"}
+
 mean_absolute_error <- plot_data$mean_absolute_error
 
 matplot(t(mean_absolute_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
 )
 legend(
-  x = "topright", legend = rownames(mean_absolute_error),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_absolute_error),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
-```
 
-```{r, echo=FALSE, out.width="100%"}
 mean_squared_error <- plot_data$mean_squared_error
 
 matplot(t(mean_squared_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MSE of Posterior Means",
-  xlab = "Sample size", ylab = ""
+  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
 )
 legend(
-  x = "topright", legend = rownames(mean_squared_error),
-  col = 1:6, pch = 1, bty = "n"
+  x = "right", legend = rownames(mean_squared_error),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
 ```
 
+Both plots point out that the posterior means of $\beta_0$ have a significantly larger errors than the posterior means of $\beta_2$ for $n = 30$. However, this might also be explained by the fact that for $n = 30$, $\beta_0$ have a greater empirical bias than $\beta_2$ according to the first plot of this chapter.
 
-
-
-
-
+In addition, for increasing sample sizes both the $MAE$ and the $MSE$ of the posterior means tend to zero for all coefficients except $\beta_0$. Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
 
 # Number of Simulations {#numsim}
+
+Another important parameter is $nsim$, the number of Markov Chain Monte Carlo simulations within the `mcmc_ridge()` function.
+
+As explained in our first report, we chose the proposal density for the Metropolis-Hastings algorithm of $\gamma$ in order to achieve acceptance rates between 25% und 50%. A higher number of `mcmc_ridge()` simulations increases the absolute number of accepted proposals and might deliver more precise Posterior distributions, but also deteriorates the speed of the procedure. So there is a trade-off between precision and speed.
+
+This simulation study shall analyze the effect of the $nsim$ parameter on the posterior distribution.
+
+## Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column. The sample size $n$ is chosen to be 100.
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{1_n}, \mathbf{I_n} \right)$.
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{2*1_n}, \mathbf{I_n} \right)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column. The sample size $n$ is chosen to be 100.
+    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{1_n}, \mathbf{I_n} \right)$.
+    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{n} \left( \boldsymbol{2*1_n}, \mathbf{I_n} \right)$.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 0.5 \end{pmatrix}^T$.
+
+- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with $nsim$ `mcmc_ridge()` simulations.
+
+- The posterior means are analyzed with respect to 4 different values for $nsim$: $nsim = 100, 300, 500, 1000.$
+
+- Similar as in the simulation study corcerning the sample size, above procedure is repeated 100 times to make the results more stable. For each coefficient, the mean of the posterior means is calculated as well as the mean absolute error ($MAE$) and the mean squared error ($MSE$), both with respect to the true values of $\beta$ and $\gamma$. In addition, the variance within the Markov Chains are analyzed.
+
+## Simulation Results
+
+Similar as in the sample size simulation study, the following plot contains the means of the posterior means for the different values of the $nsim$ parameter:
+
 
 ```{r, include=FALSE}
 num_sim_data <- readr::read_rds(
@@ -386,14 +443,14 @@ num_sim_data <- readr::read_rds(
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=FALSE, out.width="80%"}
 mean_mean_num_sim <- num_sim_data$mean_mean
 array_num_sim <- num_sim_data$array_num_sim
 
 matplot(t(mean_mean_num_sim),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_mean_num_sim),
@@ -401,14 +458,21 @@ legend(
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+The result is quite clearly: In the range between $nsim = 100$ and $nsim = 1000$, the $nsim$ parameter has no significant impact on the mean of the posterior means.
+
+Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in chapter 3).
+
+We also analyzed the $MSE$ and the $MAE$ for different values of $nsim$:
+
+
+```{r, echo=FALSE, out.width="80%"}
 mean_absolute_error_num_sim <- num_sim_data$mean_absolute_error
 array_num_sim <- num_sim_data$array_num_sim
 
 matplot(t(mean_absolute_error_num_sim),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_absolute_error_num_sim),
@@ -416,14 +480,14 @@ legend(
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+```{r, echo=FALSE, out.width="80%"}
 mean_squared_error_num_sim <- num_sim_data$mean_squared_error
 array_num_sim <- num_sim_data$array_num_sim
 
 matplot(t(mean_squared_error_num_sim),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " MSE of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_squared_error_num_sim),
@@ -431,14 +495,18 @@ legend(
 )
 ```
 
-```{r, echo=FALSE, out.width="100%"}
+These two plots provide interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ and $MSE$ values for all $\gamma$ coefficients.
+
+In the last step, we analyzed whether the value of $nsim$ has any impact on the variance within the Markov chains, the results can be obtained in the following plot:
+
+```{r, echo=FALSE, out.width="80%"}
 mean_of_variances_within <- num_sim_data$mean_of_variances_within
 array_num_sim <- num_sim_data$array_num_sim
 
 matplot(t(mean_of_variances_within),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " Mean of Variances within the Samples",
-  xlab = "Number of MCMC Ridge Simulations", ylab = ""
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_of_variances_within),
@@ -446,8 +514,11 @@ legend(
 )
 ```
 
+Again, one obtains that the $nsim$ parameter has no impact on the variances within the $\beta$ samples of the Markov chain, whereas the variance within the $\gamma$ samples increases with increasing value of $nsim$. 
 
+This result is not really surprising, because the Markov chain typically jumps to points which are quite close to the previous points. As a consequence, if the number of jumps increases, also the variance of the samples might increase.
 
+In combination with the lower $MAE$ and $MSE$ for the $\gamma$ parameters, one can conclude that the Posterior distributions of the $\gamma$ parameters might be squeezed for small values of $nsim$ and converge to the true distributions if the number of simulations increases.
 
 
 # Hyperparameters {#hyper}
