@@ -107,6 +107,10 @@ For a better visual comparison the true values for each coefficient are indicate
 corr_regressors_list$plot_single_sim
 ```
 
+```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
+corr_regressors_list$plot_many_sims
+```
+
 The scaling of the $x$ - axis is dominated by one outlier in the lower panel for each correlation structure.
 While the Metropolis-Hastings approach for $\boldsymbol{\beta}$ performs moderately well for most of the coefficients, it massively overestimates the intercept $\beta_0$.
 This observation can be made across many different data sets: In some special cases the performance is close to (but never better) than sampling directly from a multivariate normal distribution, however, most of the time the performance is significantly worse and the samples show (obviously) much larger correlation requiring a higher number of simulations for stable estimation. 
@@ -122,10 +126,6 @@ Since we cannot rely on distributional theory for the standard errors, the varia
 
 Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
 For that reason only the results of the `mcmc_ridge()` sampler are shown in Figure \@ref(fig:corr-plot-many).
-
-```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
-corr_regressors_list$plot_many_sims
-```
 
 There are three conclusions from this first simulation study:
 
@@ -182,12 +182,16 @@ The remaining two cases analyze the performance in presence of a mild ($t$ distr
 
 ## Simulation Results
 
-Just as in section \@ref(corr) the results of one complete iteration (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
-Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$ distributed random variable, which does not follow an exact $t$ distribution.
-
 ```{r, outcome-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - One Simulation Cycle", fig.pos="t"}
 outcome_dist_list$plot_single_sim
 ```
+
+```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
+outcome_dist_list$plot_many_sims
+```
+
+Just as in section \@ref(corr) the results of one complete iteration (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
+Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$ distributed random variable, which does not follow an exact $t$ distribution.
 
 The differences within each facet as well as between the facets are significant.
 All three models seem to estimate the $\boldsymbol{\beta}$ vector well, when there are no or only mild violations of the normal assumption for $y$. 
@@ -196,10 +200,6 @@ Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the la
 
 To gain insights beyond this single simulation cycle, which could well be disturbed by random noise, we repeat the sampling process $50$ times.
 The resulting means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in Figure \@ref(fig:outcome-plot-many).
-
-```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
-outcome_dist_list$plot_many_sims
-```
 
 This plot (literally) paints a drastically different picture, emphasizing the necessity of repeating experiments multiple times whenever possible.
 Across all $50$ simulations the deviation of the estimates for $\beta_2$ (corresponding to the regressor variable from the exponential distribution) is huge for all three distributional specifications of $y$.
@@ -321,6 +321,17 @@ This additional complexity is automatically handled by the `future_map()` functi
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 # Sample Size {#n}
 
 This simulation study analyzes the effect of the sample size $n$ on the means of the posterior distribution for the coefficients of $\beta$ and $\gamma$. There are two main goals of this simulation study: On the one hand, we want to investigate whether the posterior means of large samples are closer to the true values than the posterior means of small samples. On the other hand, we want to analyze whether the `mcmc_ridge()` penalty affects the location of the posterior means.
@@ -345,16 +356,13 @@ This simulation study analyzes the effect of the sample size $n$ on the means of
 
 ## Simulation Results
 
-The means of the posterior means are displayed in the following plot:
-
-
 ```{r, include=FALSE}
 plot_data <- readr::read_rds(
   file = here::here("simulation-studies", "samplesize_1.rds")
 )
 ```
 
-```{r, echo=FALSE, out.width="80%"}
+```{r, sample-size-means, echo=FALSE, out.width="80%", fig.cap="Mean value of 100 Posterior Mean Estimates", fig.pos="t"}
 mean_mean <- plot_data$mean_mean
 n_data <- plot_data$n_data
 
@@ -369,14 +377,7 @@ legend(
 )
 ```
 
-For larger sample sizes ($n \geq 200)$, none of the six parameters are extremely biased.
-
-Moreover, for $n = 30$, $\beta_0$ and $\beta_0$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
-
-After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the $MAE$ based on the results of the 100 repetitions.
-
-```{r, echo=FALSE, out.width="80%"}
-
+```{r, sample-size-mae, echo=FALSE, out.width="80%", fig.cap="Mean Absolute Error Estimates", fig.pos="t"}
 mean_absolute_error <- plot_data$mean_absolute_error
 
 matplot(t(mean_absolute_error),
@@ -388,12 +389,31 @@ legend(
   x = "right", legend = rownames(mean_absolute_error),
   col = 1:6, pch = 1, bty = "o", title = "Parameter"
 )
-
 ```
 
-The plot points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for $n = 30$. However, this might also be explained by the fact that for $n = 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ according to the first plot of this chapter.
+The means of the posterior means are displayed in the Figure \@ref(fig:sample-size-means)
+For larger sample sizes ($n \geq 200)$, none of the six parameters are extremely biased.
+
+Moreover, for $n = 30$, $\beta_0$ and $\beta_0$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
+
+After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the $MAE$ based on the results of the 100 repetitions.
+
+Figure \@ref(fig:sample-size-mae) points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for $n = 30$. However, this might also be explained by the fact that for $n = 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ according to the first plot of this chapter.
 
 In addition, for increasing sample sizes the $MAE$ of the posterior means tend to zero for all coefficients except $\beta_0$. Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Number of Simulations {#numsim}
 
@@ -423,16 +443,13 @@ This simulation study shall analyze the effect of the $nsim$ parameter on the po
 
 ## Simulation Results
 
-Similar as in the sample size simulation study, the following plot contains the means of the posterior means for the different values of the $nsim$ parameter:
-
-
 ```{r, include=FALSE}
 num_sim_data <- readr::read_rds(
   file = here::here("simulation-studies", "number_mcmc_ridge_simulations.rds")
 )
 ```
 
-```{r, echo=FALSE, out.width="80%"}
+```{r, nsim-mean, echo=FALSE, out.width="80%", fig.cap="Mean value of 100 Posterior Mean Estimates", fig.pos="t"}
 mean_mean_num_sim <- num_sim_data$mean_mean
 array_num_sim <- num_sim_data$array_num_sim
 
@@ -447,14 +464,7 @@ legend(
 )
 ```
 
-The result is quite clearly: In the range between $nsim = 100$ and $nsim = 1000$, the $nsim$ parameter has no significant impact on the mean of the posterior means.
-
-Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in chapter 3).
-
-We also analyzed the $MAE$ for different values of $nsim$:
-
-
-```{r, echo=FALSE, out.width="80%"}
+```{r, nsim-mae, echo=FALSE, out.width="80%", fig.cap="Mean Absolute Error Estimates", fig.pos="t"}
 mean_absolute_error_num_sim <- num_sim_data$mean_absolute_error
 array_num_sim <- num_sim_data$array_num_sim
 
@@ -469,11 +479,7 @@ legend(
 )
 ```
 
-This plot provides interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ values for all $\gamma$ coefficients.
-
-In the last step, we analyzed whether the value of $nsim$ has any impact on the variance within the Markov chains, the results can be obtained in the following plot:
-
-```{r, echo=FALSE, out.width="80%"}
+```{r, nsim-varmean, echo=FALSE, out.width="80%", fig.cap="Mean value of 100 Posterior Variance Estimates", fig.pos="t"}
 mean_of_variances_within <- num_sim_data$mean_of_variances_within
 array_num_sim <- num_sim_data$array_num_sim
 
@@ -488,11 +494,28 @@ legend(
 )
 ```
 
+Similar as in the sample size simulation study, Figure \@ref(fig:nsim-mean) contains the means of the posterior means for the different values of the $nsim$ parameter.
+The result is quite clearly: In the range between $nsim = 100$ and $nsim = 1000$, the $nsim$ parameter has no significant impact on the mean of the posterior means.
+
+Furthermore, for the chosen sample size $n = 100$, none of the 6 parameters has a large bias. However, the mean posterior means of $\beta_0$ are all close to 1.07, whereas the mean posterior means of $\beta_2$ are all close to 3.96, such that one can obtain small biases for $\beta_0$ and $\beta_0$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in chapter 3).
+
+We also analyzed the $MAE$ for different values of $nsim$. 
+Figure \@ref(fig:nsim-mae) provides interesting results for the errors of the $\beta$ and $\gamma$ coefficients: On the one hand, $nsim$ seems not to have any impact on the errors of the $\beta$ coefficients. But on the other hand, an increase of $nsim$ leads to more precise $\gamma$ estimates and apparently lower $MAE$ values for all $\gamma$ coefficients.
+
+In the last step, we analyzed whether the value of $nsim$ has any impact on the variance within the Markov chains.
+The results can be obtained in Figure \@ref(fig:nsim-varmean).
 Again, one obtains that the $nsim$ parameter has no impact on the variances within the $\beta$ samples of the Markov chain, whereas the variance within the $\gamma$ samples increases with increasing value of $nsim$. 
 
 This result is not really surprising, because the Markov chain typically jumps to points which are quite close to the previous points. As a consequence, if the number of jumps increases, also the variance of the samples might increase.
 
 In combination with the lower $MAE$ for the $\gamma$ parameters, one can conclude that the Posterior distributions of the $\gamma$ parameters might be squeezed for small values of $nsim$ and converge to the true distributions if the number of simulations increases.
+
+
+
+
+
+
+
 
 
 # Hyperparameters {#hyper}
@@ -576,6 +599,14 @@ Anyway, it is an aim to inspect the performance of the sampler for values less t
 
 ## Simulation Results
 
+```{r, hyppar-beta, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
+hyperparameters_list$p1 / hyperparameters_list$p3 / hyperparameters_list$p5 / hyperparameters_list$p7
+```
+
+```{r, hyppar-gamma, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
+hyperparameters_list$p2 / hyperparameters_list$p4 / hyperparameters_list$p6 / hyperparameters_list$p8
+```
+
 The first two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) display the absolute deviations of the posterior mean estimates from the true parameters with the stated different values for $a_{\tau}$ and $b_{\tau}$. 
 For each estimate, the posterior mean averages over 1000 simulations of the `mcmc_ridge()` sampler. 
 Note, that location and scale parameters are plotted separately, according to the relationship mentioned above. 
@@ -587,15 +618,6 @@ Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_t
 It can be observed, that the intercept estimates in each plot show the largest deviations from their true value. 
 In Figure \@ref(fig:hyppar-beta), however, deviations of $\boldsymbol{\beta}$ estimates are small in absolute value and can be considered to not affect the performance of the sampler unambiguously. 
 On the contrary, deviations of the $\boldsymbol{\gamma}$ estimates in Figure \@ref(fig:hyppar-gamma) are absolutely remarkable, especially for $\gamma_0$.
-
-```{r, hyppar-beta, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
-hyperparameters_list$p1 / hyperparameters_list$p3 / hyperparameters_list$p5 / hyperparameters_list$p7
-```
-
-
-```{r, hyppar-gamma, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
-hyperparameters_list$p2 / hyperparameters_list$p4 / hyperparameters_list$p6 / hyperparameters_list$p8
-```
 
 The functional chain that applies to the estimates of $\boldsymbol{\beta}$ can be described by the effect of the mean of the inverse gamma distribution on $\tau^2$. 
 A larger value for $b_\tau$ leads to larger values of $\tau^2$, which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and by this the absolute deviation of the corresponding estimates from their true value to be larger. 
@@ -622,6 +644,14 @@ The effect of $a_{\xi}$ and $b_{\xi}$ on ${\boldsymbol{\beta}}$ can be explained
 The smallest deviations of the location estimates are observable for $a_\xi = 1$, and $b_\xi = 200$. 
 
 Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. For the value range of $a_{\tau}$, $b_{\tau}$ and $a_{\xi}$, no distinct pattern is observable. With growing values of $b_{\xi}$, rates are more likely to grow. Since the acceptance rates are in reasonable ranges for the underlying data and for space-saving reasons, these results are not further revealed here.
+
+
+
+
+
+
+
+
 
 # Next Steps {-}
 
