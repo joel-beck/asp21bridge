@@ -286,7 +286,7 @@ p1 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true beta (1000 simulations)",
-    x = "a_tau", y = "Absolute Deviation", color = NULL
+    x = "a_tau", y = "|Deviation|", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -307,7 +307,7 @@ p2 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "a_tau", y = "Absolute Deviation", color = NULL
+    x = "a_tau", y = "|Deviation|", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -328,9 +328,9 @@ p3 <- deviation_b_tau_data %>%
   geom_point(size = 2) +
   labs(
     # title = "Absolute deviations from true beta (1000 simulations)",
-    x = "b_tau", y = "Absolute Deviation", color = NULL
+    x = "b_tau", y = "|Deviation|", color = NULL
   ) +
-  guides(color = "none") + 
+  guides(color = "none") +
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
@@ -350,9 +350,9 @@ p4 <- deviation_b_tau_data %>%
   geom_point(size = 2) +
   labs(
     # title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "b_tau", y = "Absolute Deviation", color = NULL
+    x = "b_tau", y = "|Deviation|", color = NULL
   ) +
-  guides(color = "none") + 
+  guides(color = "none") +
   theme_light(base_size = 9) +
   theme(
     panel.grid.minor = element_blank(),
@@ -375,11 +375,16 @@ p5 <- deviation_a_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "Values for a_xi", y = "Absolute Deviation"
+    # title = "Absolute deviations from true gamma (1000 simulations)",
+    x = "a_xi", y = "|Deviation|", color = NULL
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -392,11 +397,16 @@ p6 <- deviation_a_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "Values for a_xi", y = "Absolute Deviation"
+    #title = "Abs. dev. from true gamma (#sim = 1000)",
+    x = "a_xi", y = "|Deviation|"
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -409,11 +419,16 @@ p7 <- deviation_b_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "Values for b_xi", y = "Absolute Deviation"
+    #title = "Abs. dev. from true beta (#sim = 1000)",
+    x = "b_xi", y = "|Deviation|"
   ) +
-  theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -426,11 +441,17 @@ p8 <- deviation_b_xi_data %>%
   geom_line() +
   geom_point(size = 2) +
   labs(
-    title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "Values for b_xi", y = "Absolute Deviation"
+    #title = "Abs. dev. from true gamma (#sim = 1000)",
+    x = "b_xi", y = "|Deviation|"
   ) +
   theme_light() +
-  theme(panel.grid.minor = element_blank()) +
+  guides(color = "none") +
+  theme_light(base_size = 9) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "top",
+    plot.title = element_text(hjust = 0.5)
+  ) +
   geom_smooth(
     method = "lm", aes(colour = "linear trend"), linetype = "dashed",
     se = FALSE
@@ -448,7 +469,23 @@ a_tau_data %>%
   select(hyppar, hyppar_val, acc_rate) %>%
   slice_min(order_by = acc_rate, n = 3)
 
+b_tau_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_max(order_by = acc_rate, n = 3)
+
+b_tau_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_min(order_by = acc_rate, n = 3)
+
 # highest and lowest acceptance rates for b_xi
+a_xi_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_max(order_by = acc_rate, n = 3)
+
+a_xi_data %>%
+  select(hyppar, hyppar_val, acc_rate) %>%
+  slice_min(order_by = acc_rate, n = 3)
+
 b_xi_data %>%
   select(hyppar, hyppar_val, acc_rate) %>%
   slice_max(order_by = acc_rate, n = 3)
@@ -524,9 +561,9 @@ readr::write_rds(
     p5 = p5,
     p6 = p6,
     p7 = p7,
-    p8 = p8,
-    beta0_cor_plot = beta0_cor_plot,
-    gamma0_cor_plot = gamma0_cor_plot
+    p8 = p8
+    #beta0_cor_plot = beta0_cor_plot,
+    #gamma0_cor_plot = gamma0_cor_plot
   ),
   file = here::here(
     "simulation-studies",
