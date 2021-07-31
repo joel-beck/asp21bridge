@@ -28,17 +28,25 @@ pacman::p_load(
 library(asp21bridge)
 ```
 
-```{r child=here::here("final-report", "introduction.Rmd")}
+\newpage
+
+```{r child=here::here("final-report", "chapter-0_introduction.Rmd")}
 
 ```
+
+\newpage
 
 ```{r child=here::here("final-report", "chapter-1_mathematical-model.Rmd")}
 
 ```
 
+\newpage
+
 ```{r child=here::here("final-report", "chapter-2_r-package.Rmd")}
 
 ```
+
+\newpage
 
 ```{r child=here::here("final-report", "chapter-3_simulation-studies.Rmd")}
 
