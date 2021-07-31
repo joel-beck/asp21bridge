@@ -104,7 +104,7 @@ The variance of the corresponding proposal distribution is set to a carefully ch
 corr_regressors_list$plot_single_sim
 ```
 
-```{r, corr-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
+```{r, corr-plot-many, echo=FALSE, fig.height=4, fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
 corr_regressors_list$plot_many_sims
 ```
 
@@ -228,9 +228,7 @@ outcome_dist_list$data_many_sims %>%
     digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
     caption = "Bias of Coefficient Estimates"
   ) %>%
-  kableExtra::kable_styling(
-    latex_options = "HOLD_position", position = "center", full_width = FALSE
-  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
   kableExtra::add_header_above(
     header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3)
   )
@@ -254,9 +252,7 @@ outcome_dist_list$data_many_sims %>%
     digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
     caption = "Standard Errors of Coefficient Estimates"
   ) %>%
-  kableExtra::kable_styling(
-    latex_options = "HOLD_position", position = "center", full_width = FALSE
-  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
   kableExtra::add_header_above(
     header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3), escape = FALSE
   )
