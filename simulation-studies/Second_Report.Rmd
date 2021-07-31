@@ -654,7 +654,7 @@ In general, one obtains smaller deviations for larger values of $b_{\xi}$ and lo
 The same wide variations exclusively for $a_{\xi} \leq 1$ cannot be obtained in the same manner as for $a_{\tau}$.
 
 The sampler exhibits the best results for the *scale* estimates for $a_\xi = 2$ and $b_\xi = 100$. 
-Although, due to the wide overall variation, these results must be taken with care.
+However, due to the wide overall variation, these results must be taken with care.
 
 The effect of $a_{\xi}$ and $b_{\xi}$ on ${\boldsymbol{\beta}}$ can be explained through the cross-effects of the matrix $\mathbf{ W}$ and the vector $\mathbf{ u}$ introduced at the beginning of this section, both containing ${\boldsymbol{\gamma}}$. 
 These diminish with increasing values of the ${\boldsymbol{\gamma}}$ entries. 
