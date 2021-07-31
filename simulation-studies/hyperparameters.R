@@ -286,7 +286,7 @@ p1 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true beta (1000 simulations)",
-    x = "a_tau", y = "|Deviation|", color = NULL
+    x = "a_tau", y = "| Deviation |", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -307,7 +307,7 @@ p2 <- deviation_a_tau_data %>%
   geom_point(size = 2) +
   labs(
     title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "a_tau", y = "|Deviation|", color = NULL
+    x = "a_tau", y = "| Deviation |", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -328,7 +328,7 @@ p3 <- deviation_b_tau_data %>%
   geom_point(size = 2) +
   labs(
     # title = "Absolute deviations from true beta (1000 simulations)",
-    x = "b_tau", y = "|Deviation|", color = NULL
+    x = "b_tau", y = "| Deviation |", color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -350,7 +350,7 @@ p4 <- deviation_b_tau_data %>%
   geom_point(size = 2) +
   labs(
     # title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "b_tau", y = "|Deviation|", color = NULL
+    x = "b_tau", y = "| Deviation |", color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -376,7 +376,7 @@ p5 <- deviation_a_xi_data %>%
   geom_point(size = 2) +
   labs(
     # title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "a_xi", y = "|Deviation|", color = NULL
+    x = "a_xi", y = "| Deviation |", color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -398,7 +398,7 @@ p6 <- deviation_a_xi_data %>%
   geom_point(size = 2) +
   labs(
     #title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "a_xi", y = "|Deviation|"
+    x = "a_xi", y = "| Deviation |"
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -420,7 +420,7 @@ p7 <- deviation_b_xi_data %>%
   geom_point(size = 2) +
   labs(
     #title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "b_xi", y = "|Deviation|"
+    x = "b_xi", y = "| Deviation |"
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -442,7 +442,7 @@ p8 <- deviation_b_xi_data %>%
   geom_point(size = 2) +
   labs(
     #title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "b_xi", y = "|Deviation|"
+    x = "b_xi", y = "| Deviation |"
   ) +
   theme_light() +
   guides(color = "none") +
