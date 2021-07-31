@@ -346,7 +346,7 @@ This simulation study analyzes the effect of the sample size `n` on the means of
 
 - The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
 
-- The posterior means are analyzed with respect to $6$ different sample sizes: $n \in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
+- The posterior means are analyzed with respect to $6$ different sample sizes: `n` $\in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
 
 - In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with `nsim` $= 500$ simulations.
 
@@ -603,7 +603,7 @@ The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} 
 - For sampling the location parameter, the full conditional multivariate normal distribution of $\boldsymbol{\beta}$ is chosen, i.e. `mcmc_ridge(..., mh_location = FALSE)` is used. 
 Therefore, the location estimate is directly affected by the hyperparameters.
 
-- For simulating the influence of the hyperparameters, nine different values are chosen: $a_{\tau}, b_{_\tau}, a_{\xi}, b_{xi} \in \left\{ -1, 0, 0.5, 1, 2, 10, 50, 100, 200  \right\}$. 
+- For simulating the influence of the hyperparameters, nine different values are chosen: $a_{\tau}, b_{\tau}, a_{\xi}, b_{\xi} \in \left\{ -1, 0, 0.5, 1, 2, 10, 50, 100, 200  \right\}$. 
 Since for statistical properties like the mean of an Inverse Gamma distribution $\frac{ b}{ a-1}$ the condition $a > 1$ is required, particular attention is given to larger values. 
 However, it is an aim to inspect the performance of the sampler for smaller hyperparameter values than $1$ as well.
 
