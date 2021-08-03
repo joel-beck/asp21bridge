@@ -1,3 +1,7 @@
-^lmls\.Rproj$
+^asp21bridge\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^data-raw$
+^README\.Rmd$
+^simulation-studies$
+^final-report$

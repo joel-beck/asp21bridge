@@ -1,4 +1,5 @@
 library(testthat)
-library(lmls)
+library(asp21bridge)
 
-test_check("lmls")
+test_check("asp21bridge")
+

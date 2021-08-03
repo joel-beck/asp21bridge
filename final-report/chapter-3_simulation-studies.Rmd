@@ -1,0 +1,21 @@
+---
+title: "Simulation Studies"
+output:
+  bookdown::pdf_document2:
+    highlight: tango
+    toc: FALSE
+    number_sections: TRUE
+    df_print: tibble
+    latex_engine: pdflatex
+    keep_tex: FALSE
+urlcolor: blue
+linkcolor: blue
+---
+
+
+# Simulation Studies
+
+```{r}
+paste("a + b + c =", a + b + c)
+```
+

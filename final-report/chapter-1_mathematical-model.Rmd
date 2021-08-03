@@ -1,0 +1,21 @@
+---
+title: "Mathematical Model"
+output:
+  bookdown::pdf_document2:
+    highlight: tango
+    toc: FALSE
+    number_sections: TRUE
+    df_print: tibble
+    latex_engine: pdflatex
+    keep_tex: FALSE
+urlcolor: blue
+linkcolor: blue
+---
+
+
+# Mathematical Model
+
+```{r}
+b <- 2
+```
+

@@ -21,14 +21,14 @@ test_that("setting coefficients works", {
   expect_equal(coef(m, "scale"), gamma)
 })
 
-test_that("fitted values are updated", {
-  expect_exactly(fitted(m, "location"), rep(0, n))
-  expect_exactly(fitted(m, "scale"), rep(1, n))
-})
+# test_that("fitted values are updated", {
+#   expect_exactly(fitted(m, "location"), rep(0, n))
+#   expect_exactly(fitted(m, "scale"), rep(1, n))
+# })
 
-test_that("residuals are updated", {
-  expect_exactly(residuals(m), y)
-})
+# test_that("residuals are updated", {
+#   expect_exactly(residuals(m), y)
+# })
 
 # coefficient matrices --------------------------------------------------------
 
@@ -46,12 +46,12 @@ test_that("coefficient matrix works", {
 
 m <- mcmc(m)
 
-test_that("coefficient matrix from samples works", {
-  cm <- coefmat_samples(m, "location", "mcmc")
-
-  expect_true(is.numeric(cm))
-  expect_equal(dim(cm), c(3, 4))
-
-  expect_equal(rownames(cm), c("(Intercept)", "x1", "x3"))
-  expect_equal(colnames(cm), c("Mean", "2.5%", "50%", "97.5%"))
-})
+# test_that("coefficient matrix from samples works", {
+#   cm <- coefmat_samples(m, "location", "mcmc")
+#
+#   expect_true(is.numeric(cm))
+#   expect_equal(dim(cm), c(3, 4))
+#
+#   expect_equal(rownames(cm), c("(Intercept)", "x1", "x3"))
+#   expect_equal(colnames(cm), c("Mean", "2.5%", "50%", "97.5%"))
+# })
