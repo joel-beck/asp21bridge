@@ -1,1 +1,21 @@
+---
+title: "The `asp21bridge` Package"
+output:
+  bookdown::pdf_document2:
+    highlight: tango
+    toc: FALSE
+    number_sections: TRUE
+    df_print: tibble
+    latex_engine: pdflatex
+    keep_tex: FALSE
+urlcolor: blue
+linkcolor: blue
+---
+
+
 # The `asp21bridge` Package
+
+```{r}
+c <- 3
+```
+
