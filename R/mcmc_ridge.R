@@ -115,9 +115,9 @@
 
 
 mcmc_ridge <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
-                          beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
-                          a_tau = 50, b_tau = 200, a_xi = 2, b_xi = 100,
-                          prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200) {
+                       beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
+                       a_tau = 50, b_tau = 200, a_xi = 2, b_xi = 100,
+                       prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200) {
   mod <- FALSE
   mcmc_ridge_m <- m
 
@@ -187,9 +187,11 @@ mcmc_ridge <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
       acc_count_loc <- acc_count_loc + beta_list$accepted
     } else {
       # sampling beta with closed form full conditional
-      beta_var <- solve(crossprod(W) + (1 / tau_start^2) * diag(c(0, rep(1, times = K))))
-      beta_mean <- beta_var %*% crossprod(W, u)
-      beta_samples[i, ] <- mvtnorm::rmvnorm(n = 1, mean = beta_mean, sigma = beta_var)
+      beta_var_inv <- crossprod(W) + (1 / tau_start^2) * diag(c(0, rep(1, times = K)))
+      beta_mean <- solve(beta_var_inv, crossprod(W, u))
+      beta_samples[i, ] <- rmvnorm(
+        n = 1, mu = beta_mean, chol_sig_inv = chol(beta_var_inv)
+      )
     }
 
     # sampling gamma with metropolis-hastings

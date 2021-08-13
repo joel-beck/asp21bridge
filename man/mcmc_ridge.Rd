@@ -14,10 +14,10 @@ mcmc_ridge(
   gamma_start = NULL,
   tau_start = 1,
   xi_start = 1,
-  a_tau = 1,
-  b_tau = 1,
-  a_xi = 1,
-  b_xi = 1,
+  a_tau = 50,
+  b_tau = 200,
+  a_xi = 2,
+  b_xi = 100,
   prop_var_scale = 3,
   mh_location = FALSE,
   prop_var_loc = 200
@@ -61,16 +61,16 @@ Regularization parameter in a Bayesian ridge setting, \cr
 Default: 1}
 
 \item{a_tau}{Fix shape parameter of the IG distribution of \code{tau_start}, \cr
-Default: 1}
+Default: 50}
 
 \item{b_tau}{Fix scale parameter of the IG distribution of \code{tau_start}, \cr
-Default: 3}
+Default: 200}
 
 \item{a_xi}{Fix shape parameter of the IG distribution of \code{xi_start}, \cr
-Default: 1}
+Default: 2}
 
 \item{b_xi}{Fix scale parameter of the IG distribution of \code{xi_start}, \cr
-Default: 3}
+Default: 100}
 
 \item{prop_var_scale}{Variance of proposal distribution for \code{gamma} sampling, \cr
 Default: 3}
