@@ -61,18 +61,6 @@ mult_density <- function(data, log, latex) {
       )
   }
 
-  # robust parameter not compatible with filling densities of geom_density_ridges()
-  # reinclusion with commands
-
-  # mult_density <- function(data, log, robust, latex){}
-
-  # if (robust) {
-  #   bounds <- data %>%
-  #     dplyr::summarise(bounds = stats::quantile(.data$vals, probs = c(0.01, 0.99)))
-  #   density_p <- density_p +
-  #     ggplot2::coord_cartesian(xlim = bounds$bounds)
-  # }
-
   return(density_p)
 }
 
@@ -101,11 +89,6 @@ mult_density <- function(data, log, latex) {
 #'            density plots are transformed to the logarithmic scale. \cr
 #'            Default: FALSE
 #'
-# @param robust Logical. If TRUE, the first and last percentile of the samples'
-#               distributions are omitted from density plots to avoid a strong
-#               influence of outliers on the x - axis scale. \cr
-#               Default: FALSE
-#
 #' @param free_scale Logical. If TRUE, the y - axis scale in time plots is
 #'                   chosen differently for all facets. \cr
 #'                   Default: FALSE
@@ -205,12 +188,6 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     )
 
   # density plot ------------------------------------------------------------
-
-  # see comments regarding robust parameter in mult_density()
-
-  # density_p <- mult_density(
-  #   data = data, log = log, robust = robust, latex = latex
-  #   )
 
   density_p <- mult_density(data = data, log = log, latex = latex)
 

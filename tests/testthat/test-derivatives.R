@@ -17,15 +17,15 @@ f <- function(x, predictor) {
   logLik(set_coef(m, predictor, x))
 }
 
-# test_that("score of beta is correct", {
-#   num_score <- numDeriv::grad(f, beta, predictor = "location")
-#   expect_exactly(score(m, "location"), num_score)
-# })
+test_that("score of beta is correct", {
+  num_score <- numDeriv::grad(f, beta, predictor = "location")
+  expect_exactly(score(m, "location"), num_score)
+})
 
-# test_that("score of gamma is correct", {
-#   num_score <- numDeriv::grad(f, gamma, predictor = "scale")
-#   expect_exactly(score(m, "scale"), num_score)
-# })
+test_that("score of gamma is correct", {
+  num_score <- numDeriv::grad(f, gamma, predictor = "scale")
+  expect_exactly(score(m, "scale"), num_score)
+})
 
 # fisher info -----------------------------------------------------------------
 

@@ -640,7 +640,7 @@ For values of $a_\tau \leq 1$, one obtains wider variances of absolute deviation
 In the upper two plots of Figure \@ref(fig:hyppar-gamma), there is no clear impact of $\tau^2$ and its parameters. 
 Rooted in no direct effect of $\tau^2$ on $\boldsymbol{\gamma}$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of the `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
 
-Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ estimates  for $a_\tau, b_\tau \in \{0.5, 200\}$, where $0.5$ is chosen by coincidence here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
+Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ estimates  for $a_\tau, b_\tau \in \{0, 0.5, 200\}$, where $0.5$ is chosen by coincidence for $a_\tau$ here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
 
 The lower two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) are constructed analogously, but showing the impact of $a_{\xi}$ and $b_{\xi}$ on the location and scale parameters respectively.
 Again, the overall absolute deviations for the $\boldsymbol{\beta}$ estimates from their true values are small, whereas the deviations for the $\boldsymbol{\gamma}$ estimates are considerably larger.
