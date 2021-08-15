@@ -12,10 +12,620 @@ urlcolor: blue
 linkcolor: blue
 ---
 
-
-# Simulation Studies
-
-```{r}
-paste("a + b + c =", a + b + c)
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
+  dpi = 300, collapse = TRUE
+)
+options(knitr.table.format = "latex")
 ```
+
+```{r, include=FALSE}
+pacman::p_load(
+  dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
+)
+library(asp21bridge)
+```
+
+
+
+
+
+# Simulation Studies {#simulations}
+
+This chapter investigates the effect of manipulating some of the `mcmc_ridge()` inputs and thereby sampling parameters in a controlled environment, such that changes in the estimation outcome can be directly linked to respective changes in the model inputs.
+After an introductory exploration phase, we decided for a subset of all possible model variations that indicated the greatest potential for interesting and relevant findings.
+
+As a result, the simulation studies discussed in this chapter will be conducted on the following components:
+
+- The **data** input (sections \@ref(corr) and \@ref(outcome)), which is captured by the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
+Here, the sampler's *robustness* is tested across various scenarios.
+
+- The **sample size** `n` (section \@ref(n)) and the **number of simulations** `num_sim` (section \@ref(numsim)).
+Here, we are looking for a possible stabilization process with increasing either of these two input parameters hinting at *asymptotic*/*convergence* properties.
+
+- The **hyperparameters** `a_tau`, `b_tau`, `a_xi` and `b_xi` (section \@ref(hyper)) of the Inverse Gamma prior distribution of the variance parameters $\tau^2$ and $\xi^2$, as specified in the first report.
+The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
+Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
+
+Since the resulting simulation studies serve different purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
+For that reason, we decided against forcing all of the following sections into one common rigid framework.
+Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
+
+In order to keep the analysis compact and succinct, there will be almost no code included.
+It it worth noting though that the `R Markdown` document generating this report as well as all `R Scripts` used for the simulations are contained in the `simulation-studies` folder of the `asp21bridge` package.
+Thus, each figure as well as all numerical results are fully reproducible and can be repeated and extended by the reader.
+
+
+
+
+
+
+
+
+## Correlated Predictor Variables {#corr}
+
+```{r, include=FALSE}
+corr_regressors_list <- readr::read_rds(
+  file = here::here("simulation-studies", "regressor-correlation.rds")
+)
+```
+
+Up to this point, we have often illustrated the usage and results of the `mcmc_ridge()` sampler with simulated data from the built-in `toy_data` set.
+There, each regressor variable is independently sampled from a normal distribution and the outcome variable is simulated based on a correctly specified location-scale regression model $y_i \sim \mathcal{N}_{} \left( \mathbf{x}^T_i \boldsymbol{\beta}, \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2 \right)$.
+All these conditions lead to an excellent performance of the `mcmc_ridge()` sampler, but might arguably not represent the most challenging task.
+
+Sections \@ref(corr) and \@ref(outcome) analyze the sampler's performance on simulated data, which might be closer to data found in the real world.
+First, we will induce correlation among the predictor variables, whereas in the following section the distributional assumptions are considerably changed.
+Further, the `mcmc_ridge()` performance is compared to the Maximum Likelihood based `lmls()` estimates and the Markov Chain Monte Carlo `mcmc()` sampler without penalty from the `lmls` package.
+
+### Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{x}_3 \end{pmatrix}$ is simulated from a three dimensional normal distribution $\mathcal{N}_{3} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} -5 & 2 & 0 \end{pmatrix}^T$ and covariance matrix $\begin{pmatrix} 1 & \rho & \rho \\ \rho & 3 & \rho \\ \rho & \rho & 5 \end{pmatrix}$.
+Hence, the dependence among the regressors is fully determined by the parameter $\rho$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ consists of linear combinations of the regressors $\mathbf{x}_1$ up to $\mathbf{x}_3$, more specifically $\mathbf{ z}_1 = 0.8 \cdot \mathbf{x}_1 + 0.2 \cdot \mathbf{x}_2$ and $\mathbf{ z}_2 = \mathbf{x}_2 - 0.5 \cdot \mathbf{x}_3$.
+
+- In both design matrices intercept columns are added for estimation purposes. 
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_3 \end{pmatrix}^T = \begin{pmatrix} 0 & 3 & -1 & 1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 2 & 0 \end{pmatrix}^T$.
+
+- Three different values were chosen for $\rho \in \left\{ 0, -0.5, 0.9 \right\}$ to compare the 'nice' case of uncorrelated predictors with the performance for negative and positive dependence.
+For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted, where each Posterior Mean estimate from both of the Markov Chain Monte Carlo samplers is based on $1000$ samples.
+
+- Moreover, we compared the performance of the usual `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
+The latter is initiated by the `mcmc_ridge()` argument `mh_location = TRUE`. 
+The variance of the corresponding proposal distribution is set to a carefully chosen default value, but can be manually changed by means of the `prop_var_loc` argument.
+
+### Simulation Results
+
+```{r, corr-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - One Simulation Cycle", fig.pos="t"}
+corr_regressors_list$plot_single_sim
+```
+
+```{r, corr-plot-many, echo=FALSE, fig.height=4, fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
+corr_regressors_list$plot_many_sims
+```
+
+Figure \@ref(fig:corr-plot-single) displays the posterior mean estimates for both MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete simulation cycle.
+For a better visual comparison the true values for each coefficient are indicated by grey circles, whereas the acceptance rate(s) of the Metropolis-Hastings algorithm used in the sampling process are provided in grey boxes.
+
+The scaling of the $x$ - axis is dominated by one outlier in the lower panel for each correlation structure.
+While the Metropolis-Hastings approach for $\boldsymbol{\beta}$ performs moderately well for most of the coefficients, it massively overestimates the intercept $\beta_0$.
+
+This observation can be made across many different data sets: In some special cases the performance is close to (but never better) than sampling directly and independently from a multivariate normal distribution. 
+However, most of the time the performance is significantly worse and the samples show (obviously) much larger correlation requiring a higher number of simulations for stable estimation. 
+For that reason, we limit the Metropolis-Hastings sampling process for $\boldsymbol{\beta}$ to this one illustration and will focus on the classical `mcmc_ridge()` implementation in the remaining parts of the report.
+
+The upper panel in Figure \@ref(fig:corr-plot-single) indicates a very good performance by all three estimation procedures in consideration.
+Further, all acceptance probabilities are in a reasonable range supporting a fast convergence of all Markov Chains.
+
+It is important to remember, that each point in the plot only represents exactly one measurement.
+In order to make any conclusions about bias and variance of the different estimation models, the above procedure is repeated $50$ times.
+The black points in Figure \@ref(fig:corr-plot-many) represent the mean of these $50$ Posterior Mean estimates.
+Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
+
+Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
+For that reason only the results of the `mcmc_ridge()` sampler are shown in Figure \@ref(fig:corr-plot-many).
+
+There are three conclusions from this first simulation study:
+
+1. The correlation structure does not have a significant impact of the sampling results.
+The three plot facets look almost identical.
+
+1. The `mcmc_ridge()` sampler (as well as the `mcmc()` and `lmls()` functions) are very robust towards correlated data and perform extremely well. 
+In particular, all three approaches (visually and numerically) provide close to unbiased estimates.
+
+1. The variability among the $\boldsymbol{\beta}$ estimates is almost nonexistent, such that results from a single simulation cycle are already reliable and representative.
+While the estimates for the $\boldsymbol{\gamma}$ vector are still correct on average, the variability across different simulations is significant (particularly for $\gamma_0$).
+Thus, averaging the results from multiple repetitions of the sampling process is advisable.
+
+
+
+
+
+
+
+
+## Challenging the Model Assumptions {#outcome}
+
+```{r, include=FALSE}
+outcome_dist_list <- readr::read_rds(
+  file = here::here("simulation-studies", "outcome-distribution.rds")
+)
+```
+
+```{r, outcome-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - One Simulation Cycle", fig.pos="t"}
+outcome_dist_list$plot_single_sim
+```
+
+```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
+outcome_dist_list$plot_many_sims
+```
+
+This simulation study is structured in a very similar way to the study considered in section \@ref(corr).
+Instead of varying the correlation structure among the regressors in the underlying data set, both the regressors and the outcome variable $y$ are sampled from distributions that are more challenging for estimation than the normal distribution.
+
+### Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{x}_3 & \mathbf{x}_4 \end{pmatrix}$ contains four independently sampled regressor variables plus one intercept column:
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 5, 16 \right)$,
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathrm{Exp}(5)$,
+    + $\mathbf{x}_3 \stackrel{ iid}{ \sim} \mathcal{U}_{} \left( \left[ -2, \; 12 \right] \right)$,
+    + $\mathbf{x}_4 \stackrel{ iid}{ \sim} \mathrm{Ber}(0.3)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{z}_3 \end{pmatrix}$ contains the additional regressor variable $\mathbf{z}_3 \stackrel{ iid}{ \sim} t_{10}$, which is independently sampled from all other columns.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_3 & \beta_4 \end{pmatrix}^T = \begin{pmatrix} 0 & -3 & -1 & -1 & 2 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 & \gamma_3 \end{pmatrix}^T = \begin{pmatrix} 0 & 1 & 2 & 3 \end{pmatrix}^T$.
+
+- Three different specifications for the outcome distribution were chosen:
+    + $y_i \sim \mathcal{N}_{} \left( \mu, \sigma^2 \right)$,
+    + $y_i \sim \mu + \left(\sigma \cdot \sqrt{ \frac{ 3}{ 5}}\right) T$, where $T \sim t_{5}$,
+    + $y_i \sim \mu + \sigma \cdot U$, where $U \sim \mathcal{U}_{} \left( \left[ 0, \; 1 \right] \right)$.
+    
+In order to isolate the impact of the different shapes of the three probability distributions, the mean $\mu = \mathbf{x}_i^T \boldsymbol{\beta}$ and the variance $\sigma^2 = \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2$ are held constant across the models.
+
+Note that the `lmls()`, `mcmc()` and `mcmc_ridge()` models are built upon the assumption $y_i \sim \mathcal{N}_{} \left( \mu, \sigma^2 \right)$.
+Hence, we expect all three estimation procedures to perform well under the first outcome specification, which they were designed for.
+The remaining two cases analyze the performance in presence of a mild ($t$ distribution) and a moderately strong (uniform distribution) violation of this model assumption.
+
+### Simulation Results
+
+Just as in section \@ref(corr) the results of one complete simulation cycle (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
+Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$-distributed random variable, which does not follow an exact $t$ distribution.
+
+The differences within each facet as well as between the facets are significant.
+All three models seem to estimate the $\boldsymbol{\beta}$ vector well, when there are no or only mild violations of the normal assumption for $y$. 
+If $y$ is sampled from a uniform distribution, there are major differences for $\beta_0$, $\beta_2$ and $\beta_4$ (notice the extended $x$-scale in the third facet).
+Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the latter case with more deviations in the setting, where $y$ is based on the $t$ distribution.
+
+To gain insights beyond this single simulation cycle, which could well be disturbed by random noise, we repeat the sampling process $50$ times.
+The resulting means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in Figure \@ref(fig:outcome-plot-many).
+
+This plot (literally) paints a drastically different picture, emphasizing the necessity of repeating experiments multiple times whenever possible.
+Across all $50$ simulations the deviation of the estimates for $\beta_2$ (corresponding to the regressor variable from the exponential distribution) is huge for all three distributional specifications of $y$.
+
+The small bias induced by all three models is negligible compared to the wide confidence intervals, which is particularly interesting, when $y$ stems from a normal distribution. 
+In this case all models should perform well, however the `lmls()` and the `mcmc()` Posterior Mean / Maximum Likelihood estimates vary wildly across the simulation cycles.
+A similar effect can be observed for $\beta_0$ in case of the uniform distribution.
+Here, all models overestimate the true value on average, while the `mcmc_ridge()` function again shows the smallest variability.
+In contrast, the estimates for $\gamma_0$ in the right facet are fairly stable across simulation cycles, but also consistently wrong at the same time.
+
+Estimates of the bias and the standard error of the Posterior Mean / Maximum Likelihood estimates can be more distinctly compared by their numerical values provided in Tables \@ref(tab:bias) and \@ref(tab:se).
+In order to emphasize the interesting/differing entries, both tables only include a subset of the estimated coefficients.
+
+```{r, bias, echo=FALSE}
+outcome_dist_list$data_many_sims %>%
+  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
+  select(-contains("se")) %>%
+  pivot_longer(cols = contains("bias")) %>%
+  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
+  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
+  tibble::column_to_rownames(var = "Parameter") %>%
+  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
+  kableExtra::kbl(
+    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "Bias of Coefficient Estimates"
+  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
+  kableExtra::add_header_above(
+    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3)
+  )
+```
+
+Considering the bias estimates in Table \@ref(tab:bias) first, there are no obvious patterns that would suggest the superiority of one model.
+Further, none of the three models tend to only over- or underestimate the true coefficient values.
+The most interesting entries are the bias estimates for $\beta_0$ and $\gamma_0$ in the uniform case, where all three models agree to significantly overestimate.
+However, the intercept coefficients are often of minor interest.
+
+```{r, se, echo=FALSE}
+outcome_dist_list$data_many_sims %>%
+  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
+  select(-contains("bias")) %>%
+  pivot_longer(cols = contains("se")) %>%
+  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
+  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
+  tibble::column_to_rownames(var = "Parameter") %>%
+  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
+  kableExtra::kbl(
+    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "Standard Errors of Coefficient Estimates"
+  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
+  kableExtra::add_header_above(
+    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3), escape = FALSE
+  )
+```
+
+The standard error estimates displayed in Table \@ref(tab:se) clearly indicate the worst performance of the `lmls()` and the `mcmc()` model for $\beta_2$.
+In almost all cases (and sometimes very significantly), the `mcmc_ridge()` sampler has the smallest standard error.
+This finding nicely confirms the underlying mathematical theory:
+The present prior specifications in the Bayesian setting, which induces the equivalent form of a frequentist Ridge penalty, can lead to biased estimation.
+
+However, this loss in accuracy can be (as it is in this case) dominated by the gain in precision by the shrinkage effect of the penalty.
+Note that (except for $\gamma_0$ in the most right facet in Figure \@ref(fig:outcome-plot-many)) the `mcmc_ridge()` sampler slightly *overestimates* coefficients with true *negative* values and *underestimates* those with true *positive* values. 
+This again is caused by the Ridge penalty leading to estimated coefficients close to zero.
+
+In summary, the following conclusions can be drawn:
+
+1. All three models are affected by changes in the regressor and/or outcome distributions.
+In the former case the regressor variables sampled from the Exponential and the Bernoulli distributions were the greatest challenge, in the latter case the outcome variable from the Uniform distribution.
+This is generally not surprising, since these distributions deviate most from the nicely behaved normally distributed case.
+
+1. As expected, the `lmls()` function is affected strongly by violating the model assumptions, since its estimation process is based on the normal (log) Likelihood.
+Surprisingly, the `mcmc()` sampler without penalty often did not perform much better.
+
+1. While the `mcmc_ridge()` function does not excel at estimation accuracy, it does lead to the most stable estimation with smallest standard errors in the vast majority of cases.
+As emphasized above, this behaviour nicely agrees with the mathematical theory of Ridge penalization.
+
+1. Had we not conducted repeated experiments, our conclusions would have been quite different.
+Simulation results are therefore always worth repeating many times to consolidate the correct interpretations.
+
+
+
+### Technical Aspects
+
+As outlined in the previous paragraph, a total of $50 \cdot 3 \cdot 3 = 450$ models were fitted to analyze the performance differences.
+In order to speed up the involved computations of this specific and some of the other simulation studies in this report, we used the *parallel computing* capabilities of `R`.
+
+There are many options from various packages to choose from.
+We decided to use the [furrr](https://furrr.futureverse.org/) package, which is built on top of the `future` package specialized on parallel processing.
+As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package, while using multiple cores at the same time. 
+This *functional programming* based approach (similar to the `apply()` family in 'base `R`') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach.
+
+The following (slightly modified) code snippet provides a brief insight into the implementation:
+
+```{r, eval=FALSE}
+plan(multisession, workers = 8)
+
+full_results <- tibble(id = 1:50) %>%
+  mutate(samples = future_map(
+    .x = id,
+    .f = ~ show_results(n = 50, num_sim = 1000),
+    .options = furrr_options(seed = 1)
+  ))
+```
+
+The `plan()` function borrowed from the `future` package initializes the parallel computing process and determines the number of cores/workers available for computation.
+The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single simulation cycle.
+
+This entire procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
+This new column of the data frame contains complete information about all simulations, such that any required element for the further analysis can be easily extracted and post processed.
+
+Finally, the `.options()` argument allows the specification of a random seed.
+Random number generation in the context of parallel computing is slightly more involved compared to the sequential approach.
+This additional complexity is automatically handled by the `future_map()` function, such that all results are sampled in a statistically valid and fully reproducible manner.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Sample Size {#n}
+
+```{r, include=FALSE}
+plot_data <- readr::read_rds(
+  file = here::here("simulation-studies", "samplesize_1.rds")
+)
+```
+
+```{r, sample-size-means, echo=FALSE, out.width="70%", fig.cap="Mean value of 100 Posterior Mean Estimates", fig.pos="t"}
+mean_mean <- plot_data$mean_mean
+n_data <- plot_data$n_data
+
+matplot(t(mean_mean),
+  x = n_data, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Posterior Means",
+  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
+)
+legend(
+  x = "right", legend = rownames(mean_mean),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
+)
+```
+
+```{r, sample-size-mae, echo=FALSE, out.width="70%", fig.cap="Mean Absolute Error Estimates", fig.pos="t"}
+mean_absolute_error <- plot_data$mean_absolute_error
+
+matplot(t(mean_absolute_error),
+  x = n_data, type = "b", pch = 1, col = 1:6,
+  main = " MAE of Posterior Means",
+  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
+)
+legend(
+  x = "right", legend = rownames(mean_absolute_error),
+  col = 1:6, pch = 1, bty = "o", title = "Parameter"
+)
+```
+
+This simulation study analyzes the effect of the sample size `n` on the means of the posterior distribution for the coefficients of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$. There are two main goals of this simulation study: On the one hand, we want to investigate whether the posterior means of large samples are closer to the true values than the posterior means of small samples. On the other hand, we want to analyze whether the `mcmc_ridge()` penalty affects the location of the posterior means.
+
+### Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column:
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ is structured in the same way with the regressor variables:
+    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
+    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
+
+- The posterior means are analyzed with respect to $6$ different sample sizes: `n` $\in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
+
+- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with `nsim` $= 500$ simulations.
+
+- To make the results more stable, the above procedure is repeated $100$ times. 
+For each coefficient, the mean value of the Posterior Mean estimates of each coefficient is calculated as well as the Mean Absolute Error (*MAE*) with respect to the true values of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$.
+
+### Simulation Results
+
+The means of the Posterior Mean estimates are displayed in Figure \@ref(fig:sample-size-means).
+For larger sample sizes (`n` $\geq 200$) none of the six parameters are extremely biased.
+
+Moreover, for `n` $= 30$, $\beta_0$ and $\beta_2$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
+
+After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the *MAE* based on the results of the $100$ repetitions.
+Figure \@ref(fig:sample-size-mae) points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for `n` $= 30$. 
+However, this might also be explained by the fact that for `n` $= 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ as could be observed in Figure \@ref(fig:sample-size-means).
+
+In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
+Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Number of Simulations {#numsim}
+
+```{r, include=FALSE}
+num_sim_data <- readr::read_rds(
+  file = here::here("simulation-studies", "number_mcmc_ridge_simulations.rds")
+)
+```
+
+```{r, nsim-mean, echo=FALSE, out.width="70%", fig.cap="Mean value of 100 Posterior Mean Estimates", fig.pos="t"}
+mean_mean_num_sim <- num_sim_data$mean_mean
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_mean_num_sim),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Posterior Means",
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+)
+legend(
+  x = "topright", legend = rownames(mean_mean_num_sim),
+  col = 1:6, pch = 1, bty = "n"
+)
+```
+
+```{r, nsim-mae, echo=FALSE, out.width="70%", fig.cap="Mean Absolute Error Estimates", fig.pos="t"}
+mean_absolute_error_num_sim <- num_sim_data$mean_absolute_error
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_absolute_error_num_sim),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " MAE of Posterior Means",
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+)
+legend(
+  x = "topright", legend = rownames(mean_absolute_error_num_sim),
+  col = 1:6, pch = 1, bty = "n"
+)
+```
+
+```{r, nsim-var, echo=FALSE, out.width="70%", fig.cap="Mean value of 100 Posterior Variance Estimates", fig.pos="t"}
+mean_of_variances_within <- num_sim_data$mean_of_variances_within
+array_num_sim <- num_sim_data$array_num_sim
+
+matplot(t(mean_of_variances_within),
+  x = array_num_sim, type = "b", pch = 1, col = 1:6,
+  main = " Mean of Variances within the Samples",
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+)
+legend(
+  x = "topright", legend = rownames(mean_of_variances_within),
+  col = 1:6, pch = 1, bty = "n"
+)
+```
+
+Another important model input is `nsim`, the number of Markov Chain Monte Carlo simulations within the `mcmc_ridge()` function.
+
+As explained in our first report, we chose the proposal density for the Metropolis-Hastings algorithm of $\boldsymbol{\gamma}$ in order to achieve acceptance rates between $35$% und $50$%. 
+A higher number of `mcmc_ridge()` simulations increases the absolute number of accepted proposals and might deliver more precise approximations of the true posterior distributions, but also increases the computational cost such that there is a trade-off between precision and speed.
+
+This simulation study analyzes the effect of the `nsim` parameter on the posterior distribution.
+
+### Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column. 
+The sample size `n` is chosen to be $100$.
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$.
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ similarly contains two independently sampled regressor variables plus one intercept column. 
+The sample size `n` is chosen to be $100$ as well.
+    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$.
+    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 0.5 \end{pmatrix}^T$.
+
+- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated according to the correct normality assumption and passed to the `mcmc_ridge()` function.
+
+- The posterior means are analyzed with respect to $4$ different values for `nsim` $\in \left\{ 100, 300, 500, 1000 \right\}$.
+
+- Similar as in the simulation study concerning the sample size, the above procedure is repeated $100$ times to make the results more stable. 
+For each coefficient, the mean value of the $100$ Posterior Means is calculated as well as the mean absolute error (*MAE*) with respect to the true values of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$. 
+In addition, the variances *within* the Markov Chains are analyzed.
+
+### Simulation Results
+
+Similar as in the sample size simulation study, Figure \@ref(fig:nsim-mean) contains the mean values of the Posterior Mean estimates for the different `nsim` specifications.
+The result is quite clear: In the range between `nsim` $= 100$ and `nsim` $= 1000$, the `nsim` parameter has no significant impact on the mean of the posterior means.
+
+Furthermore, for the chosen sample size `n` $= 100$, none of the $6$ coefficients has a large bias. 
+However, the estimates of $\beta_0$ are all close to $1.07$, whereas the estimates of $\beta_2$ are all close to $3.96$. 
+Thus, we obtain small biases for $\beta_0$ and $\beta_2$, which again might be a result of the high `mcmc_ridge()` penalty for $\beta_2 = 4$ (similar as discussed in section \@ref(n)).
+
+We also analyzed the *MAE* for different values of `nsim`. 
+Figure \@ref(fig:nsim-mae) provides interesting results for the errors of the $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ coefficients: 
+On the one hand, `nsim` seems not to have any impact on the errors of the $\boldsymbol{\beta}$ coefficients. 
+But on the other hand, an increase of `nsim` leads to more precise $\boldsymbol{\gamma}$ estimates and apparently lower *MAE* values for all $\boldsymbol{\gamma}$ coefficients.
+
+In the last step, we analyzed whether the value of `nsim` has any impact on the posterior variance within the Markov Chains.
+The results are displayed in Figure \@ref(fig:nsim-var).
+Again, it can be observed that the `nsim` parameter has no impact on the variances within the $\boldsymbol{\beta}$ samples of the Markov chain, whereas the variance within the $\boldsymbol{\gamma}$ samples increases with increasing value of `nsim`. 
+
+This result is not really surprising, since the Markov Chain typically jumps to points which are quite close to the current location. 
+As a consequence, if the number of jumps increases, also the variance of the samples might increase.
+
+In combination with the lower *MAE* for the $\boldsymbol{\gamma}$ parameters, one can conclude that the approximated posterior distributions of the $\boldsymbol{\gamma}$ coefficients might be squeezed for small values of `nsim` and converge to the true posterior distributions if the number of simulations increases.
+
+
+
+
+
+
+
+
+
+## Hyperparameters {#hyper}
+
+```{r, include=FALSE}
+hyperparameters_list <- readr::read_rds(
+  file = here::here("simulation-studies", "hyperparameters.rds")
+)
+```
+
+```{r, hyppar-beta, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
+hyperparameters_list$p1 / hyperparameters_list$p3 / hyperparameters_list$p5 / hyperparameters_list$p7
+```
+
+```{r, hyppar-gamma, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
+hyperparameters_list$p2 / hyperparameters_list$p4 / hyperparameters_list$p6 / hyperparameters_list$p8
+```
+
+In the past, we have been sampling data with the `mcmc_ridge()` function without having a closer look on the effect of the hyperparameters and model inputs `a_tau`, `b_tau`, `a_xi` and `b_xi`. 
+However, they affect the Full Conditional Distributions of $\tau^2$ and $\xi^2$, as stated in sections \@ref(tau) and \@ref(xi) in chapter \@ref(math).
+
+Moreover, the mean vector $\boldsymbol{\mu}_{beta}$ and covariance matrix $\mathbf{\Sigma}_{beta}$ of the $\boldsymbol{\beta}$ vector both depend on $\tau^2$ and, thus, implicitly on the hyperparameters $a_{\tau}$ and $b_{\tau}$ (see section \@ref(beta)).
+Analogously, section \@ref(gamma) illustrates the direct effect of the Full Conditional distribution of $\boldsymbol{\gamma}$ on $\xi^2$, which in turn depends on the hyperparameters $a_{\xi}$ and $b_{\xi}$.
+
+Finally, cross effects can be observed, since $f( \boldsymbol{\beta} \mid \cdot)$ depends on $\boldsymbol{\gamma}$ through the quantities $\mathbf{ W}$ and $\mathbf{ u}$ as defined in chapter \@ref(math) and $f( \boldsymbol{\gamma} \mid \cdot)$ directly depends on $\boldsymbol{\beta}$.
+These dependencies are reflected in the `mcmc_ridge()` sampler by the iterative sampling procedure which is discussed in great detail in the previous sections \@ref(mcmc-ridge) and \@ref(mh).
+
+Thus, the hyperparameter choice of $a_{\tau}$, $b_{\tau}$, $a_{\xi}$ and $b_{\xi}$ inevitably impacts the result of *all* coefficient estimates contained in the model in a nontrivial way, such that pure analytical reasoning might be misleading.
+For this reason, this section investigates these effects based on a simulation approach.
+
+
+### Simulation Setting
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ is simulated from a two dimensional normal distribution $\mathcal{N}_{2} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 1 & 2 \end{pmatrix}^T$ and identity covariance matrix $\mathbf{\Sigma} = \mathbf{I}_{2}$. 
+The same holds true for the design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 5 & 3 \end{pmatrix}^T$ and identity covariance matrix.
+
+- In both design matrices intercept columns are added for estimation purposes. 
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -2 & 1 \end{pmatrix}^T$.
+
+- For sampling the location parameter, the full conditional multivariate normal distribution of $\boldsymbol{\beta}$ is chosen, i.e. `mcmc_ridge(..., mh_location = FALSE)` is used. 
+Therefore, the location estimate is directly affected by the hyperparameters.
+
+- For simulating the influence of the hyperparameters, nine different values are chosen: $a_{\tau}, b_{\tau}, a_{\xi}, b_{\xi} \in \left\{ -1, 0, 0.5, 1, 2, 10, 50, 100, 200  \right\}$. 
+Since for statistical properties like the mean of an Inverse Gamma distribution $\frac{ b}{ a-1}$ the condition $a > 1$ is required, particular attention is given to larger values. 
+However, it is an aim to inspect the performance of the sampler for smaller hyperparameter values than $1$ as well.
+
+### Simulation Results
+
+The first two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) display the absolute deviations of the Posterior Mean estimates from the true parameters with the stated different values for $a_{\tau}$ and $b_{\tau}$. 
+For each estimate, the Posterior Mean averages over $1000$ simulations of the `mcmc_ridge()` sampler. 
+Note, that location and scale parameters are plotted separately, according to the relationship mentioned above. 
+For a better overview, the dotted line displays the linear trend of all estimate deviations.
+
+The $x$ - axis is transformed by a pseudo logarithm in order to clearly visualize the deviations in the range of $-1$ to $10$, which would not be possible on original scales. 
+Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_trans()` function of the `scales` package is applied, log-transforming positive values only. 
+
+It can be observed, that the intercept estimates in each plot show the largest deviations from their true value. 
+In Figure \@ref(fig:hyppar-beta), however, the overall deviations of $\boldsymbol{\beta}$ estimates from their corresponding true value are small in absolute value.
+In contrast, deviations of the $\boldsymbol{\gamma}$ estimates in Figure \@ref(fig:hyppar-gamma) are fairly significant, especially for $\gamma_0$.
+
+The functional chain that applies to the estimates of $\boldsymbol{\beta}$ can be described by the effect of the mean of the inverse gamma distribution on $\tau^2$: 
+A larger value for $b_\tau$ leads to larger values of $\tau^2$, which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and, thus, potentially increase the absolute deviation of the corresponding estimates from their true values. 
+$a_\tau$ causes the opposite effect. 
+This numerically observable effect, however, is hided by the overall small deviation in the first two plots of Figure \@ref(fig:hyppar-beta). 
+
+It is remarkable, that the deviation of ${\boldsymbol{\beta}}$ estimates is smallest when $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
+For values of $a_\tau \leq 1$, one obtains wider variances of absolute deviations, since the Posterior Mean requires values larger than one.
+
+In the upper two plots of Figure \@ref(fig:hyppar-gamma), there is no clear impact of $\tau^2$ and its parameters. 
+Rooted in no direct effect of $\tau^2$ on $\boldsymbol{\gamma}$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of the `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
+
+Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ estimates  for $a_\tau, b_\tau \in \{0, 0.5, 200\}$, where $0.5$ is chosen by coincidence for $a_\tau$ here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
+
+The lower two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) are constructed analogously, but showing the impact of $a_{\xi}$ and $b_{\xi}$ on the location and scale parameters respectively.
+Again, the overall absolute deviations for the $\boldsymbol{\beta}$ estimates from their true values are small, whereas the deviations for the $\boldsymbol{\gamma}$ estimates are considerably larger.
+Once again, the intercept estimates display the largest deviations from their true value.
+
+Arguing with the mean of the Inverse Gamma distribution of $\xi^2$ in a similar way, one obtains larger mean values for $b_{\xi}$, while $a_{\xi}$ lowers them. 
+The impact of $\xi^2$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \boldsymbol{\gamma} \mid \cdot )$ according to our underlying theoretical model. 
+This effect is indicated by the linear trend lines in the second half of Figure \@ref(fig:hyppar-gamma). 
+
+In general, one obtains smaller deviations for larger values of $b_{\xi}$ and lower ones of $a_{\xi}$, where especially lots of randomness occurs in the deviations of $\gamma_0$. Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the scale intercepts is overshadowed by the randomness induced by the Metropolis Hastings algorithm. 
+The same wide variations exclusively for $a_{\xi} \leq 1$ cannot be obtained in the same manner as for $a_{\tau}$.
+
+The sampler exhibits the best results for the *scale* estimates for $a_\xi = 2$ and $b_\xi = 100$. 
+However, due to the wide overall variation, these results must be taken with care.
+
+The effect of $a_{\xi}$ and $b_{\xi}$ on ${\boldsymbol{\beta}}$ can be explained through the cross-effects of the matrix $\mathbf{ W}$ and the vector $\mathbf{ u}$ introduced at the beginning of this section, both containing ${\boldsymbol{\gamma}}$. 
+These diminish with increasing values of the ${\boldsymbol{\gamma}}$ entries. 
+
+The matrix $\mathbf{ W}$ affects the variance of the full conditional distribution of $\boldsymbol{\beta}$ negatively, while the mean is positively affected. 
+Hence, larger values of $a_{\xi}$ cause higher Posterior Means of the location parameters. 
+The positive linear trend in the second half of Figure \@ref(fig:hyppar-beta) for values of $a_{\xi}$ is particularly interesting. 
+For values of $b_{\xi}$, the trend comes off inferior. 
+The wider variations of deviations for $a_{\xi} \leq 1$ is again not observable here. 
+Nonetheless, the randomness observable for scale estimates does not show up for location estimates anymore.
+
+The smallest deviations of the *location* estimates can be detected for $a_\xi = 1$ and $b_\xi = 200$. 
+
+Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. 
+For the value range of $a_{\tau}$, $b_{\tau}$ and $a_{\xi}$, no distinct pattern is observable in this regard. 
+With growing values of $b_{\xi}$, however, acceptance rates are more likely to grow. 
+Since the acceptance rates are in reasonable ranges enabling statistically valid estimation, these results are not further investigated here.
+
 

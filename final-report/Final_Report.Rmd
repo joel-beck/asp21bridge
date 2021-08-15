@@ -5,6 +5,7 @@ output:
   bookdown::pdf_document2:
     highlight: tango
     toc: TRUE
+    toc_depth: 3
     number_sections: TRUE
     df_print: tibble
     latex_engine: pdflatex
@@ -12,21 +13,6 @@ output:
 urlcolor: blue
 linkcolor: blue
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
-  dpi = 300, collapse = TRUE
-)
-options(knitr.table.format = "latex")
-```
-
-```{r, include=FALSE}
-pacman::p_load(
-  dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
-)
-library(asp21bridge)
-```
 
 \newpage
 
@@ -49,5 +35,11 @@ library(asp21bridge)
 \newpage
 
 ```{r child=here::here("final-report", "chapter-3_simulation-studies.Rmd")}
+
+```
+
+\newpage
+
+```{r child=here::here("final-report", "chapter-4_conclusion.Rmd")}
 
 ```

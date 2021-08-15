@@ -13,9 +13,31 @@ linkcolor: blue
 ---
 
 
-# The `asp21bridge` Package
+# The `asp21bridge` Package {#package}
 
-```{r}
-c <- 3
-```
+## User Guide {#guide}
+
+### Sampling with the `mcmc_ridge()` function {#sampling}
+
+### Statistical Analysis {#statistical}
+
+### Graphical Analysis {#graphical}
+
+
+
+## Implementation of the Markov Chain Monte Carlo Sampler {#mcmc}
+
+### Iterative Parameter Sampling {#mcmc-ridge}
+
+### Metropolis Hastings Step {#mh}
+
+
+
+
+## Package Development {#development}
+
+### Code Coverage {#coverage}
+
+### Design Choices {#design}
+
 
