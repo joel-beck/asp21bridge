@@ -15,9 +15,77 @@ linkcolor: blue
 
 # The `asp21bridge` Package {#package}
 
+This chapter introduces various facettes of the `asp21bridge` package.
+Section \@ref(guide) explains how to use and combine the functions that are contained in the package most efficiently.
+Section \@ref(mcmc) focuses on the implementation of the Markov Chain Monte Carlo Sampler with Ridge Penalty, links the source code to the mathematical model from chapter \@ref(math) and explains, how the main function `mcmc_ridge()` as well as the helper functions implementing the Metropolis-Hastings algorithm are structured.
+Finally, some additional components of the package development process and ideas that the package is based upon are discussed in section \@ref(development).
+
+
+
 ## User Guide {#guide}
 
+This section aims to provide help for new users of the `asp21bridge` package.
+Although all exported functions are fully documented such that function arguments and brief examples can be looked up at the corresponding help page, the following tutorial extends the documentation by illustrating a typical workflow of simulation via the penalized MCMC Sampler, extracting meaningful statistical quantities from the samples and visually analyzing the results.
+
+The `asp21bridge` package inherits all functions from the `lmls` package and exports $9$ additional functions, that can be grouped into three categories:
+
+- *Sampling*: The whole sampling process is covered by the very flexible and robust `mcmc_ridge()` function that is explained in detail in section \@ref(mcmc-ridge).
+
+- *Statistical Analysis*: Here, the `summary_complete()` function represents the main tool and provides a more thorough statistical summary than the generic `summary()` function.
+In addition, the `burnin()` and `thinning()` functions are convenient in the context of Markov Chains and in particular for extracting more meaningful features of the samples from the posterior distributions.
+
+- *Graphical Analysis:* The `trace_plot()`, `density_plot()` and `acf_plot()` functions provide the three most common visualization of a *single* chain's development over time, their distribution and the autocorrelation between the samples.
+Since all of these are *diagnostic* tools, they are combined in the high-level `diagnostic_plots()` function, which simply collects all three plots in a grid and will be used more often than the separate building blocks.
+For visualizing *multiple* chains together, the `mult_plot()` function can be used.
+Several arguments for customizing the graphical output exist.
+In the most basic form, trace plots of all selected chains are displayed in the upper panel while the corresponding density plots are contained in the lower panel.
+
+
 ### Sampling with the `mcmc_ridge()` function {#sampling}
+
+As explained in section \@ref(mcmc-ridge) there are two valid input types for simulating with the `mcmc_ridge()` function:
+Most commonly, the sampling procedure will be built upon an existing model that was initialized by the `lmls()` function.
+In this case only the name of the model object is required, although many further arguments can be specified such as the number of simulation `nsim` which is set to $1000$ by default.
+The `mcmc_ridge()` function can, however, be used completely independent from the underlying `lmls` package.
+Therefore, the outcome vector $\mathbf{y}$ as well as the design matrices $\mathbf{X}$ and $\mathbf{ Z}$, corresponding to the $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ coefficient vectors respectively (as explained in chapter \@ref(math)), must be manually specified.
+
+We illustrate both use cases with the built-in data set `toy_data`, which is specifically designed for introductory tutorials, documentation and unit tests, and the more realistic `abdom` data set from the `lmls` package.
+In the former case, we use most of the default settings, except for number of simulations which we increase to $10000$.
+In the latter case, we have to provide the data input as well as starting values for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ explicitly.
+Note that the dimension of `beta_start` and `gamma_start` have to match the number of columns in `X` and `Z` in the model *input*.
+If necessary, the `mcmc_ridge()` functions adds intercept columns to both design matrices, such that the dimension of the coefficient vectors might have increased (as in the case illustrated here) in the model *output*:
+
+```{r, eval=FALSE}
+library(asp21bridge)
+set.seed(1234)
+
+toy_fit <- lmls(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+) %>%
+  mcmc_ridge(num_sim = 10000)
+
+y <- abdom$y
+X <- as.matrix(abdom$x)
+Z <- as.matrix(abdom$x)
+
+abdom_fit <- mcmc_ridge(y = y, X = X, Z = Z, beta_start = 1, gamma_start = 1, num_sim = 10000)
+```
+
+```{r, include=FALSE}
+library(asp21bridge)
+user_guide_data <- readr::read_rds(file = here::here("final-report", "user-guide_data.rds"))
+
+toy_fit <- user_guide_data$toy_fit
+abdom_fit <- user_guide_data$abdom_fit
+```
+
+```{r}
+# str(toy_fit)
+# str(abdom_fit)
+```
+
+
 
 ### Statistical Analysis {#statistical}
 
@@ -38,6 +106,14 @@ linkcolor: blue
 
 ### Code Coverage {#coverage}
 
+- unit tests
+
+- documentation
+
 ### Design Choices {#design}
+
+- pipe operator
+
+- S3 Class
 
 

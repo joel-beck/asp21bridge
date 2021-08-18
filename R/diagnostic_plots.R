@@ -1,6 +1,6 @@
 #' @title Plot values of a single Markov Chain over time
 #'
-#' @description The `time_plot()` function creates a line graph of Markov Chain
+#' @description The `trace_plot()` function creates a line graph of Markov Chain
 #'              samples, where the sampled values are mapped to the y - axis
 #'              and the iteration / index is placed on the x - axis in
 #'              chronological order. \cr
@@ -43,13 +43,13 @@
 #' diagnostic_plots(samples$location[, 1, drop = FALSE], latex = TRUE)
 #'
 #' # log argument often useful for strictly positive variance parameters
-#' time_plot(samples$scale_prior, log = TRUE, latex = TRUE)
+#' trace_plot(samples$scale_prior, log = TRUE, latex = TRUE)
 #'
 #' @export
 #'
 #' @importFrom rlang .data
 
-time_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
+trace_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 
   # validate input ----------------------------------------------------------
 
@@ -243,7 +243,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 
 #' @title Plot autocorrelations of a single Markov Chain
 #'
-#' @description The `acl_plot()` function creates a graphical display of
+#' @description The `acf_plot()` function creates a graphical display of
 #'              autocorrelations for various lags of a single Markov Chain.
 #'              The lags are mapped to the x - axis in increasing order with the
 #'              corresponding autocorrelation values mapped to the y - axis. \cr
@@ -278,16 +278,16 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
 #' samples <- fit$mcmc_ridge$sampling_matrices
 #'
 #' # uses default lag_max = 30
-#' acl_plot(samples$scale_prior, latex = TRUE)
+#' acf_plot(samples$scale_prior, latex = TRUE)
 #'
 #' # value of lag_max should be adapted depending on the correlation structure
-#' acl_plot(samples$scale[, 1, drop = FALSE], lag_max = 100, latex = TRUE)
+#' acf_plot(samples$scale[, 1, drop = FALSE], lag_max = 100, latex = TRUE)
 #'
 #' @export
 #'
 #' @importFrom rlang .data
 
-acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
+acf_plot <- function(samples, lag_max = 30, latex = FALSE) {
 
   # validate input ----------------------------------------------------------
 
@@ -407,9 +407,9 @@ acl_plot <- function(samples, lag_max = 30, latex = FALSE) {
 
 diagnostic_plots <- function(samples, lag_max = 30, log = FALSE,
                              robust = FALSE, latex = FALSE) {
-  time_plot <- time_plot(samples = samples, log = log, robust = robust, latex = latex)
+  trace_plot <- trace_plot(samples = samples, log = log, robust = robust, latex = latex)
   density_plot <- density_plot(samples = samples, log = log, robust = robust)
-  acl_plot <- acl_plot(samples = samples, lag_max = lag_max)
+  acf_plot <- acf_plot(samples = samples, lag_max = lag_max)
 
-  time_plot / (density_plot | acl_plot)
+  trace_plot / (density_plot | acf_plot)
 }
