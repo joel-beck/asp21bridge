@@ -86,8 +86,8 @@ trace_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
     data = data, mapping = ggplot2::aes(x = .data$time, y = .data$values)
   ) +
     ggplot2::geom_line() +
-    ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plot") +
-    ggplot2::theme_minimal() +
+    ggplot2::labs(x = "Iterations", y = NULL, title = "Trace Plot") +
+    ggplot2::theme_minimal(base_size = 9) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5),
       axis.title = ggplot2::element_text(size = 10)
@@ -110,7 +110,7 @@ trace_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
   if (latex) {
     name <- stringr::str_glue("$\\{name}$")
     plot <- plot +
-      ggplot2::labs(title = latex2exp::TeX(paste("Time Plot for", name)))
+      ggplot2::labs(title = latex2exp::TeX(paste("Trace Plot for", name)))
   }
 
   return(plot)
@@ -206,7 +206,7 @@ density_plot <- function(samples, log = FALSE, robust = FALSE, latex = FALSE) {
       color = "grey50"
     ) +
     ggplot2::labs(x = "Values", y = NULL, title = "Density Estimate") +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 9) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5),
       axis.title = ggplot2::element_text(size = 10)
@@ -327,7 +327,7 @@ acf_plot <- function(samples, lag_max = 30, latex = FALSE) {
     ggplot2::geom_segment(mapping = ggplot2::aes(xend = .data$time, yend = 0)) +
     ggplot2::coord_cartesian(xlim = c(1, min(length(data$time), lag_max))) +
     ggplot2::labs(x = "Lag", y = NULL, title = "Autocorrelation") +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 9) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5),
       axis.title = ggplot2::element_text(size = 10)
@@ -349,10 +349,10 @@ acf_plot <- function(samples, lag_max = 30, latex = FALSE) {
 
 
 
-#' @title Combine time, density and autocorrelation plots for a single
+#' @title Combine trace, density and autocorrelation plots for a single
 #'        Markov Chain into one graphical display
 #'
-#' @description The `diagnostic_plots()` function stacks a time plot on top
+#' @description The `diagnostic_plots()` function stacks a trace plot on top
 #'              of side-by-side density and autocorrelation plots for a single
 #'              Markov Chain. \cr
 #'              This functionality is particularly convenient to analyze both
@@ -366,12 +366,12 @@ acf_plot <- function(samples, lag_max = 30, latex = FALSE) {
 #'                that are shown on the x - axis of the autocorrelation plot. \cr
 #'                Default: 30
 #'
-#' @param log Logical. If TRUE, the y - axis in the time plot and the x - axis
+#' @param log Logical. If TRUE, the y - axis in the trace plot and the x - axis
 #'            in the density plot are transformed to the logarithmic scale. \cr
 #'            Default: FALSE
 #'
 #' @param robust Logical. If TRUE, the first and last percentile of the samples'
-#'               distribution are omitted from the time plot as well as the
+#'               distribution are omitted from the trace plot as well as the
 #'               density plot to avoid a strong influence of outliers. \cr
 #'               Default: FALSE
 #'

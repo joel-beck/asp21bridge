@@ -3,33 +3,33 @@
 
 #' @importFrom rlang .data
 
-mult_time <- function(data, log, free_scale, latex) {
+mult_trace <- function(data, log, free_scale, latex) {
   free_scale <- ifelse(test = free_scale, yes = "free_y", no = "fixed")
 
-  time_p <- data %>%
+  trace_p <- data %>%
     ggplot2::ggplot(mapping = ggplot2::aes(
       x = .data$time, y = .data$vals, color = .data$Parameter
     )) +
     ggplot2::geom_line() +
-    ggplot2::labs(x = "Iterations", y = NULL, title = "Time Plots") +
+    ggplot2::labs(x = "Iterations", y = NULL, title = "Trace Plots") +
     ggplot2::facet_wrap(facets = ggplot2::vars(.data$Parameter), scales = free_scale) +
     ggplot2::guides(color = "none") +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 9) +
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
   if (log) {
-    time_p <- time_p +
+    trace_p <- trace_p +
       ggplot2::scale_y_log10()
   }
 
   if (latex) {
-    time_p <- time_p +
+    trace_p <- trace_p +
       ggplot2::facet_wrap(
         facets = ggplot2::vars(.data$Parameter), scales = free_scale,
         labeller = ggplot2::label_parsed
       )
   }
-  return(time_p)
+  return(trace_p)
 }
 
 
@@ -43,7 +43,7 @@ mult_density <- function(data, log, latex) {
     ) +
     ggplot2::labs(x = "Values", y = NULL, title = "Density Estimates") +
     ggplot2::guides(fill = "none") +
-    ggplot2::theme_minimal() +
+    ggplot2::theme_minimal(base_size = 9) +
     ggplot2::theme(
       plot.title = ggplot2::element_text(hjust = 0.5),
       axis.title = ggplot2::element_text(size = 10)
@@ -71,29 +71,29 @@ mult_density <- function(data, log, latex) {
 
 #' @title Plot multiple Markov Chains together
 #'
-#' @description The `mult_plot()` function allows to combine time and / or
+#' @description The `mult_plot()` function allows to combine trace and / or
 #'              density plots of multiple Markov Chains into a single graphical
 #'              illustration. \cr
-#'              Time plots are displayed separately in facets, density plots
+#'              Trace plots are displayed separately in facets, density plots
 #'              are shown in a ridgeline plot.
 #'
 #' @param samples Model object of the class 'lmls', list or matrix
 #'                containing samples of the MCMC sampler.
 #'
-#' @param type One of the values "time", "density" or "both". \cr
-#'             Controls whether only time plots or only density plots should
+#' @param type One of the values "trace", "density" or "both". \cr
+#'             Controls whether only trace plots or only density plots should
 #'             be included for all chains.
-#'             The option "both" stacks time plots on top of the density plots.
+#'             The option "both" stacks trace plots on top of the density plots.
 #'
-#' @param log Logical. If TRUE, the y - axis in time plots and the x - axis in
+#' @param log Logical. If TRUE, the y - axis in trace plots and the x - axis in
 #'            density plots are transformed to the logarithmic scale. \cr
 #'            Default: FALSE
 #'
-#' @param free_scale Logical. If TRUE, the y - axis scale in time plots is
+#' @param free_scale Logical. If TRUE, the y - axis scale in trace plots is
 #'                   chosen differently for all facets. \cr
 #'                   Default: FALSE
 #'
-#' @param latex Logical. If TRUE, facets in time plots and ridgelines in density
+#' @param latex Logical. If TRUE, facets in trace plots and ridgelines in density
 #'              plots can be labeled by rendered mathematical symbols such as
 #'              greek letters in combination with subscripts and superscripts.
 #'              This option requires the columns of the input matrices to be
@@ -116,8 +116,8 @@ mult_density <- function(data, log, latex) {
 #' # plots all output list elements together for quick overview
 #' mult_plot(samples, type = "both", free_scale = TRUE, latex = TRUE)
 #'
-#' # time plot of location coefficients
-#' mult_plot(samples$location, type = "time", free_scale = TRUE, latex = TRUE)
+#' # trace plot of location coefficients
+#' mult_plot(samples$location, type = "trace", free_scale = TRUE, latex = TRUE)
 #'
 #' # log argument often useful for strictly positive variance parameters
 #' mult_plot(
@@ -130,7 +130,7 @@ mult_density <- function(data, log, latex) {
 #' @importFrom rlang .data
 #' @import patchwork
 
-mult_plot <- function(samples, type = c("time", "density", "both"),
+mult_plot <- function(samples, type = c("trace", "density", "both"),
                       log = FALSE, free_scale = FALSE, latex = FALSE) {
 
   # validate input ----------------------------------------------------------
@@ -181,9 +181,9 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
     ) %>%
     dplyr::mutate(Parameter = factor(.data$Parameter) %>% forcats::fct_inorder())
 
-  # time plot ---------------------------------------------------------------
+  # trace plot ---------------------------------------------------------------
 
-  time_p <- mult_time(
+  trace_p <- mult_trace(
     data = data, log = log, free_scale = free_scale, latex = latex
     )
 
@@ -194,9 +194,9 @@ mult_plot <- function(samples, type = c("time", "density", "both"),
   # output depending on type ------------------------------------------------
 
   if (type == "both") {
-    plot <- time_p / density_p
-  } else if (type == "time") {
-    plot <- time_p
+    plot <- trace_p / density_p
+  } else if (type == "trace") {
+    plot <- trace_p
   } else if (type == "density") {
     plot <- density_p
   }

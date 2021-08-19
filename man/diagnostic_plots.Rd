@@ -2,7 +2,7 @@
 % Please edit documentation in R/diagnostic_plots.R
 \name{diagnostic_plots}
 \alias{diagnostic_plots}
-\title{Combine time, density and autocorrelation plots for a single
+\title{Combine trace, density and autocorrelation plots for a single
 Markov Chain into one graphical display}
 \usage{
 diagnostic_plots(
@@ -21,12 +21,12 @@ containing such a vector or matrix as the only element.}
 that are shown on the x - axis of the autocorrelation plot. \cr
 Default: 30}
 
-\item{log}{Logical. If TRUE, the y - axis in the time plot and the x - axis
+\item{log}{Logical. If TRUE, the y - axis in the trace plot and the x - axis
 in the density plot are transformed to the logarithmic scale. \cr
 Default: FALSE}
 
 \item{robust}{Logical. If TRUE, the first and last percentile of the samples'
-distribution are omitted from the time plot as well as the
+distribution are omitted from the trace plot as well as the
 density plot to avoid a strong influence of outliers. \cr
 Default: FALSE}
 
@@ -42,7 +42,7 @@ Default: FALSE}
 Plot object of the classes "patchwork" and "ggplot".
 }
 \description{
-The \code{diagnostic_plots()} function stacks a time plot on top
+The \code{diagnostic_plots()} function stacks a trace plot on top
 of side-by-side density and autocorrelation plots for a single
 Markov Chain. \cr
 This functionality is particularly convenient to analyze both

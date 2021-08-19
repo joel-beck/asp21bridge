@@ -73,7 +73,7 @@ thin_element <- function(samples, freq) {
 #' samples$location %>%
 #'   burnin(num_burn = 10) %>%
 #'   thinning(freq = 5) %>%
-#'   mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
+#'   mult_plot(type = "trace", latex = TRUE, free_scale = TRUE)
 #'
 #' @export
 
