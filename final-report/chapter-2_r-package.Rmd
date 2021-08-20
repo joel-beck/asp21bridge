@@ -11,47 +11,65 @@ output:
 urlcolor: blue
 linkcolor: blue
 ---
+
 ```{r, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE, warning = FALSE, message = FALSE, fig.align = "center",
-  dpi = 300, collapse = TRUE
+  fig.pos = "t", dpi = 300, collapse = TRUE, error = TRUE
 )
 ```
 
 
 # The `asp21bridge` Package {#package}
 
-This chapter introduces various facettes of the `asp21bridge` package.
+This chapter introduces numerous facets of the `asp21bridge` package.
+
 Section \@ref(guide) explains how to use and combine the functions that are contained in the package most efficiently.
-Section \@ref(mcmc) focuses on the implementation of the Markov Chain Monte Carlo Sampler with Ridge Penalty, links the source code to the mathematical model from chapter \@ref(math) and explains, how the main function `mcmc_ridge()` as well as the helper functions implementing the Metropolis-Hastings algorithm are structured.
-Finally, some additional components of the package development process and ideas that the package is based upon are discussed in section \@ref(development).
+
+Section \@ref(mcmc) focuses on the implementation of the Markov Chain Monte Carlo Sampler with Ridge Penalty, links the source code to the mathematical model from chapter \@ref(math) and explains how the main function `mcmc_ridge()` as well as the helper functions implementing the Metropolis-Hastings algorithm are structured.
+
+Finally, some additional components of the package development process and ideas, that the package is based upon, are discussed in section \@ref(development).
+
+
 
 
 
 ## User Guide {#guide}
 
-This section aims to provide help for new users of the `asp21bridge` package.
+This section aims to provide guidance for new users of the `asp21bridge` package.
 Although all exported functions are fully documented such that function arguments and brief examples can be looked up at the corresponding help page, the following tutorial extends the documentation by illustrating a typical workflow of simulation via the penalized MCMC Sampler, extracting meaningful statistical quantities from the samples and visually analyzing the results.
 
-The `asp21bridge` package inherits all functions from the `lmls` package and exports $9$ additional functions, that can be grouped into three categories:
+The `asp21bridge` package inherits all functions from the `lmls` package and exports $9$ additional functions, which can be grouped into three categories:
 
-- *Sampling*: The whole sampling process is covered by the very flexible and robust `mcmc_ridge()` function that is explained in detail in section \@ref(mcmc-ridge).
+- **Sampling:** The whole sampling process is covered by the very flexible and robust `mcmc_ridge()` function that is explained in detail in section \@ref(mcmc-ridge).
 
-- *Graphical Analysis:* The `trace_plot()`, `density_plot()` and `acf_plot()` functions provide the three most common visualization of a *single* chain's development over time, their distribution and the autocorrelation between the samples.
-Since all of these are *diagnostic* tools, they are combined in the high-level `diagnostic_plots()` function, which simply collects all three plots in a grid and will be used more often than the separate building blocks.
-For visualizing *multiple* chains together, the `mult_plot()` function can be used.
-Several arguments for customizing the graphical output exist.
-In the most basic form, trace plots of all selected chains are displayed in the upper panel while the corresponding density plots are contained in the lower panel.
+- **Graphical Analysis:** The `trace_plot()`, `density_plot()` and `acf_plot()` functions provide the three most common visualizations of a *single* chain's development over time, its distribution and the autocorrelation between the samples.
+    Since all of these are *diagnostic* tools, they are combined in the high-level `diagnostic_plots()` function, which simply collects all three plots in a grid and will be used more often than the separate building blocks.
+    
+    For visualizing *multiple* chains together, the `mult_plot()` function can be used.
+    Several arguments for customizing the graphical output exist.
+    In the most basic form, trace plots of all selected chains are displayed in the upper panel while the corresponding density plots are integrated into the lower panel.
 
-- *Statistical Analysis*: Here, the `summary_complete()` function represents the main tool and provides a more thorough statistical summary than the generic `summary()` function.
+- **Statistical Analysis:** Here, the `summary_complete()` function represents the main tool and provides a more thorough statistical summary than the generic `summary()` function.
 In addition, the `burnin()` and `thinning()` functions are convenient in the context of Markov Chains and in particular for extracting more meaningful features of the samples from the posterior distributions.
+
 
 
 ### Sampling with the `mcmc_ridge()` function {#sampling}
 
-As explained in section \@ref(mcmc-ridge) there are two valid input types for simulating with the `mcmc_ridge()` function:
+```{r, include=FALSE}
+library(asp21bridge)
+user_guide_data <- readr::read_rds(file = here::here("final-report", "user-guide_data.rds"))
+
+toy_fit <- user_guide_data$toy_fit
+abdom_fit <- user_guide_data$abdom_fit
+```
+
+
+As explained in section \@ref(mcmc-ridge), there are two valid input types for simulating with the `mcmc_ridge()` function.
 Most commonly, the sampling procedure will be built upon an existing model that was initialized by the `lmls()` function.
-In this case only the name of the model object is required, although many further arguments can be specified such as the number of simulation `nsim` which is set to $1000$ by default.
+In this case, only the name of the model object is required, although many further arguments can be specified such as the number of simulations `nsim` which is set to $1000$ by default.
+
 The `mcmc_ridge()` function can, however, be used completely independent from the underlying `lmls` package.
 Therefore, the outcome vector $\mathbf{y}$ as well as the design matrices $\mathbf{X}$ and $\mathbf{ Z}$, corresponding to the $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ coefficient vectors respectively (as explained in chapter \@ref(math)), must be manually specified.
 
@@ -59,19 +77,21 @@ In order to illustrate both options, we construct two separate models:
 
 -   The first model uses the built-in `toy_data`, a data set which is specifically designed for introductory tutorials, documentation and unit tests.
     It consists of a column `y` representing a vector of observed values and the explanatory variables `x1`, `x2`, `z1` and `z2.` 
-    The data is simulated according to the correctly specified location-scale regression model from chapter \@ref(math), where all explanatory variables predict the mean of y and only the latter two model the variance.
+    
+    The data is simulated according to the correctly specified location-scale regression model from chapter \@ref(math), where all explanatory variables predict the mean of $\mathbf{y}$ and only the latter two model the variance.
     This example will be used for model evaluation, since the true data generating values $\boldsymbol{\beta} = \begin{pmatrix} 0 & -2 & -1 & 1 & 2 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} 0 & -1 & 1 \end{pmatrix}^T$ are known.
     
-    For the simulations, we use the model object that is created by the `lmls()` function as input and use most of the `mcmc_ridge()` default settings, except for number of simulations which we increase to $10000$.
+    For the simulations, we use the model object that is created by the `lmls()` function as input and use most of the `mcmc_ridge()` default settings, except for the number of simulations, which we increase to $10000$.
 
 -   The second model uses the more realistic `abdom` data set from the `lmls` package.
+
     In this case, we have to provide the data input as well as starting values for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ explicitly.
     Note that the dimension of `beta_start` and `gamma_start` have to match the number of columns in `X` and `Z` in the model *input*.
-    If necessary, the `mcmc_ridge()` functions adds intercept columns to both design matrices, such that the dimension of the coefficient vectors might have increased (as in the case illustrated here) in the model *output*:
+    If necessary, the `mcmc_ridge()` functions adds intercept columns to both design matrices, such that the dimension of the coefficient vectors might have increased (as in the case illustrated here) in the model *output*.
 
-    This example differs from the first model with regards to the conclusions that can be drawn:
+    This example differs from the first one with regards to the conclusions that can be drawn:
     Since the true data generating values of $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 \end{pmatrix}^T$ are *not* known, we have to rely more heavily on the model estimates.
-    The number of simulations is again increased to $10000$ such that stable and statistically valid estimates of posterior characteristics are possible, even if preceding 'burnin' and 'thinning' steps might be required. 
+    The number of simulations is again increased to $10000$ such that statistically valid estimates of posterior characteristics are possible, even if preceding 'burnin' and 'thinning' steps might be required. 
 
 
 ```{r, eval=FALSE}
@@ -94,39 +114,55 @@ abdom_fit <- mcmc_ridge(
 )
 ```
 
-```{r, include=FALSE}
-library(asp21bridge)
-user_guide_data <- readr::read_rds(file = here::here("final-report", "user-guide_data.rds"))
-
-toy_fit <- user_guide_data$toy_fit
-abdom_fit <- user_guide_data$abdom_fit
-```
-
 The different forms of data input cause different structures in the resulting model objects:
 `toy_fit` inherits the model structure as well as the S3 Class `lmls` from the `lmls()` function and adds a list entry `mcmc_ridge` containing the sampling results.
-In contrast, `abdom_fit` only contains matrices filled with the simulated samples and the acceptance probability of the Metropolis-Hastings step for sampling $\boldsymbol{\gamma}$:
+
+In contrast, `abdom_fit` only contains matrices filled with the simulations and the acceptance probability of the Metropolis-Hastings step for sampling $\boldsymbol{\gamma}$:
 
 ```{r}
 str(abdom_fit, max.level = 1)
 ```
 
+
+
+
+
 ### Graphical Analysis {#graphical}
+
+```{r, toy-trace, echo=FALSE, out.width="90%", fig.cap="Trace Plots for all Coefficients, data: toy\\_data"}
+user_guide_data$toy_trace
+```
+
+```{r, abdom-mult, echo=FALSE, out.width="90%", fig.cap="Trace and Density Plots for the Prior Variances, data: abdom"}
+user_guide_data$abdom_mult
+```
+
+```{r, abdom-diag-raw, echo=FALSE, out.width="80%", fig.cap="Diagnostic Plots for $\\beta_1$ before thinning, data: abdom"}
+user_guide_data$abdom_diag_raw
+```
+
+```{r, abdom-diag-thinned, echo=FALSE, out.width="80%", fig.cap="Diagnostic Plots for $\\beta_1$ after thinning, data: abdom"}
+user_guide_data$abdom_diag_thinned
+```
 
 Most statistical analyses start with an exploratory phase.
 To obtain a graphical overview of the simulations, the `mult_plot()` function is convenient to display trace plots and/or density plots for all model coefficients.
-The `free_scale` argument is often useful to obtain a meaningful graphical output, if the parameters are on different numerical scales.
-Setting `latex = TRUE` transforms the coefficient names of the sampling matrices to their corresponding greek symbols, which, although being a purely aesthetic feature, required a surprisingly nontrivial implementation:
 
-```{r}
+The `free_scale` argument is often useful to obtain a meaningful graphical output, if the parameters are on different numerical scales.
+Setting `latex = TRUE` transforms the coefficient names to their corresponding greek symbols, which, although being a purely aesthetic feature, required a surprisingly nontrivial implementation.
+
+```{r, eval=FALSE}
 mult_plot(samples = toy_fit, type = "trace", free_scale = TRUE, latex = TRUE)
 ```
 
-Due to the high number of simulations, the trace plots appear a bit overloaded.
+Figure \@ref(fig:toy-trace) shows trace plots for all coefficients of the `toy_fit` model.
+Due to the high number of simulations, the plot facets appear a bit overloaded.
 Considering the y-axis scales, the samples for the $\boldsymbol{\beta}$ vector show a small variance and fast convergence, whereas the samples for $\gamma_0$ and $\gamma_1$ indicate a significant autocorrelation and no sign of convergence.
 
-The `log` argument can be useful for displaying variance parameters such as $\tau^2$ and $\xi^2$ which are strictly positive:
+The `log` argument can be useful for displaying variance parameters such as $\tau^2$ and $\xi^2$, which are strictly positive.
+Figure \@ref(fig:abdom-mult) illustrates the effect of this option on both, the y-axis of the trace plots as well as the x-axis of the density plots.
 
-```{r, out.width="90%"}
+```{r, eval=FALSE}
 variance_samples <- cbind(
   abdom_fit$sampling_matrices$tau_samples,
   abdom_fit$sampling_matrices$xi_samples
@@ -140,53 +176,58 @@ mult_plot(
 
 Note that the `mult_plot()` function accepts various kinds of input data, such as a complete `lmls` model in the first case or simply one or multiple sampling matrices in the latter case, and correctly extracts the corresponding samples.
 
-To focus on a single Markov chain, the `diagnostic_plots()` function is useful.
-The trace plot of $\beta_1$ for the `abdom_fit` model clearly shows the need for a burnin and thinning step, since the chain seem to converge after roughly $2500$ iterations and the samples are strongly autocorrelated:
+To focus on a single Markov chain, the `diagnostic_plots()` function is useful:
 
-```{r, out.width="80%"}
+```{r, eval=FALSE}
 diagnostic_plots(
   samples = abdom_fit$sampling_matrices$beta_samples[, "beta_1", drop = FALSE],
   lag_max = 100, latex = TRUE
 )
 ```
 
-Thus, we remove the first $2500$ samples and additionally only keep every $10$th simulation.
+Figure \@ref(fig:abdom-diag-raw) clearly shows the need for a burnin and thinning step for $\beta_1$, since the chain seems to converge after roughly $2500$ iterations and the samples are strongly autocorrelated.
+The `lag_max` argument controls the number of lags that are included in the autocorrelation plot.
 
-```{r, out.width="80%"}
+In order to confront these issues, we remove the first $2500$ samples and additionally only keep every $10$th iteration:
+
+```{r, eval=FALSE}
 abdom_fit$sampling_matrices$beta_samples[, "beta_1", drop = FALSE] %>%
   burnin(num_burn = 2500) %>%
   thinning(freq = 10) %>%
   diagnostic_plots(lag_max = 100, latex = TRUE)
 ```
 
-These plots look much better:
-The chain has converged and there is little residual autocorrelation after thinning out the samples.
+The diagnostic plots for $\beta_1$ in Figure \@ref(fig:abdom-diag-thinned) look much better.
+The chain has converged and there is little residual autocorrelation left after thinning out the samples.
 Additionally, the posterior density approximately follows a normal distribution.
 
 Although removing posterior estimates in this way (and arguably losing valuable information) is not uncontroversial in the Bayesian community, statistical estimates from the remaining, well behaved chain are usually more stable and reliable.
-In any case, the above procedure clearly emphasizes the usefulness of a graphical diagnosis of the sampling results as a first step before drawing any far reaching conclusions.
+In any case, the above procedure clearly emphasizes the usefulness of a graphical diagnosis of the sampling results as a preliminary step before drawing any far reaching conclusions.
+
+
+
 
 
 ### Statistical Analysis {#statistical}
 
 At the end of a Bayesian statistical analysis, summary statistics of the posterior distribution are of major interest.
-These include estimates for *centrality* such as the Posterior Mean or the Posterior Median, estimates for the *spread*, e.g. the Posterior Variance and quantile estimates in the tails of the posterior distribution as bounds for credible intervals.
+These include estimates for *centrality*, such as the Posterior Mean or the Posterior Median, estimates for the *spread*, e.g. the Posterior Variance, and quantile estimates in the tails of the posterior distribution as bounds for credible intervals.
 
-The `asp21bridge` package offers two options to quickly access this information.
+The `asp21bridge` package offers two options to quickly access this information:
 If only a quick look at the numerical results without further investigation is desired, the `summary()` function can be used.
 The `lmls` package adapts this generic S3 method to the `lmls` class with an additional `type` argument.
 Specifying `mcmc_ridge` displays the estimates of the `mcmc_ridge()` function.
-Note that this option is only applicable for the `toy_fit` model, which is based on the `lslm` model:
+Note, that this option is only applicable for the `toy_fit` model, which is based on the `lslm` class:
 
 ```{r}
 summary(toy_fit, type = "mcmc_ridge")
 ```
 
 One downside of this approach is that the displayed values are not saved anywhere by default and, thus, cannot be immediately accessed.
-This issue is solved by the more thorough `summary_complete()` function, which conveniently saves all relevant quantities in a data frame, the central object for data analysis in `R`.
+This issue is solved by the more informative `summary_complete()` function, which conveniently saves all relevant quantities in a data frame, the central object for data analysis in `R`.
 
 In the following section we focus on the `toy_data` model, since there the true coefficient values are known, and use the popular `dplyr` package for further data frame manipulations.
-We are primarily interested in Posterior Mean estimates for all coefficients, such that we only select a subset of the output columns and add a new column containing the true coefficient values:
+We are primarily interested in Posterior Mean estimates for all coefficients, such that we only select a subset of the output columns and add a new column containing the true data generating values:
 
 ```{r}
 library(dplyr)
@@ -200,17 +241,18 @@ summary_complete(samples = toy_fit) %>%
   select(Parameter, `Posterior Mean`, Truth, `Standard Deviation`)
 ```
 
-Except for $\gamma_0$, all coefficients are estimated very accurately with a slightly larger deviation form the true values for the remaining $\boldsymbol{\gamma}$ vector, sampled by the Metropolis-Hastings algorithm, compared to the $\boldsymbol{\beta}$ vector which is drawn directly from a multivariate normal distribution.
-Similar to the plotting functions  introduced in section \@ref(graphical), the `summary_complete()` function is very robust with respect to its data input:
+Except for $\gamma_0$, all coefficients are estimated very accurately with a slightly larger deviation form the true values for the remaining $\boldsymbol{\gamma}$ vector, which is sampled by the Metropolis-Hastings algorithm, compared to the $\boldsymbol{\beta}$ vector, which is drawn directly from a multivariate normal distribution.
+
+Similar to the plotting functions introduced in section \@ref(graphical), the `summary_complete()` function is very robust with respect to its data input:
 Besides the whole model object as in the example above, just the `toy_fit$mcmc_ridge` list entry or even simply the sampling matrices `toy_fit$mcmc_ridge$sampling_matrices` are valid inputs, all leading to the same output.
 
-Further, the function has the optional argument `include_plot` argument.
-When set to `TRUE`, one additional `Plot` column is added to the data frame, which leverages the `diagnostic_plots()` function with some default settings and, thus, contains diagnostic plot objects for all coefficients.
+Further, the function has the optional `include_plot` argument.
+If set to `TRUE`, one additional `Plot` column is added to the data frame, which leverages the `diagnostic_plots()` function with some default settings and, thus, contains diagnostic plot objects for all coefficients.
 This option comes in handy in an interactive workflow:
-Particularly interesting findings from the `summary_complete()` output can be quickly extracted from the data frame output without interrupting the current thought process by using the `diagnostic_plots()` function separately.
+Particularly interesting findings from the `summary_complete()` output can be quickly extracted from the data frame without interrupting the current thought process by using the `diagnostic_plots()` function separately.
 
 In the example above, the `gamma_0` row shows a large posterior variance in addition to the large deviation of the Posterior Mean estimate from the true value.
-If we are interested, if the chain suffers from a lack of convergence or a significant autocorrelation, we could create the desired output with the following simple command:
+In order to investigate, if the chain suffers from a lack of convergence or a significant autocorrelation, we could create the desired (yet here omitted) output with the following simple command:
 
 ```{r, eval=FALSE}
 summary_complete(toy_fit, include_plot = TRUE) %>%
@@ -218,59 +260,180 @@ summary_complete(toy_fit, include_plot = TRUE) %>%
   pull(Plot)
 ```
 
-This introductory tutorial is not intended to underline the sampler's performance or validity, but rather provide an overview of various applications, where the `asp21bridge` package can be useful.
-A more in depth analysis of the `mcmc_ridge()` results, also in comparison to alternative models from the `lmls()` and `mcmc()` functions of the underlying `lmls` package, can be found in chapter \@ref(simulations) after explaining some of the internal implementations in section \@ref(mcmc).
+This introductory tutorial is not intended to underline the sampler's performance or validity, but rather provide an overview of the various applications, where the `asp21bridge` package turns out to be useful.
+A more in depth analysis of the `mcmc_ridge()` results, also in comparison to alternatives like the `lmls()` and `mcmc()` functions of the underlying `lmls` package, can be found in chapter \@ref(simulations) after explaining some of the internal implementations in section \@ref(mcmc).
+
+
+
+
 
 
 ## Implementation of the Markov Chain Monte Carlo Sampler {#mcmc}
 
+
+
+
+
 ### Iterative Parameter Sampling {#mcmc-ridge}
+
+
+
+
+
 
 ### Metropolis Hastings Step {#mh}
 
 
 
 
+
+
+
+
 ## Package Development {#development}
 
-This section is dedicated to more niche aspects that come along with the package development process.
-Part \@ref(coverage) focuses on the more formal components of the package, whereas some of the ideas beyond the `asp21bridge` functions are discussed in section \@ref(design).
+This section is dedicated to more niche aspects, that come along with the package development process.
+Part \@ref(coverage) focuses on more formal components of the package, whereas some of the ideas behind the `asp21bridge` functions are discussed in section \@ref(design).
+
+
+
 
 ### Code Coverage {#coverage}
 
 Arguably the most important component of a package for new users is the **documentation**.
 All exported functions of the `asp21bridge` package as well as the `toy_data` data set are fully documented according to common standards for `R` packages.
-Specifically we put effort into precise and not excessively long descriptions of the overall function and their parameters with highlighted default settings.
-The structure of the help pages is kept uniformly across all functions.
-The `examples` section usually starts with the most basic applications signaling the function's *intent* and proceeding with more complex use cases that cover many of the function's optional arguments.
 
-A more elaborate publicly accessible tutorial similar to section \@ref(guide) of this report can be found in the `README` file or the front page of the `asp21bridge` GitLab website.
+Specifically, we put effort into precise, yet not excessively long descriptions of the overall function and their parameters with highlighted default settings.
+The help pages are designed uniformly across all functions.
+The `examples` section usually starts with the most basic applications signaling the function's *intent* and proceeds with more complex use cases that cover many of the function's optional arguments.
 
-A second major aspect, that contributes to the quality of a package are **unit tests**.
-At the time of writing, a total of $251$ unit tests have been written for the `lmls` and the `asp21bridge` packages combined.
-The number of implemented tests alone is, of course, not a meaningful metric, since the tests might be highly redundant and only capture a small fraction of the entire package's functionality.
+A more elaborate, publicly accessible tutorial similar to section \@ref(guide) of this report can be found in the `README` file or the front page of the `asp21bridge` GitLab website.
+
+A second major aspect, that contributes to the quality of a package, are **unit tests**.
+Up to this point, a total of $251$ unit tests have been written for the `lmls` and the `asp21bridge` packages combined.
+The number of implemented tests alone is, of course, not a meaningful metric, since the tests might be highly redundant and capture only a small fraction of the entire package's functionality.
 Thus, we prioritized both *width* and *depth* of the test coverage.
 
 More specifically, unit tests are written for every single exported function with a larger focus on the more complex and more central functions such as the main `mcmc_ridge()` function.
+
 Further, not only simple input checks (which are important nonetheless!), but also more esoteric edge cases and in particular very common use cases of combining inputs and outputs of multiple `asp21bridge` functions are covered.
 Whenever discovering and fixing an unexpected error during the development phase, we implemented corresponding unit tests, such that this specific error will not reoccur in the future.
-Tests are continuously written and updated to ensure a stable and joyful user experience.
+Tests are continuously written and updated to ensure a stable and enjoyable user experience.
 
 At a larger scope, the `R CMD CHECK`, or equivalently the `devtools::check()` command, produces $0$ errors, $0$ warnings and $0$ messages.
-Besides working unit tests, this includes for example correctly specified `DESCRIPTION` and `NAMESPACE` files for all imported and exported functions as well as functioning examples in the documentation.
-The master branch of the `asp21bridge` project will maintain this standard in the foreseeable future; possible new features that could involve breaking changes will first be implemented on separate Git branches and merged into the master branch at a later stage after a thorough testing process.
+Besides working unit tests, this includes correctly specified `DESCRIPTION` and `NAMESPACE` files for all imported and exported functions as well as functioning examples in the documentation.
+The master branch of the `asp21bridge` project will maintain this standard in the foreseeable future; possible new features that could involve breaking changes will first be implemented on separate Git branches and merged into the master branch at a later stage after a thorough testing procedure.
+
+
 
 
 
 
 ### Design Choices {#design}
 
-- pipe operator
+Throughout the development process, we tried to adhere to some 'best practices' for general software development.
+These include several different aspects:
 
-- robustness to inputs and helpful error messages
+**Default Settings:**
 
-- modularity
+For many `asp21bridge` functions, the user has to specify very few inputs manually, since many input options are set to sensible default arguments.
+These inputs are chosen in a *neutral* way, such that the output aligns as best as possible with the user's expectation.
 
-- style conventions (tidyverse style guide and styler package)
+As an example, the default starting values for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ are the Maximum Likelihood estimates from the `lmls()` function, if a model object is provided as input to the `mcmc_ridge()` function.
+This serves as guidance for users with little prior knowledge about their model.
+It is worth noting, however, that there are multiple input parameters which *can* be set manually if desired, enabling fine control over the sampling procedure.
 
-- S3 Class
+**Input Flexibility / Defensive Programming:**
+
+As already mentioned in section \@ref(guide), all exported functions are designed to be as flexible as possible with respect to their input arguments.
+Thus, many functions accept multiple data structures like (nested) lists, data frames, matrices or even simple vectors as data input and internally transforms the input into the desired format.
+
+These transformations, however, are only performed as long as the user's *intention* is clear, e.g. providing the samples as input to a plotting functions regardless of the exact data structure, where the samples are stored.
+Whenever there is ambiguity or the input is simply not valid / incomplete, we have put effort into writing informative error messages.
+
+To illustrate this last point, assume that we had forgotten to provide the second design matrix `Z` as input to our second application example from section \@ref(guide) using the `abdom` data set.
+This might happen quite frequently, especially if the user is not particularly familiar with the structure of location-scale regression models:
+
+```{r}
+y <- abdom$y
+X <- as.matrix(abdom$x)
+
+abdom_fit <- mcmc_ridge(
+  y = y, X = X, beta_start = 1, gamma_start = 1, num_sim = 10000
+)
+```
+
+From the error message, it is immediately obvious which part of the input is missing.
+
+One further quite neat feature is implemented for the generic `summary()` function.
+Since the possible values for the `type` argument are specific to the `lmls` class and therefore a potential reason for confusion, the error message provides some guidance in case of spelling mistakes, suggesting the closest valid input option:
+
+```{r}
+summary(toy_fit, type = "mcmc-ridge")
+```
+
+**Modularity:**
+
+The `lmls` package served as a fantastic example how to design and compose functions in a modular way, leading to independent applications of single small functions in various contexts, easier debugging and arguably better code transparency and readability.
+
+The `asp21bridge` package similarly splits large functions into multiple pieces according to the well known premise, that functions should be doing one thing only, but one thing well.
+Therefore the `mcmc_ridge_helpers` file contains various helper functions for the main `mcmc_ridge()` function, which perform tasks like input validation or inclusion of the Metropolis-Hastings step for the $\boldsymbol{\gamma}$ vector.
+
+However, there is certainly a trade off to keep in mind:
+Since naming functions and variables is notoriously challenging, excessive modularity with poor naming choices can hinder code comprehension by inducing a wrong mental model of the function's task.
+Moreover, it can make sense to keep related functions close together in a physical sense and avoid spreading them across multiple files across the project.
+
+**Coding Style:**
+
+Before starting our work on different parts of the code base, we agreed to a consistent coding style.
+This includes using only lowercase letters and underscores in function and variable names and a limit of $80$ characters per line.
+Here, we mostly conformed to the recommendations from the [tidyverse style guide](https://style.tidyverse.org/) by Hadley Wickham.
+Moreover, we leveraged the [styler](https://styler.r-lib.org/) package for consistent and aesthetically pleasing code formatting.
+
+To extend consistent naming schemes even further, we chose the same argument names for all exported functions whenever possible.
+For instance, the data input for all functions that expect the MCMC simulations is called `samples` and all shared arguments of the $5$ plotting functions are assigned the same name and the same functionality.
+Hence, it often suffices to be familiar with one function of a certain family, since that knowledge can be easily transferred to all related functions.
+
+These conventions allow both new and experienced users of the package easier file navigation and orientation as well as a more enjoyable programming experience overall.
+Finally, there are two design choices, that are very specific to the `asp21bridge` context.
+
+**Operation Chaining:**
+
+First, we aimed to allow for frictionless function composition via the popular `%>%` operator.
+As illustrated in section \@ref(guide), this comes in particularly handy when including `burnin()` and `thinning()` operations in a larger pipeline without the need to define dummy variables for temporary objects:
+
+```{r, eval=FALSE}
+lmls(
+  location = y ~ x1 + x2 + z1 + z2, scale = ~ z1 + z2,
+  data = toy_data, light = FALSE
+) %>%
+  mcmc_ridge(num_sim = 1000) %>%
+  purrr::pluck("mcmc_ridge", "sampling_matrices") %>%
+  burnin(num_burn = 100) %>%
+  thinning(freq = 5) %>%
+  mult_plot(type = "both", free_scale = TRUE, latex = TRUE)
+```
+
+This workflow proved to be so useful, that we provided access to the pipe operator directly by loading the `asp21bridge` package, i.e. we reexported `%>%` from the `magrittr` package.
+Alternatively, one could use the native `|>` pipe introduced in `R 4.1`.
+However, since the release of this `R` version was so recent, it might induce a stronger dependency than just relying on the `%>%` operator, which is ubiquitous at least in the `R` community that is related to the data science field.
+
+There are two conditions that functions must fulfill to chain multiple operations:
+
+- The first argument must be chosen uniformly for all (except the first) involved commands.
+In case of the `asp21bridge` package, *all* exported functions share the `samples` argument at the first position.
+
+- Functions that serve as intermediary steps inside a chain should return the same object type as their input.
+When given a `lmls` model object, the `mcmc_ridge()` function returns a modified (copy of the same) `lmls` model object.
+Even more flexible are the `burnin()` and `thinning()` functions.
+They can take a list of matrices, a single matrix or a numeric vector as input and always return the same provided input data structure.
+
+**Object-Oriented Programming:**
+
+Secondly, we thought about initializing our own S3 class when calling the `mcmc_ridge()` function, but finally decided against it for two reasons:
+We always considered the `asp21bridge` package as a strict extension to the `lmls` package.
+Thus, we did not want to make the underlying `lmls()` results less accessible after using `mcmc_ridge()`, i.e. generic functions like `coef()`, `plot()` or `print()` should in our mind create the same output before and after extending the original model.
+
+One exception is the `summary()` function, as we have already mentioned.
+Here, we added one more option to the `type` argument, which has to be specified anyway, as soon as the `boot()` and/or `mcmc()` function of the `lmls` package are used.
+Apart from that, we could not see much additional value in implementing wrapper functions, which adapt e.g. the `print()` output to the MCMC results with penalty, beyond the already existing tools, that were introduced in section \@ref(guide).

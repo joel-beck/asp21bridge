@@ -18,9 +18,7 @@ knitr::opts_chunk$set(
   dpi = 300, collapse = TRUE
 )
 options(knitr.table.format = "latex")
-```
 
-```{r, include=FALSE}
 pacman::p_load(
   dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
 )
@@ -343,7 +341,7 @@ n_data <- plot_data$n_data
 matplot(t(mean_mean),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
+  xlab = "Sample size", ylab = "", xlim = c(0, 700), lty = 2
 )
 legend(
   x = "right", legend = rownames(mean_mean),
@@ -357,7 +355,7 @@ mean_absolute_error <- plot_data$mean_absolute_error
 matplot(t(mean_absolute_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Sample size", ylab = "", xlim = c(0,700), lty = 2
+  xlab = "Sample size", ylab = "", xlim = c(0, 700), lty = 2
 )
 legend(
   x = "right", legend = rownames(mean_absolute_error),
@@ -428,7 +426,7 @@ array_num_sim <- num_sim_data$array_num_sim
 matplot(t(mean_mean_num_sim),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0, 1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_mean_num_sim),
@@ -443,7 +441,7 @@ array_num_sim <- num_sim_data$array_num_sim
 matplot(t(mean_absolute_error_num_sim),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0, 1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_absolute_error_num_sim),
@@ -458,7 +456,7 @@ array_num_sim <- num_sim_data$array_num_sim
 matplot(t(mean_of_variances_within),
   x = array_num_sim, type = "b", pch = 1, col = 1:6,
   main = " Mean of Variances within the Samples",
-  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0,1300), lty = 2
+  xlab = "Number of MCMC Ridge Simulations", ylab = "", xlim = c(0, 1300), lty = 2
 )
 legend(
   x = "topright", legend = rownames(mean_of_variances_within),
@@ -627,5 +625,3 @@ Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sam
 For the value range of $a_{\tau}$, $b_{\tau}$ and $a_{\xi}$, no distinct pattern is observable in this regard. 
 With growing values of $b_{\xi}$, however, acceptance rates are more likely to grow. 
 Since the acceptance rates are in reasonable ranges enabling statistically valid estimation, these results are not further investigated here.
-
-

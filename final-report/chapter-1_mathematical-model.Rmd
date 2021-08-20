@@ -18,7 +18,9 @@ linkcolor: blue
 This chapter focuses on the underlying theoretical model of Bayesian Ridge Regression in the context of the Gaussian Location-Scale Regression model considered in the `lmls` package.
 First, the distributional assumptions for the parameter vectors $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ as well as the scalar quantities $\tau^2$ and $\xi^2$ are clearly stated.
 Based on these prior distributions, the full conditional distributions of each parameter given all of the remaining model components are derived.
-Throughout this rather theoretical exposition we will build connections from the derived equations to practical consequences that have to be considered in the code implementation discussed in sections \@ref(mcmc-ridge) and \@ref(mh) of chapter \@ref(package).
+Throughout this rather theoretical exposition we will build connections from the derived equations to practical consequences that have to be considered in the code implementation discussed in sections \@ref(mcmc-ridge) and \@ref(mh).
+
+
 
 
 ## Prior Distributions {#prior}
@@ -51,6 +53,8 @@ Thus, the Prior distributions of the parameters in the Bayesian Ridge Regression
 - $\tau^2 \sim IG(a_{\tau}, \, b_{\tau})$, with fixed hyperparameters $a_{\tau}$ and $b_{\tau}$,
 
 - $\xi^2 \sim IG(a_{\xi}, \, b_{\xi})$, with fixed hyperparameters $a_{\xi}$ and $b_{\xi}$.
+
+
 
 
 ## Full Posterior Distribution {#posterior}
@@ -122,6 +126,8 @@ $$
 <!--  -->
 
 
+
+
 ## Full Conditional Distributions {#full-conditional}
 
 The Full Posterior distribution contains complete information about the statistical model.
@@ -129,6 +135,9 @@ For our purposes, we are mostly interested in the Full Conditional Distribution 
 These can be obtained by simply neglecting all factors of the Full Posterior that do not depend on the parameter in consideration.
 
 The Full Conditional distribution can then be recovered by the resulting density kernel, either by recognizing a known distribution or by adding a normalization constant (which, however, is not needed for Markov Chain Monte Carlo sampling).
+
+
+
 
 ### Full Conditional of $\tau^2$: {#tau}
 
@@ -151,6 +160,8 @@ $$
 <!--  -->
 
 
+
+
 ### Full Conditional of $\xi^2$: {#xi}
 
 <!--  -->
@@ -170,6 +181,8 @@ $$
 \end{aligned}
 $$
 <!--  -->
+
+
 
 
 ### Full Conditional of $\boldsymbol{\beta}$: {#beta}
@@ -243,6 +256,8 @@ $$
 <!--  -->
 
 
+
+
 ### Full Conditional of $\boldsymbol{\gamma}$: {#gamma}
 
 Using the notation
@@ -270,7 +285,3 @@ Thus, for sampling from the Full Posterior distribution, it is not feasible to u
 More specifically, we will include a Metropolis Hastings step for sampling the $\boldsymbol{\gamma}$ parameter vector.
 
 Although this 'inconvenience' is not required for $\boldsymbol{\beta}$ (since we can use independent samples from a multivariate normal distribution), we will briefly explore and analyze the convergence properties of the modified version of sampling both $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$ via the Metropolis-Hastings procedure.
-
-
-
-
