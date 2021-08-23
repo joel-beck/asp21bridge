@@ -14,3 +14,15 @@ linkcolor: blue
 
 
 # Appendix {-}
+
+The following paragraphs contain additional information about the **simulation studies** that were covered in chapter \@ref(simulations).
+
+### Section \@ref(corr): Correlated Predictor Variables {.unlisted .unnumbered}
+
+### Section \@ref(outcome): Challenging the Model Assumptions {.unlisted .unnumbered}
+
+### Section \@ref(redundant): Redundant Covariates {.unlisted .unnumbered}
+
+### Section \@ref(n): Sample Size {.unlisted .unnumbered}
+
+### Section \@ref(hyper): Hyperparameters {.unlisted .unnumbered}

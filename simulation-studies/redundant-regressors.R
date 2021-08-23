@@ -13,6 +13,7 @@ create_pairs <- function(n, rho) {
   mvtnorm::rmvnorm(n = n, mean = c(0, 0), sigma = matrix(data = c(1, rho, rho, 1), nrow = 2))
 }
 
+# standardized covariates !!
 create_design_matrix <- function(n, rho, pairs) {
   map(.x = 1:pairs, .f = ~ create_pairs(n = n, rho = rho)) %>%
     do.call(what = cbind, args = .) %>%
