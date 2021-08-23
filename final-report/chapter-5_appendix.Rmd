@@ -19,6 +19,20 @@ The following paragraphs contain additional information about the **simulation s
 
 ### Section \@ref(corr): Correlated Predictor Variables {.unlisted .unnumbered}
 
+The simulation design was chosen in the following way:
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{x}_3 \end{pmatrix}$ is simulated from a three dimensional normal distribution $\mathcal{N}_{3} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} -5 & 2 & 0 \end{pmatrix}^T$ and covariance matrix $\begin{pmatrix} 1 & \rho & \rho \\ \rho & 3 & \rho \\ \rho & \rho & 5 \end{pmatrix}$.
+Hence, the dependence among the regressors is fully determined by the parameter $\rho$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ consists of linear combinations of the regressors $\mathbf{x}_1$ up to $\mathbf{x}_3$, more specifically $\mathbf{ z}_1 = 0.8 \cdot \mathbf{x}_1 + 0.2 \cdot \mathbf{x}_2$ and $\mathbf{ z}_2 = \mathbf{x}_2 - 0.5 \cdot \mathbf{x}_3$.
+
+- In both design matrices intercept columns are added for estimation purposes.
+Moreover, all columns in $\mathbf{X}$ and $\mathbf{ Z}$ are standardized, i.e. mean-centered around $0$ and scaled to unit variance.
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_3 \end{pmatrix}^T = \begin{pmatrix} 0 & 3 & -1 & 1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 2 & 0 \end{pmatrix}^T$.
+
+- Three different values were chosen for $\rho \in \left\{ 0, -0.5, 0.9 \right\}$ to compare the 'nice' case of uncorrelated predictors with the performance for negative and positive dependence.
+For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted, where each Posterior Mean estimate from both of the Markov Chain Monte Carlo samplers is based on $10000$ samples.
+
 ### Section \@ref(outcome): Challenging the Model Assumptions {.unlisted .unnumbered}
 
 ### Section \@ref(redundant): Redundant Covariates {.unlisted .unnumbered}

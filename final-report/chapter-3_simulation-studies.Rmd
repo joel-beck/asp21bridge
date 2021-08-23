@@ -70,72 +70,60 @@ corr_regressors_list <- readr::read_rds(
 ```
 
 Up to this point, we have often illustrated the usage and results of the `mcmc_ridge()` sampler with simulated data from the built-in `toy_data` set.
-There, each regressor variable is independently sampled from a normal distribution and the outcome variable is simulated based on a correctly specified location-scale regression model $y_i \sim \mathcal{N}_{} \left( \mathbf{x}^T_i \boldsymbol{\beta}, \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2 \right)$.
+As stated in section \@ref(guide), each regressor variable is independently sampled from a normal distribution and the outcome variable is simulated based on the correctly specified location-scale regression model introduced in chapter \@ref(math).
 All these conditions lead to an excellent performance of the `mcmc_ridge()` sampler, but might arguably not represent the most challenging task.
 
 Sections \@ref(corr) and \@ref(outcome) analyze the sampler's performance on simulated data, which might be closer to data found in the real world.
-First, we will induce correlation among the predictor variables, whereas in the following section the distributional assumptions are considerably changed.
+First, we will induce correlation among the predictor variables, whereas in the second part the distributional assumptions are considerably changed.
 Further, the `mcmc_ridge()` performance is compared to the Maximum Likelihood based `lmls()` estimates and the Markov Chain Monte Carlo `mcmc()` sampler without penalty from the `lmls` package.
 
 ### Simulation Setting {.unlisted .unnumbered}
 
-- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 & \mathbf{x}_3 \end{pmatrix}$ is simulated from a three dimensional normal distribution $\mathcal{N}_{3} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} -5 & 2 & 0 \end{pmatrix}^T$ and covariance matrix $\begin{pmatrix} 1 & \rho & \rho \\ \rho & 3 & \rho \\ \rho & \rho & 5 \end{pmatrix}$.
-Hence, the dependence among the regressors is fully determined by the parameter $\rho$.
+Briefly stated, we simulated data from a three dimensional multivariate normal distribution with three different values for the pairwise correlation $\rho$.
+Then, we fitted the three models `mcmc_ridge()`, `mcmc()` and `lmls()`, where the number of simulations was set to $10000$ for the Bayesian Samplers.
+The exact simulation setting is described in full detail in the Appendix.
 
-- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ consists of linear combinations of the regressors $\mathbf{x}_1$ up to $\mathbf{x}_3$, more specifically $\mathbf{ z}_1 = 0.8 \cdot \mathbf{x}_1 + 0.2 \cdot \mathbf{x}_2$ and $\mathbf{ z}_2 = \mathbf{x}_2 - 0.5 \cdot \mathbf{x}_3$.
-
-- In both design matrices intercept columns are added for estimation purposes. 
-The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 & \beta_3 \end{pmatrix}^T = \begin{pmatrix} 0 & 3 & -1 & 1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 2 & 0 \end{pmatrix}^T$.
-
-- Three different values were chosen for $\rho \in \left\{ 0, -0.5, 0.9 \right\}$ to compare the 'nice' case of uncorrelated predictors with the performance for negative and positive dependence.
-For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lmls()` were fitted, where each Posterior Mean estimate from both of the Markov Chain Monte Carlo samplers is based on $1000$ samples.
-
-- Moreover, we compared the performance of the usual `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
-The latter is initiated by the `mcmc_ridge()` argument `mh_location = TRUE`. 
-The variance of the corresponding proposal distribution is set to a carefully chosen default value, but can be manually changed by means of the `prop_var_loc` argument.
+Moreover, we compared the performance of the classical `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
 
 ### Simulation Results {.unlisted .unnumbered}
-
-```{r, corr-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Correlation Structures - One Simulation Cycle", fig.pos="t"}
-corr_regressors_list$plot_single_sim
-```
 
 ```{r, corr-plot-many, echo=FALSE, fig.height=4, fig.cap="Comparison of Correlation Structures - 50 Simulation Cycles", fig.pos="t"}
 corr_regressors_list$plot_many_sims
 ```
 
-Figure \@ref(fig:corr-plot-single) displays the posterior mean estimates for both MCMC samplers and the Maximum Likelihood estimates for the `lmls()` function of one complete simulation cycle.
-For a better visual comparison the true values for each coefficient are indicated by grey circles, whereas the acceptance rate(s) of the Metropolis-Hastings algorithm used in the sampling process are provided in grey boxes.
+All three models perform very similarly for each correlation structure:
+The estimates for $\boldsymbol{\beta}$ are almost exactly equal to the true values, whereas there are slight deviations for the $\boldsymbol{\gamma}$ vector.
+These errors, however, are consistent in all three sampling scenarios and, thus, do not depend on the strength nor the direction of the correlation between the covariates.
+Due to this similarity between the three models, the remaining analysis of this simulation study is dedicated to the `mcmc_ridge()` model.
 
-The scaling of the $x$ - axis is dominated by one outlier in the lower panel for each correlation structure.
-While the Metropolis-Hastings approach for $\boldsymbol{\beta}$ performs moderately well for most of the coefficients, it massively overestimates the intercept $\beta_0$.
+There is one additional aspect to be noted:
+The performance of the `mcmc_ridge()` function is considerably worse, when $\boldsymbol{\beta}$ is sampled by means of the Metropolis-Hastings algorithm.
+Although the acceptance rates of the proposed values are in acceptable ranges for a random walk proposal (between $35$% and $40$%), the chains are strongly correlated and did not fully converge even after $10000$ iterations.
+For that reason, we limit the Metropolis-Hastings sampling process for $\boldsymbol{\beta}$ to this one example and will focus on the classical `mcmc_ridge()` implementation in the remaining parts of chapter \@ref(simulations).
 
-This observation can be made across many different data sets: In some special cases the performance is close to (but never better) than sampling directly and independently from a multivariate normal distribution. 
-However, most of the time the performance is significantly worse and the samples show (obviously) much larger correlation requiring a higher number of simulations for stable estimation. 
-For that reason, we limit the Metropolis-Hastings sampling process for $\boldsymbol{\beta}$ to this one illustration and will focus on the classical `mcmc_ridge()` implementation in the remaining parts of the report.
+The corresponding graphical display for the comparison between the three models and between the two sampling procedures for $\boldsymbol{\beta}$ is omitted here for brevity reasons, since the findings are not that surprising.
+The code as well as all plots can be found and fully reproduced in the `regressor-correlation.R` file located inside of the `simulation-studies` folder of the project directory.
 
-The upper panel in Figure \@ref(fig:corr-plot-single) indicates a very good performance by all three estimation procedures in consideration.
-Further, all acceptance probabilities are in a reasonable range supporting a fast convergence of all Markov Chains.
 
-It is important to remember, that each point in the plot only represents exactly one measurement.
-In order to make any conclusions about bias and variance of the different estimation models, the above procedure is repeated $50$ times.
-The black points in Figure \@ref(fig:corr-plot-many) represent the mean of these $50$ Posterior Mean estimates.
+In order to make any conclusions about bias and variance, the above procedure is repeated $50$ times with $1000$ simulations each.
+The black points in Figure \@ref(fig:corr-plot-many) represent the mean of these $50$ Posterior Mean estimates from the penalized Ridge sampler.
+For a better visual comparison, the true values for each coefficient are indicated by grey circles.
 Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
 
-Further investigations have shown that the `mcmc_ridge()`, the `mcmc()` and the `lmls()` functions perform very similar for each correlation structure.
-For that reason only the results of the `mcmc_ridge()` sampler are shown in Figure \@ref(fig:corr-plot-many).
+These intervals are very narrow and centered around the true value in all cases except for $\gamma_1$, where the estimated are biased upwards for all correlation structures.
+This result is somewhat surprising, since the Ridge penalty might suggest a bias towards zero.
+Although the `mcmc_ridge()` function does indeed show the greatest variability across many different scenarios for the $\boldsymbol{\gamma}$ vector which is sampled via Metropolis-Hastings, this upward bias is not consistent and might be induced by chance in this case.
 
-There are three conclusions from this first simulation study:
+Further, it is worth noting that the results are partially affected by the standardization of the covariates:
+Although the behaviour illustrated here is quite similar overall to the performance for unstandardized data (as used for the second report), there are two differences:
 
-1. The correlation structure does not have a significant impact of the sampling results.
-The three plot facets look almost identical.
+- The variability of the Posterior Mean estimates of $\beta_0$ is significantly reduced. 
+This indicates a greater sampling stability for the standardized case.
 
-1. The `mcmc_ridge()` sampler (as well as the `mcmc()` and `lmls()` functions) are very robust towards correlated data and perform extremely well. 
-In particular, all three approaches (visually and numerically) provide close to unbiased estimates.
+- The bias of the Posterior Mean estimates of $\gamma_1$ is not present, when the design matrices are not centered and scaled (referring to the second report).
+This again suggests that the finding in the standardized case is due to randomness, since there is no convincing explanation why upward bias should be connected to scaled covariates.
 
-1. The variability among the $\boldsymbol{\beta}$ estimates is almost nonexistent, such that results from a single simulation cycle are already reliable and representative.
-While the estimates for the $\boldsymbol{\gamma}$ vector are still correct on average, the variability across different simulations is significant (particularly for $\gamma_0$).
-Thus, averaging the results from multiple repetitions of the sampling process is advisable.
+
 
 
 

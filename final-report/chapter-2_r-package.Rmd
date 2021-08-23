@@ -270,7 +270,9 @@ A more in depth analysis of the `mcmc_ridge()` results, also in comparison to al
 
 ## Implementation of the Markov Chain Monte Carlo Sampler {#mcmc}
 
-
+Of all components that the `asp21bridge` package is built upon, the implementation of the `mcmc_ridge()` function is of special interest from a statistical perspective.
+Thus, section \@ref(mcmc-ridge) explains both the overall structure of the `mcmc_ridge()` function and the Gibbs Sampler that is responsible for inducing the Ridge penalty.
+Section \@ref(mh) is dedicated to the integrated Metropolis-Hastings step, which is used for sampling $\boldsymbol{\gamma}$ and, if desired, $\boldsymbol{\beta}$ as well.
 
 
 

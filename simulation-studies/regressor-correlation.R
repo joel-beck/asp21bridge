@@ -13,11 +13,16 @@ create_data <- function(rho, n) {
       rho, rho, 5
     ), nrow = 3)
   )
+  # standardize columns in X
+  X <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+  
   beta <- c(3, -1, 1)
 
   z1 <- 0.8 * X[, 1] + 0.2 * X[, 2]
   z2 <- X[, 2] - 0.5 * X[, 3]
   Z <- cbind(z1, z2)
+  # standardize columns in Z
+  Z <- apply(Z, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
 
   gamma <- c(2, 0)
 
@@ -79,7 +84,7 @@ full_data <- crossing(rho = c(-0.5, 0, 0.9), mh_loc = c(FALSE, TRUE)) %>%
   mutate(model = map2(
     .x = cor_data,
     .y = mh_loc,
-    .f = ~ create_fit(data = .x, mh_location = .y, num_sim = 1000)
+    .f = ~ create_fit(data = .x, mh_location = .y, num_sim = 10000)
   )) %>%
   mutate(coefs = map(.x = model, .f = extract_coefs)) %>%
   mutate(accep_rate = map(.x = model, .f = extract_accep_rate)) %>%
@@ -127,7 +132,7 @@ plot_single_sim <- plot_data_single_sim %>%
     size = 1
   ) +
   geom_label(
-    mapping = aes(label = acc_label), x = 20, y = 1.5, color = "grey50", size = 2
+    mapping = aes(label = acc_label), x = -2, y = 1.5, color = "grey50", size = 2
   ) +
   facet_grid(rows = vars(mh_loc), cols = vars(rho)) +
   labs(
@@ -252,12 +257,11 @@ plot_many_sims <- plot_data %>%
   ) +
   geom_errorbar(
     mapping = aes(
-      # xmin = mean_estimate - 1.96 * se, xmax = mean_estimate + 1.96 * se
       xmin = lower, xmax = upper
     ),
-    color = "grey10", linetype = "dashed", width = 0.3
+    color = "grey10", linetype = "solid", width = 0.2, size = 0.5
   ) +
-  geom_point(mapping = aes(x = mean_estimate)) +
+  geom_point(mapping = aes(x = mean_estimate), size = 1) +
   facet_wrap(facets = vars(rho)) +
   scale_y_discrete(
     labels = parse(text = levels(plot_data$Parameter))
