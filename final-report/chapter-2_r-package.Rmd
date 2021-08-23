@@ -92,7 +92,8 @@ In order to illustrate both options, we construct two separate models:
     This example differs from the first one with regards to the conclusions that can be drawn:
     Since the true data generating values of $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 \end{pmatrix}^T$ are *not* known, we have to rely more heavily on the model estimates.
     The number of simulations is again increased to $10000$ such that statistically valid estimates of posterior characteristics are possible, even if preceding 'burnin' and 'thinning' steps might be required. 
-
+    
+    Note, that we first standardize the covariates in this case, which is strongly recommended when working with penalized methods.
 
 ```{r, eval=FALSE}
 library(asp21bridge)
@@ -104,9 +105,10 @@ toy_fit <- lmls(
 ) %>%
   mcmc_ridge(num_sim = 10000)
 
+standardize <- function(x) (x - mean(x)) / sd(x)
 y <- abdom$y
-X <- as.matrix(abdom$x)
-Z <- as.matrix(abdom$x)
+X <- as.matrix(standardize(abdom$x))
+Z <- X
 
 abdom_fit <- mcmc_ridge(
   y = y, X = X, Z = Z, beta_start = 1, gamma_start = 1,
@@ -185,14 +187,14 @@ diagnostic_plots(
 )
 ```
 
-Figure \@ref(fig:abdom-diag-raw) clearly shows the need for a burnin and thinning step for $\beta_1$, since the chain seems to converge after roughly $2500$ iterations and the samples are strongly autocorrelated.
+Figure \@ref(fig:abdom-diag-raw) clearly shows the need for a burnin and thinning step for $\beta_1$, since the chain varies heavily among the first iterations and the samples are strongly autocorrelated.
 The `lag_max` argument controls the number of lags that are included in the autocorrelation plot.
 
-In order to confront these issues, we remove the first $2500$ samples and additionally only keep every $10$th iteration:
+In order to confront these issues, we remove the first $500$ samples and additionally only keep every $10$th iteration:
 
 ```{r, eval=FALSE}
 abdom_fit$sampling_matrices$beta_samples[, "beta_1", drop = FALSE] %>%
-  burnin(num_burn = 2500) %>%
+  burnin(num_burn = 500) %>%
   thinning(freq = 10) %>%
   diagnostic_plots(lag_max = 100, latex = TRUE)
 ```
@@ -260,7 +262,7 @@ summary_complete(toy_fit, include_plot = TRUE) %>%
   pull(Plot)
 ```
 
-This introductory tutorial is not intended to underline the sampler's performance or validity, but rather provide an overview of the various applications, where the `asp21bridge` package turns out to be useful.
+This introductory tutorial is not intended to validate the sampler's performance nor to interpret the obtained coefficient estimates, but rather to provide an overview of the various applications, where the `asp21bridge` package turns out to be useful.
 A more in depth analysis of the `mcmc_ridge()` results, also in comparison to alternatives like the `lmls()` and `mcmc()` functions of the underlying `lmls` package, can be found in chapter \@ref(simulations) after explaining some of the internal implementations in section \@ref(mcmc).
 
 

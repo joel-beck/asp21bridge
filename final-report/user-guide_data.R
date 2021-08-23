@@ -7,9 +7,10 @@ toy_fit <- lmls(
 ) %>%
   mcmc_ridge(num_sim = 10000)
 
+standardize <- function(x) (x - mean(x)) / sd(x)
 y <- abdom$y
-X <- as.matrix(abdom$x)
-Z <- as.matrix(abdom$x)
+X <- as.matrix(standardize(abdom$x))
+Z <- X
 
 abdom_fit <- mcmc_ridge(y = y, X = X, Z = Z, beta_start = 1, gamma_start = 1, num_sim = 10000)
 
