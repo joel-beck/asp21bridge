@@ -19,7 +19,12 @@ create_data <- function(outcome_dist = c("norm", "t", "unif"), n) {
   z3 <- rt(n = n, df = 10)
 
   X <- cbind(x1, x2, x3, x4)
+  # standardize columns in X
+  X <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+  
   Z <- cbind(x1, x2, z3)
+  # standardize columns in Z
+  Z <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
 
   # true coefficient values
   beta <- c(-3, -1, -1, 2)
@@ -117,6 +122,7 @@ show_results <- function(seed = NULL, n, num_sim) {
 
   plot_single_sim <- plot_data_single_sim %>%
     ggplot(mapping = aes(x = value, y = Parameter, color = name)) +
+    geom_vline(xintercept = 0, color = "grey60", linetype = "dotted") + 
     geom_point(
       mapping = aes(x = truth), color = "grey80", fill = "transparent",
       size = 6, shape = 21
@@ -149,10 +155,10 @@ show_results <- function(seed = NULL, n, num_sim) {
 #   ____________________________________________________________________________
 #   Data and Plot for Single Simulation                                     ####
 
-seed_2 <- show_results(seed = 2, n = 50, num_sim = 1000)
+seed_123 <- show_results(seed = 123, n = 50, num_sim = 10000)
 
-data_single_sim <- seed_2$results
-plot_single_sim <- seed_2$plot
+data_single_sim <- seed_123$results
+plot_single_sim <- seed_123$plot
 
 
 #   ____________________________________________________________________________

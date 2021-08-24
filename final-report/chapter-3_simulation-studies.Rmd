@@ -345,7 +345,15 @@ This property is beneficial for the red points, since the estimates clutter arou
 However, the coefficients corresponding to the green points are penalized as well such that a bias towards zero is induced, which is not present for the two unpenalized models.
 Hence, the hypothesized shrinkage effect can indeed be observed.
 
-In order to take a closer look on this shrinkage effect, we calculate the sum of squared coefficient estimates, i.e. the squared Euclidean norm $\left \Vert \boldsymbol{\beta} \right \Vert^2$, for each model.
+It is insightful to compare the observed effect from the Ridge penalty to the expected effect of the *LASSO* penalty.
+The LASSO penalty encourages *sparse* solutions: each coefficient is assigned the same weight such that shrinkage of large estimates is not preferred over shrinkage of small estimates. Thus, small estimates are often set to exactly zero, while large estimates, although reduced, can still be significantly different from zero.
+
+In contrast, the Ridge penalty generally does not induce sparsity.
+In fact, quite the opposite can be the case: Small coefficient estimates such as $\beta_{14}$ in Figure \@ref(fig:red-regr-plot) are sometimes *increased* in magnitude compared to the unpenalized models.
+Large estimates such as $\beta_4$ or $\beta_6$, however, are reduced in size quite heavily.
+The Ridge penalty tries to put all coefficients on the same scale and, thus, prioritizes shrinkage of large estimates compared to small ones!
+
+In order to quantify the observed shrinkage effect from Figure \@ref(fig:red-regr-plot) numerically, we calculate the sum of squared coefficient estimates, i.e. the squared Euclidean norm $\left \Vert \boldsymbol{\beta} \right \Vert^2$, for each model.
 Moreover, these magnitudes are compared separately for all coefficients correspoding to relevant regressors (those with an *odd* subscript) and those correspoding to redundant regressors (*even* subscript).
 Table \@ref(tab:coef-norms) summarizes the results.
 
@@ -366,7 +374,7 @@ The `lmls()` model is very close to the perfect value for the second group, indi
 However, as we have seen in Figure \@ref(fig:red-regr-plot), this conclusion does not transfer to the individual estimates due to the significant variability among the estimates.
 
 The most interesting and reassuring finding is obtained from the `mcmc_ridge()` vector norms:
-In agreement to the visual illustration of Figure Figure \@ref(fig:red-regr-plot), the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
+In agreement with the visual illustration, the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
 While this property induces a bias that is not desired for the second column (underestimating the true values on average), it does indeed prevent overfitting by shrinking the coefficients corresponding to the redundant covariates, which is indicated by the lowest value in the first column.
 In that sense, the Ridge penalty increases the model *robustness* in presence of a high number of (correlated) regressors and often leads to an overall lower Mean Squared Error due to the reduction in variance.
 

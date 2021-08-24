@@ -44,7 +44,7 @@ $$
 <!--  -->
 where the notation $\boldsymbol{\beta} = \left(\beta_0,...,\beta_K \right) \in \mathbb{R}^{K+1}$ , $\tilde{ \boldsymbol{\beta}} = \left(\beta_1,...,\beta_K \right) \in \mathbb{R}^K$ and, analogously, $\boldsymbol{\gamma} = \left(\gamma_0,...,\gamma_J \right) \in \mathbb{R}^{J+1}$, $\tilde{ \boldsymbol{\gamma}} = \left(\gamma_1,...,\gamma_J \right) \in \mathbb{R}^J$ is used.
 
-Thus, the Prior distributions of the parameters in the Bayesian Ridge Regression model are given by
+Thus, the Prior distributions of the parameters in the Bayesian Ridge Regression model, which are responsible for the regularizing effect compared to models without penalty, are given by
 
 - $\tilde{\boldsymbol{\beta}}\mid \tau^2 \sim \mathcal{N} \left( \mathbf{0}, \, \tau^2 \cdot \mathbf{ I}_K \right)$,
 
