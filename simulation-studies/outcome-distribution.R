@@ -19,20 +19,19 @@ create_data <- function(outcome_dist = c("norm", "t", "unif"), n) {
   z3 <- rt(n = n, df = 10)
 
   X <- cbind(x1, x2, x3, x4)
-  # standardize columns in X
-  X <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
-  
   Z <- cbind(x1, x2, z3)
-  # standardize columns in Z
-  Z <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
 
   # true coefficient values
-  beta <- c(-3, -1, -1, 2)
-  gamma <- c(1, 2, 3)
+  beta <- c(-10, -5, -3, -1)
+  gamma <- c(3, 5, 10)
+  
+  # standardize columns in X and Z
+  X_stand <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+  Z_stand <- apply(Z, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
 
   y <- vector(mode = "numeric", length = n)
 
-  # simulate different observation models
+  # generate y with unstandardized data
   for (i in seq_along(y)) {
     mu <- sum(X[i, ] * beta)
     sigma <- exp(sum(Z[i, ] * gamma))
@@ -47,13 +46,17 @@ create_data <- function(outcome_dist = c("norm", "t", "unif"), n) {
     }
   }
 
-  return(tibble(y = y, x1 = x1, x2 = x2, x3 = x3, x4 = x4, z3 = z3))
+  return(tibble(
+    y = y, x1_stand = X_stand[, 1], x2_stand = X_stand[, 2], 
+    x3_stand = X_stand[, 3], x4_stand = X_stand[, 4], z3_stand = Z_stand[, 3]
+  ))
 }
 
-# fit lmls(), mcmc() and mcmc_ridge() to given data
+# fit lmls(), mcmc() and mcmc_ridge() to standardized data
 create_fit <- function(df, num_sim) {
   lmls(
-    location = y ~ x1 + x2 + x3 + x4, scale = ~ x1 + x2 + z3,
+    location = y ~ x1_stand + x2_stand + x3_stand + x4_stand,
+    scale = ~ x1_stand + x2_stand + z3_stand,
     data = df, light = FALSE
   ) %>%
     mcmc(nsim = num_sim) %>%
@@ -122,18 +125,18 @@ show_results <- function(seed = NULL, n, num_sim) {
 
   plot_single_sim <- plot_data_single_sim %>%
     ggplot(mapping = aes(x = value, y = Parameter, color = name)) +
-    geom_vline(xintercept = 0, color = "grey60", linetype = "dotted") + 
-    geom_point(
-      mapping = aes(x = truth), color = "grey80", fill = "transparent",
-      size = 6, shape = 21
-    ) +
+    geom_vline(xintercept = 0, color = "grey50", linetype = "dotted") +
+    # geom_point(
+    #   mapping = aes(x = truth), color = "grey80", fill = "transparent",
+    #   size = 6, shape = 21
+    # ) +
     geom_point(
       position = position_dodge(width = 0.5), size = 1
     ) +
     facet_wrap(facets = vars(outcome_dist), scales = "free_x") +
     labs(
       title = "Posterior Means / MLE for (misspecified) Regression Models",
-      subtitle = "True coefficient values are marked by grey circles",
+      #subtitle = "True coefficient values are marked by grey circles",
       x = "Coefficient Estimate", y = NULL, color = NULL
     ) +
     scale_x_continuous(breaks = scales::breaks_pretty()) +
@@ -155,16 +158,22 @@ show_results <- function(seed = NULL, n, num_sim) {
 #   ____________________________________________________________________________
 #   Data and Plot for Single Simulation                                     ####
 
-seed_123 <- show_results(seed = 123, n = 50, num_sim = 10000)
+single_sim_list <- show_results(seed = 2, n = 50, num_sim = 1000)
 
-data_single_sim <- seed_123$results
-plot_single_sim <- seed_123$plot
+data_single_sim <- single_sim_list$results
+plot_single_sim <- single_sim_list$plot
+
+coef_norms_single_sim <- data_single_sim %>% 
+  pivot_longer(cols = mcmc_ridge:lmls) %>% 
+  group_by(name, outcome_dist) %>% 
+  summarise(norm = sum(value^2)) %>% 
+  pivot_wider(names_from = outcome_dist, values_from = norm)
 
 
 #   ____________________________________________________________________________
 #   Data and Plot for Many Simulations                                      ####
 
-SAVE_SIMS <- FALSE
+SAVE_SIMS <- TRUE
 
 if (SAVE_SIMS) {
   plan(multisession, workers = 8)
@@ -226,13 +235,14 @@ plot_data_many_sims <- bind_rows(many_sims$result) %>%
 
 plot_many_sims <- plot_data_many_sims %>%
   ggplot(mapping = aes(x = mean_estimate, y = Parameter, color = name)) +
-  geom_point(
-    mapping = aes(x = truth), color = "grey80", fill = "transparent",
-    size = 6, shape = 21
-  ) +
+  geom_vline(xintercept = 0, color = "grey50", linetype = "dotted") +
+  # geom_point(
+  #   mapping = aes(x = truth), color = "grey80", fill = "transparent",
+  #   size = 6, shape = 21
+  # ) +
   geom_errorbar(
     mapping = aes(xmin = lower, xmax = upper, color = name),
-    linetype = "dashed", width = 0.5, position = position_dodge(width = 0.5),
+    linetype = "solid", width = 0.5, position = position_dodge(width = 0.5),
     show.legend = FALSE
   ) +
   geom_point(
@@ -243,10 +253,11 @@ plot_many_sims <- plot_data_many_sims %>%
   scale_y_discrete(
     labels = parse(text = levels(plot_data_many_sims$Parameter))
   ) +
+  scale_x_continuous(breaks = scales::breaks_pretty()) +
   guides(color = guide_legend(reverse = TRUE)) +
   labs(
     title = "Empirical 90% Confidence Intervals for Posterior Mean Estimates",
-    subtitle = "True coefficient values are marked by grey circles",
+    # subtitle = "True coefficient values are marked by grey circles",
     x = "Estimate", y = NULL, color = NULL
   ) +
   theme_light(base_size = 9) +
@@ -258,6 +269,12 @@ plot_many_sims <- plot_data_many_sims %>%
 
 plot_many_sims
 
+coef_norms_many_sims <- plot_data_many_sims %>% 
+  filter(Parameter != "beta[0]" & Parameter != "gamma[0]") %>% 
+  group_by(name, outcome_dist) %>% 
+  summarise(norm = sum(mean_estimate^2)) %>% 
+  pivot_wider(names_from = outcome_dist, values_from = norm)
+
 
 
 #   ____________________________________________________________________________
@@ -265,10 +282,12 @@ plot_many_sims
 
 readr::write_rds(
   x = list(
-    data_single_sim = data_single_sim,
-    plot_single_sim = plot_single_sim,
+    # data_single_sim = data_single_sim,
+    # plot_single_sim = plot_single_sim,
+    # coef_norms_single_sim = coef_norms_single_sim,
     data_many_sims = data_many_sims,
-    plot_many_sims = plot_many_sims
+    plot_many_sims = plot_many_sims,
+    coef_norms_many_sims = coef_norms_many_sims
   ),
   file = here::here("simulation-studies", "outcome-distribution.rds")
 )

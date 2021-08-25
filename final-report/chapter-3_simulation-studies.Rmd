@@ -32,21 +32,27 @@ library(asp21bridge)
 # Simulation Studies {#simulations}
 
 This chapter investigates the effect of manipulating some of the `mcmc_ridge()` inputs and thereby sampling parameters in a controlled environment, such that changes in the estimation outcome can be directly linked to respective changes in the model inputs.
-After an introductory exploration phase, we decided for a subset of all possible model variations that indicated the greatest potential for interesting and relevant findings.
+The simulation studies discussed in this chapter can be categorized into three groups:
 
-As a result, the simulation studies discussed in this chapter will be conducted on the following components:
+1. Evaluating the **quality** and **robustness** of the sampler.
 
-- The **data** input (sections \@ref(corr), \@ref(outcome) and \@ref(redundant)), which is captured by the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
-Here, the sampler's *robustness* as well as the *shrinkage effect* of the Ridge penalty is tested across various scenarios.
+    Sections \@ref(corr) and \@ref(outcome) create data configurations that can be challenging for estimation.
+    The variation in the input parameters is therefore focused on the function argument `m` or alternatively the combination of `X`, `Z` and `y`.
+    Section \@ref(n) is dedicated to manipulating the sample size through the input parameter `n`.
+    Here, we are looking for a possible stabilization process with increasing size of the input data hinting at asymptotic/convergence properties.
+    
+2. Investigating the **penalty** effect.
 
-- The **sample size** `n` (section \@ref(n)).
-Here, we are looking for a possible stabilization process with increasing size of the input data hinting at *asymptotic*/*convergence* properties.
+    Sections \@ref(redundant) and \@ref(outcome) replicate real world estimation scenarios, where the `mcmc_ridge()` sampler is primarily chosen for the desired regularization effect.
+    To emphasize the shrinkage effect on the coefficient estimates, the `mcmc_ridge()` model is compared to the `lmls()` and the `mcmc()` models from the `lmls` package, which do not leverage a penalty. 
 
-- The **hyperparameters** `a_tau`, `b_tau`, `a_xi` and `b_xi` (section \@ref(hyper)) of the Inverse Gamma prior distribution of the variance parameters $\tau^2$ and $\xi^2$, as specified in the first report.
-The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
-Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
+3. Exploring the effect of the **hyperparameters**.
 
-Since the resulting simulation studies serve different purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
+    Section \@ref(hyper) analyzes the connection between variation of the input parameters `a_tau`, `b_tau`, `a_xi` and `b_xi` of the Inverse Gamma prior distribution of the variance parameters $\tau^2$ and $\xi^2$, as specified in chapter \@ref(math).
+    The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
+    Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
+
+Since the resulting simulation studies serve such diverse purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
 For that reason, we decided against forcing all of the following sections into one common rigid framework.
 Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
 
@@ -74,13 +80,17 @@ As stated in section \@ref(guide), each regressor variable is independently samp
 All these conditions lead to an excellent performance of the `mcmc_ridge()` sampler, but might arguably not represent the most challenging task.
 
 Sections \@ref(corr) and \@ref(outcome) analyze the sampler's performance on simulated data, which might be closer to data found in the real world.
-First, we will induce correlation among the predictor variables, whereas in the second part the distributional assumptions are considerably changed.
-Further, the `mcmc_ridge()` performance is compared to the Maximum Likelihood based `lmls()` estimates and the Markov Chain Monte Carlo `mcmc()` sampler without penalty from the `lmls` package.
+First, we will induce correlation among the predictor variables, whereas in a later part the distributional assumptions are considerably changed.
+Further, the `mcmc_ridge()` performance is compared to the Maximum Likelihood based `lmls()` estimates and the Markov Chain Monte Carlo `mcmc()` sampler.
 
 ### Simulation Setting {.unlisted .unnumbered}
 
 Briefly stated, we simulated data from a three dimensional multivariate normal distribution with three different values for the pairwise correlation $\rho$.
 Then, we fitted the three models `mcmc_ridge()`, `mcmc()` and `lmls()`, where the number of simulations was set to $10000$ for the Bayesian Samplers.
+
+This simulation study is intended to evaluate the *accuracy* of the three models.
+Therefore, the same (standardized) values of the covariates are used for both, the generation of the outcome variable $\mathbf{y}$ and the model fit.
+This entails that the true coefficient values are known and can be compared to the resulting estimates of all three and in particular the `mcmc_ridge()` model.
 The exact simulation setting is described in full detail in the Appendix.
 
 Moreover, we compared the performance of the classical `mcmc_ridge()` implementation, which draws $\boldsymbol{\beta}$ from the closed form full conditional (multivariate normal) distribution, with an alternative sampling process that uses a Metropolis-Hastings approach for both, the location parameter $\boldsymbol{\beta}$ as well as the scale parameter $\boldsymbol{\gamma}$. 
@@ -110,273 +120,14 @@ The black points in Figure \@ref(fig:corr-plot-many) represent the mean of these
 For a better visual comparison, the true values for each coefficient are indicated by grey circles.
 Since we cannot rely on distributional theory for the standard errors, the variability of the estimates is displayed by nonparametric 'confidence' intervals, which are simply given by the range from the empirical $0.05$ quantile to the $0.95$ quantile of the $50$ estimated values.
 
-These intervals are very narrow and centered around the true value in all cases except for $\gamma_1$, where the estimated are biased upwards for all correlation structures.
-This result is somewhat surprising, since the Ridge penalty might suggest a bias towards zero.
-Although the `mcmc_ridge()` function does indeed show the greatest variability across many different scenarios for the $\boldsymbol{\gamma}$ vector which is sampled via Metropolis-Hastings, this upward bias is not consistent and might be induced by chance in this case.
+These intervals are very narrow and centered around the true value in all cases with slightly larger variability for the $\boldsymbol{\gamma}$ vector, which is sampled via the Metropolis-Hastings algorithm.
+Overall, these results impressively solidify the sampler's stability in presence of correlated covariates.
+The bias towards zero that is typical for the Ridge penalty cannot be observed in this case; all coefficients are estimated with both high accuracy and high precision.
 
-Further, it is worth noting that the results are partially affected by the standardization of the covariates:
-Although the behaviour illustrated here is quite similar overall to the performance for unstandardized data (as used for the second report), there are two differences:
+It is worth noting that the results are partially affected by the standardization of the covariates.
+The standardization generally leads to a stabilized fit for all three models.
+Compared to the performance for unstandardized data (as used for the second report) the variability of the Posterior Mean estimates of $\beta_0$ in particular is significantly reduced. 
 
-- The variability of the Posterior Mean estimates of $\beta_0$ is significantly reduced. 
-This indicates a greater sampling stability for the standardized case.
-
-- The bias of the Posterior Mean estimates of $\gamma_1$ is not present, when the design matrices are not centered and scaled (referring to the second report).
-This again suggests that the finding in the standardized case is due to randomness, since there is no convincing explanation why upward bias should be connected to scaled covariates.
-
-
-
-
-
-
-
-
-
-
-## Challenging the Model Assumptions {#outcome}
-
-```{r, include=FALSE}
-outcome_dist_list <- readr::read_rds(
-  file = here::here("simulation-studies", "outcome-distribution.rds")
-)
-```
-
-This simulation study is structured in a very similar way to the study considered in section \@ref(corr).
-Instead of varying the correlation structure among the regressors in the underlying data set, both the regressors and the outcome variable $y$ are sampled from distributions that are more challenging for estimation than the normal distribution.
-
-
-### Simulation Setting {.unlisted .unnumbered}
-
-The covariates of the design matrices $\mathbf{X}$ and $\mathbf{ Z}$ are generated by a mix of distributions including the Normal, Exponential, Uniform, Bernoulli and t - distribution.
-Given these values, the outcome variable $\mathbf{y}$ is drawn from three different distributions (Normal, t and Uniform) corresponding to three separate scenarios, which are compared in the following analysis.
-As usual, the full simulation design is stated in the Appendix.
-
-Note that the `lmls()`, `mcmc()` and `mcmc_ridge()` models are built upon the assumption of a Gaussian distribution for $\mathbf{y}$.
-Hence, we expect all three estimation procedures to perform well under the first outcome specification, which they were designed for.
-The remaining two cases analyze the performance in presence of a mild ($t$ distribution) and a moderately strong (Uniform distribution) violation of this model assumption.
-
-
-### Simulation Results {.unlisted .unnumbered}
-
-```{r, outcome-plot-single, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - One Simulation Cycle", fig.pos="t"}
-outcome_dist_list$plot_single_sim
-```
-
-```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
-outcome_dist_list$plot_many_sims
-```
-
-Just as in section \@ref(corr) the results of one complete simulation cycle (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
-Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$-distributed random variable, which does not follow an exact $t$ distribution.
-
-The differences within each facet as well as between the facets are significant.
-All three models seem to estimate the $\boldsymbol{\beta}$ vector well, when there are no or only mild violations of the normal assumption for $y$. 
-If $y$ is sampled from a uniform distribution, there are major differences for $\beta_0$, $\beta_2$ and $\beta_4$ (notice the extended $x$-scale in the third facet).
-Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the latter case with more deviations in the setting, where $y$ is based on the $t$ distribution.
-
-To gain insights beyond this single simulation cycle, which could well be disturbed by random noise, we repeat the sampling process $50$ times.
-The resulting means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in Figure \@ref(fig:outcome-plot-many).
-
-This plot (literally) paints a drastically different picture, emphasizing the necessity of repeating experiments multiple times whenever possible.
-Across all $50$ simulations the deviation of the estimates for $\beta_2$ (corresponding to the regressor variable from the exponential distribution) is huge for all three distributional specifications of $y$.
-
-The small bias induced by all three models is negligible compared to the wide confidence intervals, which is particularly interesting, when $y$ stems from a normal distribution. 
-In this case all models should perform well, however the `lmls()` and the `mcmc()` Posterior Mean / Maximum Likelihood estimates vary wildly across the simulation cycles.
-A similar effect can be observed for $\beta_0$ in case of the uniform distribution.
-Here, all models overestimate the true value on average, while the `mcmc_ridge()` function again shows the smallest variability.
-In contrast, the estimates for $\gamma_0$ in the right facet are fairly stable across simulation cycles, but also consistently wrong at the same time.
-
-Estimates of the bias and the standard error of the Posterior Mean / Maximum Likelihood estimates can be more distinctly compared by their numerical values provided in Tables \@ref(tab:bias) and \@ref(tab:se).
-In order to emphasize the interesting/differing entries, both tables only include a subset of the estimated coefficients.
-
-```{r, bias, echo=FALSE}
-outcome_dist_list$data_many_sims %>%
-  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
-  select(-contains("se")) %>%
-  pivot_longer(cols = contains("bias")) %>%
-  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
-  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
-  tibble::column_to_rownames(var = "Parameter") %>%
-  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
-  kableExtra::kbl(
-    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
-    caption = "Bias of Coefficient Estimates"
-  ) %>%
-  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
-  kableExtra::add_header_above(
-    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3)
-  )
-```
-
-Considering the bias estimates in Table \@ref(tab:bias) first, there are no obvious patterns that would suggest the superiority of one model.
-Further, none of the three models tend to only over- or underestimate the true coefficient values.
-The most interesting entries are the bias estimates for $\beta_0$ and $\gamma_0$ in the uniform case, where all three models agree to significantly overestimate.
-However, the intercept coefficients are often of minor interest.
-
-```{r, se, echo=FALSE}
-outcome_dist_list$data_many_sims %>%
-  filter(Parameter %in% c("beta_0", "beta_2", "beta_4", "gamma_0", "gamma_2")) %>%
-  select(-contains("bias")) %>%
-  pivot_longer(cols = contains("se")) %>%
-  pivot_wider(names_from = c(outcome_dist, name), values_from = value) %>%
-  mutate(Parameter = stringr::str_glue("$\\{Parameter}$")) %>%
-  tibble::column_to_rownames(var = "Parameter") %>%
-  magrittr::set_colnames(rep(c("lmls", "mcmc", "mcmc\\_ridge"), 3)) %>%
-  kableExtra::kbl(
-    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
-    caption = "Standard Errors of Coefficient Estimates"
-  ) %>%
-  kableExtra::kable_styling(position = "center", full_width = FALSE) %>%
-  kableExtra::add_header_above(
-    header = c("", "Normal" = 3, "t" = 3, "Uniform" = 3), escape = FALSE
-  )
-```
-
-The standard error estimates displayed in Table \@ref(tab:se) clearly indicate the worst performance of the `lmls()` and the `mcmc()` model for $\beta_2$.
-In almost all cases (and sometimes very significantly), the `mcmc_ridge()` sampler has the smallest standard error.
-This finding nicely confirms the underlying mathematical theory:
-The present prior specifications in the Bayesian setting, which induces the equivalent form of a frequentist Ridge penalty, can lead to biased estimation.
-
-However, this loss in accuracy can be (as it is in this case) dominated by the gain in precision by the shrinkage effect of the penalty.
-Note that (except for $\gamma_0$ in the most right facet in Figure \@ref(fig:outcome-plot-many)) the `mcmc_ridge()` sampler slightly *overestimates* coefficients with true *negative* values and *underestimates* those with true *positive* values. 
-This again is caused by the Ridge penalty leading to estimated coefficients close to zero.
-
-In summary, the following conclusions can be drawn:
-
-1. All three models are affected by changes in the regressor and/or outcome distributions.
-In the former case the regressor variables sampled from the Exponential and the Bernoulli distributions were the greatest challenge, in the latter case the outcome variable from the Uniform distribution.
-This is generally not surprising, since these distributions deviate most from the nicely behaved normally distributed case.
-
-1. As expected, the `lmls()` function is affected strongly by violating the model assumptions, since its estimation process is based on the normal (log) Likelihood.
-Surprisingly, the `mcmc()` sampler without penalty often did not perform much better.
-
-1. While the `mcmc_ridge()` function does not excel at estimation accuracy, it does lead to the most stable estimation with smallest standard errors in the vast majority of cases.
-As emphasized above, this behaviour nicely agrees with the mathematical theory of Ridge penalization.
-
-1. Had we not conducted repeated experiments, our conclusions would have been quite different.
-Simulation results are therefore always worth repeating many times to consolidate the correct interpretations.
-
-
-
-### Technical Aspects {.unlisted .unnumbered}
-
-As outlined in the previous paragraph, a total of $50 \cdot 3 \cdot 3 = 450$ models were fitted to analyze the performance differences.
-In order to speed up the involved computations of this specific and some of the other simulation studies in this report, we used the *parallel computing* capabilities of `R`.
-
-There are many options from various packages to choose from.
-We decided to use the [furrr](https://furrr.futureverse.org/) package, which is built on top of the `future` package specialized on parallel processing.
-As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package, while using multiple cores at the same time. 
-This *functional programming* based approach (similar to the `apply()` family in 'base `R`') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach.
-
-The following (slightly modified) code snippet provides a brief insight into the implementation:
-
-```{r, eval=FALSE}
-plan(multisession, workers = 8)
-
-full_results <- tibble(id = 1:50) %>%
-  mutate(samples = future_map(
-    .x = id,
-    .f = ~ show_results(n = 50, num_sim = 1000),
-    .options = furrr_options(seed = 1)
-  ))
-```
-
-The `plan()` function borrowed from the `future` package initializes the parallel computing process and determines the number of cores/workers available for computation.
-The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single simulation cycle.
-
-This entire procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
-This new column of the data frame contains complete information about all simulations, such that any required element for the further analysis can be easily extracted and post processed.
-
-Finally, the `.options()` argument allows the specification of a random seed.
-Random number generation in the context of parallel computing is slightly more involved compared to the sequential approach.
-This additional complexity is automatically handled by the `future_map()` function, such that all results are sampled in a statistically valid and fully reproducible manner.
-
-
-
-
-
-
-
-## Redundant Covariates {#redundant}
-
-```{r, include=FALSE}
-red_regr_list <- readr::read_rds(
-  file = here::here("simulation-studies", "redundant-regressors.rds")
-)
-```
-
-Similar to the simulation study from section \@ref(corr), this section investigates the sampler's behaviour in presence of strong *pairwise* correlation among the covariates.
-However, in contrast to all previous simulation studies, we add additional *redundant* regressors to the model, that were not used for generating the outcome variable $\mathbf{y}$.
-The statistical theory of (Ridge) penalization suggests, that the coefficient estimates from the `mcmc_ridge()` function are affected by the shrinkage effect induced by the coefficient's prior distributions in presence of high (compared to the sample size $n$) number of correlated covariates.
-Thus, the magnitude of the estimated $\boldsymbol{\beta}$ vector should be smaller compared to models without regularizing penalty component.
-
-### Simulation Setting {.unlisted .unnumbered}
-
-The model contains $10$ pairs of covariates drawn from a multivariate normal distribution with correlation $rho = 0.9$.
-For each pair, the first covariate contributes to generating the outcome variable $\mathbf{y}$ with a true coefficient value of $1$.
-The second covariate has no impact on $\mathbf{y}$, but is included nonetheless in the model fitting stage.
-Similar to section \@ref(outcome), the `lmls()`, `mcmc()` and `mcmc_ridge()` functions are used to generate estimates.
-
-The exact design of this simulation study can be found in the Appendix, whereas the following paragraph focuses on the analysis of the obtained results.
-
-### Simulation Results {.unlisted .unnumbered}
-
-```{r, red-regr-plot, echo=FALSE, out.width="100%", fig.cap="Shrinkage Effect of Ridge Penalty in Presence of Redundant Covariates", fig.pos="t"}
-red_regr_list$plot_single_sim
-```
-
-This study exclusively focuses on the location parameter $\boldsymbol{\beta}$.
-There are two aspects of interest we wish to investigate further:
-
-1. Can each model differentiate between the relevant and the redundant covariate for each pair of regressor and, thus, isolate the true effect on $\mathbf{y}$?
-
-1. Due to the high number of $20$ covariates compared to the low sample size of $50$ observations and the presence of correlated and partially redundant regressors, the setup of this study is prone to overfitting.
-Can we therefore observe the hypothesized shrinkage effect on the coefficient estimates for the `mcmc_ridge()` model compared to the models without penalty?
-
-Figure \@ref(fig:red-regr-plot) illustrates the results obtained by fitting all three models.
-We start with the answer to the first question.
-For each of the three models and each coefficient pair the absolute value of the coefficient corresponding to relevant regressor is larger than the magnitude of the paired quantity.
-Thus all three models always contributed the major impact on the outcome variable to the correct covariate.
-Further, the differences between estimations for those coefficients with true value $1$ and those with true value $0$ do not differ in an *obvious* manner across the models.
-Since the variance of the estimates seems to be largest for the `lmls()` model and smallest for the `mcmc_ridge()` model, the ratio (instead of the difference) tends to be largest for the regularized model.
-
-The reduced variance of the `mcmc_ridge()` model can be explained by the Ridge penalty: 
-Since all estimates are shrunken towards zero, fewer 'outlier' estimates that are far away from zero will be observed.
-This property is beneficial for the red points, since the estimates clutter around their true value in this case.
-However, the coefficients corresponding to the green points are penalized as well such that a bias towards zero is induced, which is not present for the two unpenalized models.
-Hence, the hypothesized shrinkage effect can indeed be observed.
-
-It is insightful to compare the observed effect from the Ridge penalty to the expected effect of the *LASSO* penalty.
-The LASSO penalty encourages *sparse* solutions: each coefficient is assigned the same weight such that shrinkage of large estimates is not preferred over shrinkage of small estimates. Thus, small estimates are often set to exactly zero, while large estimates, although reduced, can still be significantly different from zero.
-
-In contrast, the Ridge penalty generally does not induce sparsity.
-In fact, quite the opposite can be the case: Small coefficient estimates such as $\beta_{14}$ in Figure \@ref(fig:red-regr-plot) are sometimes *increased* in magnitude compared to the unpenalized models.
-Large estimates such as $\beta_4$ or $\beta_6$, however, are reduced in size quite heavily.
-The Ridge penalty tries to put all coefficients on the same scale and, thus, prioritizes shrinkage of large estimates compared to small ones!
-
-In order to quantify the observed shrinkage effect from Figure \@ref(fig:red-regr-plot) numerically, we calculate the sum of squared coefficient estimates, i.e. the squared Euclidean norm $\left \Vert \boldsymbol{\beta} \right \Vert^2$, for each model.
-Moreover, these magnitudes are compared separately for all coefficients correspoding to relevant regressors (those with an *odd* subscript) and those correspoding to redundant regressors (*even* subscript).
-Table \@ref(tab:coef-norms) summarizes the results.
-
-```{r, coef-norms, echo=FALSE}
-red_regr_list$coef_norms %>%
-  mutate(model = stringr::str_replace(string = model, pattern = "_", replacement = "\\\\_")) %>% 
-  tibble::column_to_rownames(var = "model") %>%
-  magrittr::set_colnames(c("True Value = 0", "True Value = 1")) %>%
-  kableExtra::kbl(
-    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
-    caption = "Squared Euclidean Norms of Coefficient Estimates"
-  ) %>%
-  kableExtra::kable_styling(position = "center", full_width = FALSE)
-```
-
-A perfect model that estimates a coefficient value of $0$ for all $10$ unnecessary covariates and a value of $1$ for all relevant covariates would have achieved squared vector norms of $0$ and $10$, respectively.
-The `lmls()` model is very close to the perfect value for the second group, indicating that the estimated values are quite precise *on average*.
-However, as we have seen in Figure \@ref(fig:red-regr-plot), this conclusion does not transfer to the individual estimates due to the significant variability among the estimates.
-
-The most interesting and reassuring finding is obtained from the `mcmc_ridge()` vector norms:
-In agreement with the visual illustration, the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
-While this property induces a bias that is not desired for the second column (underestimating the true values on average), it does indeed prevent overfitting by shrinking the coefficients corresponding to the redundant covariates, which is indicated by the lowest value in the first column.
-In that sense, the Ridge penalty increases the model *robustness* in presence of a high number of (correlated) regressors and often leads to an overall lower Mean Squared Error due to the reduction in variance.
 
 
 
@@ -459,6 +210,227 @@ However, this might also be explained by the fact that for `n` $= 30$, $\beta_0$
 In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
 Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
 
+
+
+
+
+
+
+
+
+
+## Redundant Covariates {#redundant}
+
+```{r, include=FALSE}
+red_regr_list <- readr::read_rds(
+  file = here::here("simulation-studies", "redundant-regressors.rds")
+)
+```
+
+Similar to the simulation study from section \@ref(corr), this section investigates the sampler's behaviour in presence of strong *pairwise* correlation among the covariates.
+However, in contrast to all other simulation studies, we add additional *redundant* regressors to the model, that were not used for generating the outcome variable $\mathbf{y}$.
+
+The statistical theory of (Ridge) penalization suggests, that the coefficient estimates from the `mcmc_ridge()` function are affected by the shrinkage effect induced by the coefficient's prior distributions in presence of high (compared to the sample size $n$) number of correlated covariates.
+Thus, the magnitude of the estimated $\boldsymbol{\beta}$ vector should be smaller compared to models without regularizing penalty component.
+
+### Simulation Setting {.unlisted .unnumbered}
+
+The model contains $10$ pairs of covariates drawn from a multivariate normal distribution with correlation $\rho = 0.9$.
+For each pair, the first covariate contributes to generating the outcome variable $\mathbf{y}$ with a true coefficient value of $1$.
+The second covariate has no impact on $\mathbf{y}$, but is included nonetheless in the model fitting stage.
+Similar to section \@ref(outcome), the `lmls()`, `mcmc()` and `mcmc_ridge()` functions are used to generate estimates.
+
+Since the purpose of this study is to demonstrate the Ridge regularization and not primarily the accuracy of the three models, we used the covariates on their original scale for generating $\mathbf{y}$ and standardized them afterwards before fitting the models.
+Thus, the true coefficient values are not known and conclusions about the model *quality* are not valid.
+This scenario resembles a real world application, where the data generating process is latent and estimates are obtained based on purely observational data.
+The exact design of the simulation study can again be found in the Appendix.
+
+### Simulation Results {.unlisted .unnumbered}
+
+```{r, red-regr-plot, echo=FALSE, out.width="100%", fig.cap="Shrinkage Effect of Ridge Penalty in Presence of Redundant Covariates", fig.pos="t"}
+red_regr_list$plot
+```
+
+The following analysis is exclusively focused on the location parameter $\boldsymbol{\beta}$.
+As mentioned before, there are two aspects of interest we wish to investigate further:
+
+1. Can each model differentiate between the relevant and the redundant covariate for each pair of regressor and, thus, isolate the true effect on $\mathbf{y}$ (without paying too much attention to the *absolute* size of the estimated values)?
+
+1. Due to the high number of $20$ covariates compared to the low sample size of $50$ observations and the presence of correlated and partially redundant regressors, the setup of this study is prone to overfitting.
+Can we therefore observe the hypothesized shrinkage effect on the coefficient estimates for the `mcmc_ridge()` model compared to the models without penalty?
+
+Figure \@ref(fig:red-regr-plot) illustrates the results obtained by fitting all three models.
+
+We start with the answer to the first question:
+For each of the three models and each coefficient pair the absolute value of the coefficient corresponding to relevant regressor is larger than the magnitude of the paired quantity.
+Thus all three models always contribut the major impact on the outcome variable to the correct covariate.
+Further, the differences between estimations for those coefficients with true value $1$ and those with true value $0$ do not differ in an *obvious* manner across the models.
+Since the variance of the estimates seems to be largest for the `lmls()` model and smallest for the `mcmc_ridge()` model, the ratio (instead of the difference) tends to be largest for the regularized model.
+
+The reduced variance of the `mcmc_ridge()` model can be explained by the Ridge penalty: 
+Since all estimates are shrunken towards zero, fewer 'outlier' estimates that are far away from zero will be observed.
+This property is beneficial for the red points, since the estimates clutter around their true value in this case.
+However, the coefficients corresponding to the green points are penalized as well such that a bias towards zero is induced, which is not present for the two unpenalized models.
+Hence, the hypothesized shrinkage effect can indeed be observed.
+
+It is insightful to compare the observed effect from the Ridge penalty to the expected effect of the *LASSO* penalty.
+The LASSO penalty encourages *sparse* solutions: each coefficient is assigned the same weight such that shrinkage of large estimates is not preferred over shrinkage of small estimates. Thus, small estimates are often set to exactly zero, while large estimates, although reduced, can still be significantly different from zero.
+
+In contrast, the Ridge penalty generally does not induce sparsity.
+In fact, quite the opposite can be the case: Small coefficient estimates such as $\beta_{14}$ in Figure \@ref(fig:red-regr-plot) are sometimes *increased* in magnitude compared to the unpenalized models.
+Large estimates such as $\beta_4$ or $\beta_{12}$, however, are reduced in size quite heavily.
+The Ridge penalty tries to put all coefficients on the same scale and, thus, prioritizes shrinkage of large estimates compared to small ones!
+Note also, that the intercept term is typically excluded from the penalization, wich is the reason why the estimates of $\beta_0$ are of approximately equal size for all three models.
+
+In order to quantify the observed shrinkage effect from Figure \@ref(fig:red-regr-plot) numerically, we calculate the sum of squared coefficient estimates, i.e. the squared Euclidean norm $\left \Vert \boldsymbol{\beta} \right \Vert^2$, for each model.
+Moreover, these magnitudes are compared separately for all coefficients corresponding to relevant regressors (those with an *odd* subscript) and those corresponding to redundant regressors (*even* subscript).
+Table \@ref(tab:red-regr-coef-norms) summarizes the results.
+
+```{r, red-regr-coef-norms, echo=FALSE}
+red_regr_list$coef_norms %>%
+  mutate(model = stringr::str_replace(string = model, pattern = "_", replacement = "\\\\_")) %>% 
+  tibble::column_to_rownames(var = "model") %>%
+  magrittr::set_colnames(c("True Value = 0", "True Value = 1")) %>%
+  kableExtra::kbl(
+    digits = 2, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "$\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2$ excluding $\\beta_0$"
+  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE)
+```
+
+The most interesting and reassuring finding is obtained from the `mcmc_ridge()` vector norms:
+In agreement with the visual illustration, the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
+While this property induces a bias that is not desired for the second column (underestimating the true values on average), it does indeed prevent overfitting by shrinking the coefficients corresponding to the redundant covariates, which is indicated by the lowest value in the first column.
+
+In that sense, the Ridge penalty increases the model *robustness* in presence of a high number of (correlated) regressors and often leads to an overall lower Mean Squared Error due to the reduction in variance.
+
+
+
+
+
+
+
+
+
+## Challenging the Model Assumptions {#outcome}
+
+```{r, include=FALSE}
+outcome_dist_list <- readr::read_rds(
+  file = here::here("simulation-studies", "outcome-distribution.rds")
+)
+```
+
+This simulation study is structured in a very similar way to the study considered in section \@ref(corr).
+Instead of varying the correlation structure among the regressors in the underlying data set, both the regressors and the outcome variable $y$ are sampled from distributions that are more challenging for estimation than the normal distribution.
+
+
+### Simulation Setting {.unlisted .unnumbered}
+
+The covariates of the design matrices $\mathbf{X}$ and $\mathbf{ Z}$ are generated by a mix of distributions including the Normal, Exponential, Uniform, Bernoulli and t - distribution.
+Given these values, the outcome variable $\mathbf{y}$ is drawn from three different distributions (Normal, t and Uniform) corresponding to three separate scenarios, which are compared in the following analysis.
+As usual, the full simulation design is stated in the Appendix.
+
+Note that the `lmls()`, `mcmc()` and `mcmc_ridge()` models are built upon the assumption of a Gaussian distribution for $\mathbf{y}$.
+Hence, we expect all three estimation procedures to perform well under the first outcome specification, which they were designed for.
+The remaining two cases analyze the performance in presence of a mild ($t$ distribution) and a moderately strong (Uniform distribution) violation of this model assumption.
+
+### Simulation Results {.unlisted .unnumbered}
+
+```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of different Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
+outcome_dist_list$plot_many_sims
+```
+
+```{r, outcome-coef-norms, echo=FALSE}
+outcome_dist_list$coef_norms_many_sims %>% 
+  mutate(name = stringr::str_replace(string = name, pattern = "_", replacement = "\\\\_")) %>% 
+  tibble::column_to_rownames(var = "name") %>%
+  magrittr::set_colnames(c("Normal", "t", "Uniform")) %>%
+  kableExtra::kbl(
+    digits = 0, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "$\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2 + \\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ excluding $\\beta_0$ and $\\gamma_0$"
+  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE)
+```
+
+Just as in section \@ref(corr) the results of one complete simulation cycle (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
+Note that the second facet is labeled by $y \sim t$, although it is formally sampled from an affine transformation of a $t$-distributed random variable, which does not follow an exact $t$ distribution.
+
+The differences within each facet as well as between the facets are significant.
+All three models seem to estimate the $\boldsymbol{\beta}$ vector well, when there are no or only mild violations of the normal assumption for $y$. 
+If $y$ is sampled from a uniform distribution, there are major differences for $\beta_0$, $\beta_2$ and $\beta_4$ (notice the extended $x$-scale in the third facet).
+Interestingly, the $\boldsymbol{\gamma}$ vector is estimated very well in the latter case with more deviations in the setting, where $y$ is based on the $t$ distribution.
+
+To gain insights beyond this single simulation cycle, which could well be disturbed by random noise, we repeat the sampling process $50$ times.
+The resulting means as well as empirical confidence intervals (analogous to section \@ref(corr)) are plotted in Figure \@ref(fig:outcome-plot-many).
+
+This plot (literally) paints a drastically different picture, emphasizing the necessity of repeating experiments multiple times whenever possible.
+Across all $50$ simulations the deviation of the estimates for $\beta_2$ (corresponding to the regressor variable from the exponential distribution) is huge for all three distributional specifications of $y$.
+
+The small bias induced by all three models is negligible compared to the wide confidence intervals, which is particularly interesting, when $y$ stems from a normal distribution. 
+In this case all models should perform well, however the `lmls()` and the `mcmc()` Posterior Mean / Maximum Likelihood estimates vary wildly across the simulation cycles.
+A similar effect can be observed for $\beta_0$ in case of the uniform distribution.
+Here, all models overestimate the true value on average, while the `mcmc_ridge()` function again shows the smallest variability.
+In contrast, the estimates for $\gamma_0$ in the right facet are fairly stable across simulation cycles, but also consistently wrong at the same time.
+
+
+The standard error estimates displayed in Table \@ref(tab:se) clearly indicate the worst performance of the `lmls()` and the `mcmc()` model for $\beta_2$.
+In almost all cases (and sometimes very significantly), the `mcmc_ridge()` sampler has the smallest standard error.
+This finding nicely confirms the underlying mathematical theory:
+The present prior specifications in the Bayesian setting, which induces the equivalent form of a frequentist Ridge penalty, can lead to biased estimation.
+
+However, this loss in accuracy can be (as it is in this case) dominated by the gain in precision by the shrinkage effect of the penalty.
+Note that (except for $\gamma_0$ in the most right facet in Figure \@ref(fig:outcome-plot-many)) the `mcmc_ridge()` sampler slightly *overestimates* coefficients with true *negative* values and *underestimates* those with true *positive* values. 
+This again is caused by the Ridge penalty leading to estimated coefficients close to zero.
+
+In summary, the following conclusions can be drawn:
+
+1. All three models are affected by changes in the regressor and/or outcome distributions.
+In the former case the regressor variables sampled from the Exponential and the Bernoulli distributions were the greatest challenge, in the latter case the outcome variable from the Uniform distribution.
+This is generally not surprising, since these distributions deviate most from the nicely behaved normally distributed case.
+
+1. As expected, the `lmls()` function is affected strongly by violating the model assumptions, since its estimation process is based on the normal (log) Likelihood.
+Surprisingly, the `mcmc()` sampler without penalty often did not perform much better.
+
+1. While the `mcmc_ridge()` function does not excel at estimation accuracy, it does lead to the most stable estimation with smallest standard errors in the vast majority of cases.
+As emphasized above, this behaviour nicely agrees with the mathematical theory of Ridge penalization.
+
+1. Had we not conducted repeated experiments, our conclusions would have been quite different.
+Simulation results are therefore always worth repeating many times to consolidate the correct interpretations.
+
+
+
+### Technical Aspects {.unlisted .unnumbered}
+
+As outlined in the previous paragraph, a total of $50 \cdot 3 \cdot 3 = 450$ models were fitted to analyze the performance differences.
+In order to speed up the involved computations of this specific and some of the other simulation studies in this report, we used the *parallel computing* capabilities of `R`.
+
+There are many options from various packages to choose from.
+We decided to use the [furrr](https://furrr.futureverse.org/) package, which is built on top of the `future` package specialized on parallel processing.
+As the name suggests, `furrr` provides a convenient way to use many functions from the popular `purrr` package, while using multiple cores at the same time. 
+This *functional programming* based approach (similar to the `apply()` family in 'base `R`') is particularly well suited for simulation studies and provides some structural as well as minor performance advantages compared to the classical `for`-loop approach.
+
+The following (slightly modified) code snippet provides a brief insight into the implementation:
+
+```{r, eval=FALSE}
+plan(multisession, workers = 8)
+
+full_results <- tibble(id = 1:50) %>%
+  mutate(samples = future_map(
+    .x = id,
+    .f = ~ show_results(n = 50, num_sim = 1000),
+    .options = furrr_options(seed = 1)
+  ))
+```
+
+The `plan()` function borrowed from the `future` package initializes the parallel computing process and determines the number of cores/workers available for computation.
+The `show_results()` helper function fits all three models `mcmc_ridge()`, `mcmc()` and `lmls()` for each outcome distribution in a single simulation cycle.
+
+This entire procedure is repeated $50$ times in parallel using the `future_map()` function from the `furrr` package, where the results of all $450$ models are saved in a well organized structure inside of a list column. 
+This new column of the data frame contains complete information about all simulations, such that any required element for the further analysis can be easily extracted and post processed.
+
+Finally, the `.options()` argument allows the specification of a random seed.
+Random number generation in the context of parallel computing is slightly more involved compared to the sequential approach.
+This additional complexity is automatically handled by the `future_map()` function, such that all results are sampled in a statistically valid and fully reproducible manner.
 
 
 
