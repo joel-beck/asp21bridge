@@ -98,13 +98,13 @@ The sample size is set to $n = 50$ and the result of both Bayesian samplers are 
 
 
 
-### Section \@ref(hyper): Hyperparameters {.unlisted .unnumbered}
+### Section \@ref(hyper): Hyperparameters - Impact on Estimation Accuracy {.unlisted .unnumbered}
 
 
 
 
 
-### Section \@ref(hyper-penalty): Hyperparameters {.unlisted .unnumbered}
+### Section \@ref(hyper-penalty): Hyperparameters - Impact on Ridge Penalty {.unlisted .unnumbered}
 
 This simulation study is conducted in the following way:
 
