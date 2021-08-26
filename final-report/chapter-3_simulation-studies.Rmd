@@ -20,12 +20,10 @@ knitr::opts_chunk$set(
 options(knitr.table.format = "latex")
 
 pacman::p_load(
-  dplyr, readr, ggplot2, tidyr, kableExtra, patchwork, here, magrittr
+  dplyr, readr, ggplot2, tidyr, patchwork, magrittr
 )
 library(asp21bridge)
 ```
-
-
 
 
 
@@ -48,7 +46,7 @@ The simulation studies discussed in this chapter can be categorized into three g
 
 3. Exploring the effect of the **hyperparameters**.
 
-    Section \@ref(hyper) analyzes the connection between variation of the input parameters `a_tau`, `b_tau`, `a_xi` and `b_xi` of the Inverse Gamma prior distribution of the variance parameters $\tau^2$ and $\xi^2$, as specified in chapter \@ref(math).
+    Sections \@ref(hyper) and \@ref(hyper-penalty) analyze the connection between the input parameters `a_tau`, `b_tau`, `a_xi` and `b_xi` of the Inverse Gamma prior distributions of $\tau^2$ and $\xi^2$ to the simulation results.
     The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
     Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
 
@@ -59,6 +57,8 @@ Instead, each section individually motivates, explains and interprets the method
 In order to keep the analysis in this chapter compact and succinct, there will be almost no code included.
 It it worth noting though that the `R Markdown` document itself as well as all `R Scripts` used for the simulations are contained in the `simulation-studies` folder of the `asp21bridge` package.
 Thus, each figure as well as all numerical results are fully reproducible and can be repeated and extended by the reader.
+
+
 
 
 
@@ -138,6 +138,7 @@ Compared to the performance for unstandardized data (as used for the second repo
 
 
 
+
 ## Sample Size {#n}
 
 ```{r, include=FALSE}
@@ -169,46 +170,46 @@ For each coefficient, the mean value of the Posterior Mean estimates of each coe
 
 ### Simulation Results {.unlisted .unnumbered}
 
-```{r, sample-size-means, echo=FALSE, out.width="70%", fig.cap="Mean value of 100 Posterior Mean Estimates", fig.pos="t"}
+```{r, sample-size, echo=FALSE, fig.height=4.5, fig.width = 8, fig.cap="Mean and MAE of 100 Posterior Mean Estimates", fig.pos="t"}
+par(mfrow = c(1, 2))
+
 mean_mean <- plot_data$mean_mean
 n_data <- plot_data$n_data
 
 matplot(t(mean_mean),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " Mean of Posterior Means",
-  xlab = "Sample size", ylab = "", xlim = c(0, 700), lty = 2
+  xlab = "Sample size", ylab = "", xlim = c(0, 500), lty = 2
 )
-legend(
-  x = "right", legend = rownames(mean_mean),
-  col = 1:6, pch = 1, bty = "o", title = "Parameter"
-)
-```
 
-```{r, sample-size-mae, echo=FALSE, out.width="70%", fig.cap="Mean Absolute Error Estimates", fig.pos="t"}
 mean_absolute_error <- plot_data$mean_absolute_error
 
 matplot(t(mean_absolute_error),
   x = n_data, type = "b", pch = 1, col = 1:6,
   main = " MAE of Posterior Means",
-  xlab = "Sample size", ylab = "", xlim = c(0, 700), lty = 2
+  xlab = "Sample size", ylab = "", xlim = c(0, 500), lty = 2
 )
 legend(
-  x = "right", legend = rownames(mean_absolute_error),
-  col = 1:6, pch = 1, bty = "o", title = "Parameter"
+  x = "topright", legend = rownames(mean_absolute_error),
+  col = 1:6, pch = 1, title = "Parameter", bty = "n"
 )
+
+par(mfrow = c(1, 1))
 ```
 
-The means of the Posterior Mean estimates are displayed in Figure \@ref(fig:sample-size-means).
+The means of the Posterior Mean estimates are displayed in the left plot of Figure \@ref(fig:sample-size).
 For larger sample sizes (`n` $\geq 200$) none of the six parameters are extremely biased.
 
 Moreover, for `n` $= 30$, $\beta_0$ and $\beta_2$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
 
 After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the *MAE* based on the results of the $100$ repetitions.
-Figure \@ref(fig:sample-size-mae) points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for `n` $= 30$. 
-However, this might also be explained by the fact that for `n` $= 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ as could be observed in Figure \@ref(fig:sample-size-means).
+The right plot of Figure \@ref(fig:sample-size) points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for `n` $= 30$. 
+However, this might also be explained by the fact that for `n` $= 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ as could be observed in the left panel of Figure \@ref(fig:sample-size).
 
 In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
 Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
+
+
 
 
 
@@ -286,9 +287,16 @@ In order to quantify the observed shrinkage effect from Figure \@ref(fig:red-reg
 Moreover, these magnitudes are compared separately for all coefficients corresponding to relevant regressors (those with an *odd* subscript) and those corresponding to redundant regressors (*even* subscript).
 Table \@ref(tab:red-regr-coef-norms) summarizes the results.
 
+The most interesting and reassuring finding is obtained from the `mcmc_ridge()` vector norms:
+In agreement with the visual illustration, the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
+While this property induces a bias that is not desired for the second column (underestimating the true values on average), it does indeed prevent overfitting by shrinking the coefficients corresponding to the redundant covariates, which is indicated by the lowest value in the first column.
+
+In that sense, the Ridge penalty increases the model *robustness* in presence of a high number of (correlated) regressors and often leads to an overall lower Mean Squared Error due to the reduction in variance.
+
+
 ```{r, red-regr-coef-norms, echo=FALSE}
 red_regr_list$coef_norms %>%
-  mutate(model = stringr::str_replace(string = model, pattern = "_", replacement = "\\\\_")) %>% 
+  mutate(model = stringr::str_replace(string = model, pattern = "_", replacement = "\\\\_")) %>%
   tibble::column_to_rownames(var = "model") %>%
   magrittr::set_colnames(c("True Value = 0", "True Value = 1")) %>%
   kableExtra::kbl(
@@ -298,11 +306,7 @@ red_regr_list$coef_norms %>%
   kableExtra::kable_styling(position = "center", full_width = FALSE)
 ```
 
-The most interesting and reassuring finding is obtained from the `mcmc_ridge()` vector norms:
-In agreement with the visual illustration, the Ridge regularization effect can be numerically detected for all coefficient estimates, independent of the true value.
-While this property induces a bias that is not desired for the second column (underestimating the true values on average), it does indeed prevent overfitting by shrinking the coefficients corresponding to the redundant covariates, which is indicated by the lowest value in the first column.
 
-In that sense, the Ridge penalty increases the model *robustness* in presence of a high number of (correlated) regressors and often leads to an overall lower Mean Squared Error due to the reduction in variance.
 
 
 
@@ -338,18 +342,6 @@ The remaining two cases analyze the performance in presence of a mild ($t$ distr
 
 ```{r, outcome-plot-many, echo=FALSE, out.width="100%", fig.cap="Comparison of different Outcome Distributions - 50 Simulation Cycles", fig.pos="t"}
 outcome_dist_list$plot_many_sims
-```
-
-```{r, outcome-coef-norms, echo=FALSE}
-outcome_dist_list$coef_norms_many_sims %>% 
-  mutate(name = stringr::str_replace(string = name, pattern = "_", replacement = "\\\\_")) %>% 
-  tibble::column_to_rownames(var = "name") %>%
-  magrittr::set_colnames(c("Normal", "t", "Uniform")) %>%
-  kableExtra::kbl(
-    digits = 0, align = "c", booktabs = TRUE, escape = FALSE,
-    caption = "$\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2 + \\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ excluding $\\beta_0$ and $\\gamma_0$"
-  ) %>%
-  kableExtra::kable_styling(position = "center", full_width = FALSE)
 ```
 
 Just as in section \@ref(corr) the results of one complete simulation cycle (each of the $3 \cdot 3 = 9$ models was fitted once / each data point represents one estimate) are displayed in Figure \@ref(fig:outcome-plot-single).
@@ -397,6 +389,17 @@ As emphasized above, this behaviour nicely agrees with the mathematical theory o
 1. Had we not conducted repeated experiments, our conclusions would have been quite different.
 Simulation results are therefore always worth repeating many times to consolidate the correct interpretations.
 
+```{r, outcome-coef-norms, echo=FALSE}
+outcome_dist_list$coef_norms_many_sims %>%
+  mutate(name = stringr::str_replace(string = name, pattern = "_", replacement = "\\\\_")) %>%
+  tibble::column_to_rownames(var = "name") %>%
+  magrittr::set_colnames(c("Normal", "t", "Uniform")) %>%
+  kableExtra::kbl(
+    digits = 0, align = "c", booktabs = TRUE, escape = FALSE,
+    caption = "$\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2 + \\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ excluding $\\beta_0$ and $\\gamma_0$"
+  ) %>%
+  kableExtra::kable_styling(position = "center", full_width = FALSE)
+```
 
 
 ### Technical Aspects {.unlisted .unnumbered}
@@ -435,7 +438,10 @@ This additional complexity is automatically handled by the `future_map()` functi
 
 
 
-## Hyperparameters {#hyper}
+
+
+
+## Hyperparameters: Impact on Estimation Accuracy {#hyper}
 
 ```{r, include=FALSE}
 hyperparameters_list <- readr::read_rds(
@@ -453,7 +459,9 @@ Finally, cross effects can be observed, since $f( \boldsymbol{\beta} \mid \cdot)
 These dependencies are reflected in the `mcmc_ridge()` sampler by the iterative sampling procedure which is discussed in great detail in the previous sections \@ref(mcmc-ridge) and \@ref(mh).
 
 Thus, the hyperparameter choice of $a_{\tau}$, $b_{\tau}$, $a_{\xi}$ and $b_{\xi}$ inevitably impacts the result of *all* coefficient estimates contained in the model in a nontrivial way, such that pure analytical reasoning might be misleading.
-For this reason, this section investigates these effects based on a simulation approach.
+For this reason, the following paragraphs investigate these effects based on a simulation approach.
+
+Section \@ref(hyper) is dedicated to the impact of $a_\tau$, $b_\tau$, $a_\xi$ and $b_\xi$ on the Accuracy of the Posterior Mean estimates for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$, whereas section \@ref(hyper-penalty) examines their effect on the Ridge Penalty that is induced by the Inverse-Gamma distributions, that these quantities parameterize.
 
 
 ### Simulation Setting {.unlisted .unnumbered}
@@ -473,15 +481,12 @@ However, it is an aim to inspect the performance of the sampler for smaller hype
 
 ### Simulation Results {.unlisted .unnumbered}
 
-```{r, hyppar-beta, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of beta parameters", fig.pos="t"}
-hyperparameters_list$p1 / hyperparameters_list$p3 / hyperparameters_list$p5 / hyperparameters_list$p7
+```{r, hyppar, echo=FALSE, fig.height=6, fig.width = 8, fig.cap="Absolute deviations from true $\\boldsymbol{\\beta}$ and $\\boldsymbol{\\gamma}$", fig.pos="t"}
+(hyperparameters_list$p1 / hyperparameters_list$p3 / hyperparameters_list$p5 / hyperparameters_list$p7) |
+  (hyperparameters_list$p2 / hyperparameters_list$p4 / hyperparameters_list$p6 / hyperparameters_list$p8)
 ```
 
-```{r, hyppar-gamma, echo=FALSE, fig.height=6, fig.cap="Comparison of the absolute deviations of gamma parameters", fig.pos="t"}
-hyperparameters_list$p2 / hyperparameters_list$p4 / hyperparameters_list$p6 / hyperparameters_list$p8
-```
-
-The first two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) display the absolute deviations of the Posterior Mean estimates from the true parameters with the stated different values for $a_{\tau}$ and $b_{\tau}$. 
+The upper panel of Figure \@ref(fig:hyppar) displays the absolute deviations of the Posterior Mean estimates from the true parameters with the stated different values for $a_{\tau}$ and $b_{\tau}$. 
 For each estimate, the Posterior Mean averages over $1000$ simulations of the `mcmc_ridge()` sampler. 
 Note, that location and scale parameters are plotted separately, according to the relationship mentioned above. 
 For a better overview, the dotted line displays the linear trend of all estimate deviations.
@@ -490,29 +495,29 @@ The $x$ - axis is transformed by a pseudo logarithm in order to clearly visualiz
 Since $-1$ and $0$ are also part of the hyperparameter values, the `pseudo_log_trans()` function of the `scales` package is applied, log-transforming positive values only. 
 
 It can be observed, that the intercept estimates in each plot show the largest deviations from their true value. 
-In Figure \@ref(fig:hyppar-beta), however, the overall deviations of $\boldsymbol{\beta}$ estimates from their corresponding true value are small in absolute value.
-In contrast, deviations of the $\boldsymbol{\gamma}$ estimates in Figure \@ref(fig:hyppar-gamma) are fairly significant, especially for $\gamma_0$.
+In the left panel of Figure \@ref(fig:hyppar), however, the overall deviations of $\boldsymbol{\beta}$ estimates from their corresponding true value are small in absolute value.
+In contrast, deviations of the $\boldsymbol{\gamma}$ estimates in the right panel are fairly significant, especially for $\gamma_0$.
 
 The functional chain that applies to the estimates of $\boldsymbol{\beta}$ can be described by the effect of the mean of the inverse gamma distribution on $\tau^2$: 
 A larger value for $b_\tau$ leads to larger values of $\tau^2$, which are again affecting the full posterior parameters of $\boldsymbol{\beta}$ and, thus, potentially increase the absolute deviation of the corresponding estimates from their true values. 
 $a_\tau$ causes the opposite effect. 
-This numerically observable effect, however, is hided by the overall small deviation in the first two plots of Figure \@ref(fig:hyppar-beta). 
+This numerically observable effect, however, is hided by the overall small deviation in the upper left plot of Figure \@ref(fig:hyppar). 
 
 It is remarkable, that the deviation of ${\boldsymbol{\beta}}$ estimates is smallest when $a_\tau, b_\tau \in \left\{50, 100\right\}$. 
 For values of $a_\tau \leq 1$, one obtains wider variances of absolute deviations, since the Posterior Mean requires values larger than one.
 
-In the upper two plots of Figure \@ref(fig:hyppar-gamma), there is no clear impact of $\tau^2$ and its parameters. 
+In the upper right plots of Figure \@ref(fig:hyppar), there is no clear impact of $\tau^2$ and its parameters. 
 Rooted in no direct effect of $\tau^2$ on $\boldsymbol{\gamma}$ according to our underlying mathematical model, one observes cross-effects through the sampling procedure of the `mcmc_ridge()` sampler, where the full posterior $f( \boldsymbol{\gamma} \mid \cdot )$ depends on $\boldsymbol{\beta}$. 
 
 Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ estimates  for $a_\tau, b_\tau \in \{0, 0.5, 200\}$, where $0.5$ is chosen by coincidence for $a_\tau$ here, since wide variations for $a_\tau \leq 1$ of absolute deviations are observable again.
 
-The lower two plots of Figures \@ref(fig:hyppar-beta) and \@ref(fig:hyppar-gamma) are constructed analogously, but showing the impact of $a_{\xi}$ and $b_{\xi}$ on the location and scale parameters respectively.
+The lower panel of Figure \@ref(fig:hyppar) is constructed analogously, but showing the impact of $a_{\xi}$ and $b_{\xi}$ on the location and scale parameters respectively.
 Again, the overall absolute deviations for the $\boldsymbol{\beta}$ estimates from their true values are small, whereas the deviations for the $\boldsymbol{\gamma}$ estimates are considerably larger.
 Once again, the intercept estimates display the largest deviations from their true value.
 
 Arguing with the mean of the Inverse Gamma distribution of $\xi^2$ in a similar way, one obtains larger mean values for $b_{\xi}$, while $a_{\xi}$ lowers them. 
 The impact of $\xi^2$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \boldsymbol{\gamma} \mid \cdot )$ according to our underlying theoretical model. 
-This effect is indicated by the linear trend lines in the second half of Figure \@ref(fig:hyppar-gamma). 
+This effect is indicated by the linear trend lines in the lower right part of Figure \@ref(fig:hyppar). 
 
 In general, one obtains smaller deviations for larger values of $b_{\xi}$ and lower ones of $a_{\xi}$, where especially lots of randomness occurs in the deviations of $\gamma_0$. Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the scale intercepts is overshadowed by the randomness induced by the Metropolis Hastings algorithm. 
 The same wide variations exclusively for $a_{\xi} \leq 1$ cannot be obtained in the same manner as for $a_{\tau}$.
@@ -525,7 +530,7 @@ These diminish with increasing values of the ${\boldsymbol{\gamma}}$ entries.
 
 The matrix $\mathbf{ W}$ affects the variance of the full conditional distribution of $\boldsymbol{\beta}$ negatively, while the mean is positively affected. 
 Hence, larger values of $a_{\xi}$ cause higher Posterior Means of the location parameters. 
-The positive linear trend in the second half of Figure \@ref(fig:hyppar-beta) for values of $a_{\xi}$ is particularly interesting. 
+The positive linear trend in the lower left part of Figure \@ref(fig:hyppar) for values of $a_{\xi}$ is particularly interesting. 
 For values of $b_{\xi}$, the trend comes off inferior. 
 The wider variations of deviations for $a_{\xi} \leq 1$ is again not observable here. 
 Nonetheless, the randomness observable for scale estimates does not show up for location estimates anymore.
@@ -536,3 +541,83 @@ Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sam
 For the value range of $a_{\tau}$, $b_{\tau}$ and $a_{\xi}$, no distinct pattern is observable in this regard. 
 With growing values of $b_{\xi}$, however, acceptance rates are more likely to grow. 
 Since the acceptance rates are in reasonable ranges enabling statistically valid estimation, these results are not further investigated here.
+
+
+
+
+
+
+
+
+
+
+
+## Hyperparameters: Impact on Ridge Penalty {#hyper-penalty}
+
+```{r, include=FALSE}
+hyper_penalty_plots <- readr::read_rds(
+  file = here::here("simulation-studies", "hyper-penalty.rds")
+)
+```
+
+As introduced in section \@ref(hyper), we now continue to relate the values of $a_\tau$, $b_\tau$, $a_\xi$ and $b_\xi$ to the observed Penalty on the coefficients estimates for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$, where we exclude $\beta_0$ and $\gamma_0$ from the analysis since the intercept terms are not penalized in the Bayesian Ridge Regression model.
+
+
+### Simulation Setting {.unlisted .unnumbered}
+
+Many characteristics of the Inverse-Gamma distribution, such as the Mean, Median and Variance, depend in some way on the *ratio* of its two parameters.
+Thus, we built grids of value pairs for $a_\tau$ and $b_\tau$ for the prior distribution of $\boldsymbol{\beta}$ and pairs of $a_\xi$ and $b_\xi$ for the prior distribution of $\boldsymbol{\gamma}$.
+
+As noted before, the values of each pair do not only impact the immediate parameter one step above in the hierarchical model, but all other quantities as well due to cross effects in the Full Conditional distributions.
+For this reason, we evaluate the impact of each hyperparameter pair on both coefficient vectors $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$.
+As usual, more details about the simulation setting are given in the Appendix.
+
+
+### Simulation Results {.unlisted .unnumbered}
+
+```{r, hyper-pen-plots, echo=FALSE, fig.height=6, fig.width = 8, fig.cap="Heatmaps of $\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2$ and  $\\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ (excluding Intercepts)", fig.pos="t"}
+(hyper_penalty_plots$p_tau_beta | hyper_penalty_plots$p_tau_gamma) / 
+  (hyper_penalty_plots$p_xi_beta | hyper_penalty_plots$p_xi_gamma)
+```
+
+Figure \@ref(fig:hyper-pen-plots) shows $4$ Heatmaps.
+On the left, values of $\left \Vert \boldsymbol{\beta} \right \Vert^2$ are displayed depending on combinations of $a_\tau$ and $b_\tau$ (top panel) and $a_\xi$ and $b_\xi$ (bottom panel).
+Analogous observations for $\left \Vert \boldsymbol{\gamma} \right \Vert^2$ are shown on the right side.
+
+In both cases, the euclidean norms are calculated without the intercept terms $\beta_0$ and $\gamma_0$ to isolate the Penalty Effect.
+Larger values (lower Penalty) are indicated by dark red, whereas the color blue is chosen for lower values (larger Penalty). 
+For comparison, the unpenalized euclidean norms based on the true data generating coefficient values are given by $\left \Vert \boldsymbol{\beta} \right \Vert^2 = 68$ and $\left \Vert \boldsymbol{\gamma} \right \Vert^2 = 18$.
+
+Starting with the top panel, there are almost no pattern observable.
+Interestingly, some combinations of $a_\tau$ and $b_\tau$ that are located in direct neighbourhood in the grid lead to large and small regularization effects at the same time.
+
+However, we have to keep the color scale in mind.
+Drastically different colors are deceiving in this case, since all euclidean norms are almost equal, indicating that the hyperparameters of $\tau^2$ have very little impact overall on the Ridge Penalty, independent of their size.
+This finding is somewhat surprising, since e.g. the theoretical Posterior Mean of $\tau^2$ differs wildly throughout the chosen combinations, suggesting a heavily varying prior variance of $\boldsymbol{\beta}$ and therefore different *potential* for larger values in absolute value.
+
+In contrast, the bottom panel shows a huge impact of $a_\xi$ and $b_\xi$ on the regularization.
+While the left plot does not look incredibly informative at first sight, there is a pattern observable, that is common across both plots:
+If $a_\xi$ is small and/or $b_\xi$ is large, larger Norms (and thus a lower penalty effect) of the coefficient vectors tend to occur.
+Only if $a_\xi$ is large *and* $b_\xi$ is small at the same time, there might be a significant Penalty Effect.
+
+While the pattern of this reduction is not super clear in cae of $\boldsymbol{\beta}$ and could potentially be due to chance, the values of $\left \Vert \boldsymbol{\gamma} \right \Vert^2$ are consistenly lower for $a_\xi \geq 64$ and $b_\xi \leq 4$.
+This combination leads to low Posterior Means for $\xi^2$, which again induces a lower / more informative prior variance $\tau^2$.
+
+The results from this simulation study are difficult to connect to their hypothesized immediate effect based on the underlying mathematical model and in some cases even counterintuitive.
+This clearly illustrates, that tweaking parameters at one end in a Bayesian model of moderate size might not affect the model as a whole as might be intended.
+Indirect effects through the cross connections in the full Conditional Distributions might dominate the simple relations through the prior distributions.
+This again emphasizes the value of simulation studies to validate or possibly change the statistical methodology in practice.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

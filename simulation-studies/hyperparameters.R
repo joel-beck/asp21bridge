@@ -6,7 +6,8 @@ pacman::p_load(
   purrr,
   ggplot2,
   gridExtra,
-  scales
+  scales,
+  latex2exp
 )
 library(asp21bridge)
 
@@ -282,11 +283,11 @@ bind_rows(
 p1 <- deviation_a_tau_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "beta")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
-    title = "Absolute deviations from true beta (1000 simulations)",
-    x = "a_tau", y = "| Deviation |", color = NULL
+    title = TeX("Absolute deviations from true $\\beta$"),
+    x = TeX("$a_\\tau$"), y = "| Deviation |", color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -303,11 +304,11 @@ p1 <- deviation_a_tau_data %>%
 p2 <- deviation_a_tau_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "gamma")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
-    title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "a_tau", y = "| Deviation |", color = NULL
+    title = TeX("Absolute deviations from true $\\gamma$"),
+    x = TeX("$a_\\tau$"), y = NULL, color = NULL
   ) +
   theme_light(base_size = 9) +
   theme(
@@ -324,11 +325,11 @@ p2 <- deviation_a_tau_data %>%
 p3 <- deviation_b_tau_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "beta")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
     # title = "Absolute deviations from true beta (1000 simulations)",
-    x = "b_tau", y = "| Deviation |", color = NULL
+    x = TeX("$b_\\tau$"), y = "| Deviation |", color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -346,11 +347,11 @@ p3 <- deviation_b_tau_data %>%
 p4 <- deviation_b_tau_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "gamma")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
     # title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "b_tau", y = "| Deviation |", color = NULL
+    x = TeX("$b_\\tau$"), y = NULL, color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -372,11 +373,11 @@ p4 <- deviation_b_tau_data %>%
 p5 <- deviation_a_xi_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "beta")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
     # title = "Absolute deviations from true gamma (1000 simulations)",
-    x = "a_xi", y = "| Deviation |", color = NULL
+    x = TeX("$a_\\xi$"), y = "| Deviation |", color = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -394,11 +395,11 @@ p5 <- deviation_a_xi_data %>%
 p6 <- deviation_a_xi_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "gamma")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
-    #title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "a_xi", y = "| Deviation |"
+    # title = "Abs. dev. from true gamma (#sim = 1000)",
+    x = TeX("$a_\\xi$"), y = NULL
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -416,11 +417,11 @@ p6 <- deviation_a_xi_data %>%
 p7 <- deviation_b_xi_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "beta")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
-    #title = "Abs. dev. from true beta (#sim = 1000)",
-    x = "b_xi", y = "| Deviation |"
+    # title = "Abs. dev. from true beta (#sim = 1000)",
+    x = TeX("$b_\\xi$"), y = "| Deviation |"
   ) +
   guides(color = "none") +
   theme_light(base_size = 9) +
@@ -438,11 +439,10 @@ p7 <- deviation_b_xi_data %>%
 p8 <- deviation_b_xi_data %>%
   filter(stringr::str_detect(string = Parameter, pattern = "gamma")) %>%
   ggplot(mapping = aes(x = hyppar_val, y = deviation, color = Parameter)) +
-  geom_line() +
-  geom_point(size = 2) +
+  geom_line(size = 0.5) +
+  geom_point(size = 1) +
   labs(
-    #title = "Abs. dev. from true gamma (#sim = 1000)",
-    x = "b_xi", y = "| Deviation |"
+    x = TeX("$b_\\xi$"), y = NULL
   ) +
   theme_light() +
   guides(color = "none") +
@@ -562,8 +562,8 @@ readr::write_rds(
     p6 = p6,
     p7 = p7,
     p8 = p8
-    #beta0_cor_plot = beta0_cor_plot,
-    #gamma0_cor_plot = gamma0_cor_plot
+    # beta0_cor_plot = beta0_cor_plot,
+    # gamma0_cor_plot = gamma0_cor_plot
   ),
   file = here::here(
     "simulation-studies",
