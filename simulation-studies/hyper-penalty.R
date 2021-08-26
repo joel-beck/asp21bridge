@@ -113,7 +113,7 @@ p_tau_beta <- df_tau %>%
     title = TeX("Squared Euclidean Norm of $\\beta$"), x = TeX("$a_\\tau$"),
     y = TeX("$b_\\tau$"), fill = NULL
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 9) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -137,7 +137,7 @@ p_tau_gamma <- df_tau %>%
     title = TeX("Squared Euclidean Norm of $\\gamma$"), x = TeX("$a_\\tau$"),
     y = NULL, fill = NULL
   ) +
-  theme_minimal() +
+  theme_minimal(base_size = 9) +
   theme(plot.title = element_text(hjust = 0.5))
 
 
@@ -158,7 +158,7 @@ p_xi_beta <- df_xi %>%
   ) +
   scale_fill_distiller(palette = "RdBu") +
   labs(fill = NULL, x = TeX("$a_\\xi$"), y = TeX("$b_\\xi$")) +
-  theme_minimal()
+  theme_minimal(base_size = 9)
 
 
 # xi hypers on gamma
@@ -178,7 +178,7 @@ p_xi_gamma <- df_xi %>%
   ) +
   scale_fill_distiller(palette = "RdBu") +
   labs(y = NULL, fill = NULL, x = TeX("$a_\\xi$")) +
-  theme_minimal()
+  theme_minimal(base_size = 9)
 
 readr::write_rds(
   x = list(

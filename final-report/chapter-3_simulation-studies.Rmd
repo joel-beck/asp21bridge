@@ -571,8 +571,8 @@ As usual, more details about the simulation setting are given in the Appendix.
 
 ### Simulation Results {.unlisted .unnumbered}
 
-```{r, hyper-pen-plots, echo=FALSE, fig.height=6, fig.width = 8, fig.cap="Heatmaps of $\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2$ and  $\\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ (excluding Intercepts)", fig.pos="t"}
-(hyper_penalty_plots$p_tau_beta | hyper_penalty_plots$p_tau_gamma) / 
+```{r, hyper-pen-plots, echo=FALSE, out.width="90%", fig.cap="Heatmaps of $\\left \\Vert \\boldsymbol{\\beta} \\right \\Vert^2$ and  $\\left \\Vert \\boldsymbol{\\gamma} \\right \\Vert^2$ (excluding Intercepts)", fig.pos="t"}
+(hyper_penalty_plots$p_tau_beta | hyper_penalty_plots$p_tau_gamma) /
   (hyper_penalty_plots$p_xi_beta | hyper_penalty_plots$p_xi_gamma)
 ```
 
@@ -603,17 +603,3 @@ The results from this simulation study are difficult to connect to their hypothe
 This clearly illustrates, that tweaking parameters at one end in a Bayesian model of moderate size might not affect the model as a whole as might be intended.
 Indirect effects through the cross connections in the full Conditional Distributions might dominate the simple relations through the prior distributions.
 This again emphasizes the value of simulation studies to validate or possibly change the statistical methodology in practice.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
