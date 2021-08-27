@@ -12,9 +12,9 @@
 #'          model matrices. The model is used in second stage, if one of `X`, `Z`, `y`,
 #'          `beta_start` or `gamma_start` is not given, \cr
 #'          Default: NULL
-#' @param X Matrix containing the data according to the beta_start coefficient, \cr
+#' @param X Matrix containing the data according to the `beta_start` coefficient, \cr
 #'          Default: NULL
-#' @param Z Matrix containing the data according to the gamma_start coefficient, \cr
+#' @param Z Matrix containing the data according to the `gamma_start` coefficient, \cr
 #'          Default: NULL
 #' @param y Response vector; `y = X * beta + Z * gamma`,
 #'          Default: NULL
