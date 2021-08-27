@@ -280,7 +280,11 @@ Section \@ref(mh) is dedicated to the integrated Metropolis-Hastings step, which
 
 ### Iterative Parameter Sampling {#mcmc-ridge}
 
+The `mcmc_ridge()` function is a Markov chain Monte Carlo (MCMC) algorithm allowing to simulate from parameters of a location scale regression model or from matrices and parameters that are assigned by hand. Since multiple input types are allowed, the `mcmc_ridge()` function does not only contain the simulation process itself, but also input and output modalities, especially in a sense of defensive programming.
 
+**Overall Structure:**
+
+As broached in section \@ref(sampling), the `mcmc_ridge()` can take two different valid input types for simulating data. Next to them, however, input parameters for number of simulations, starting values for the simulation process, strengths of ridge penalties and allowance as well as proposal variances for simulating with a *Metropolis-Hastings algorithm* (see section \@ref(mh) for the latter). Their default settings are discussed in section \@ref(design).
 
 
 
