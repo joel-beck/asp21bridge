@@ -336,13 +336,23 @@ As we distinguish between the data input types, we of course accomplish the outp
 
 The main part of our `mcmc_ridge()` function, meaning the data simulation itself is covered in the following. It is intrinsically built on the full conditional distributions introduced in section \@ref(full-conditional). Since the *Metropolis Hastings step* is covered in section \@ref(mh), the focus of the current section is on the simulation steps where the kernel of the full conditionals can be assigned to known types of distributions. These are simulating $\tau^2$ (section \@ref(tau)), $\xi^2$ (section \@ref(xi)) and $\boldsymbol{\beta}$ (section \@ref(beta)) in closed forms. The steps are as followed:
 
-1. The parameters of the Full Conditionals of section \@ref(full-conditional) are calculated, depending on the inputted data.
+1. The parameters of the Full Conditionals of section \@ref(full-conditional) are calculated, namely $K$, $J$, $\boldsymbol{W}$ and $\boldsymbol{u}$.
 
-2. For each parameter to simulate $i$, a initial matrix $\boldsymbol{R}_i$, where $\boldsymbol{R}_i \in \mathbb{R}^{m+1 \, \times \, r}$ with the number of simulations $m$ and the dimension of the parameters $r$ is created. 
-The first entry of $\boldsymbol{R}_i$ is always the inputted starting value for the parameter (`beta_start`, `gamma_start`, `xi_start`, `tau_start`). 
+2. For each parameter to simulate $i$, an initial matrix $\boldsymbol{R}_i$, where $\boldsymbol{R}_i \in \mathbb{R}^{s+1 \, \times \, r}$ with the number of simulations $m = 1,...,s$ and the dimension of the parameters $r$ is created. 
+The first entry of $\boldsymbol{R}_i$, $\boldsymbol{R}_{i,1}$ is always the inputted starting value for the parameter (`beta_start`, `gamma_start`, `xi_start`, `tau_start`). 
 In each iteration of the simulation, the regarding column is overwritten by the simulated parameter values. The resulting output list of the `mcmc_ridge()` contains the single $\boldsymbol{R}_i$, once all iterations are passed through.
 
-3. 
+3. Starting a simulation ($m = 1$) by sampling $\beta$ according to section \@ref(beta), using $\boldsymbol{R}_{\gamma,m}$ in $\boldsymbol{W}$ and $\boldsymbol{u}$ as well as $\boldsymbol{R}_{\tau^2,m}$. 
+[This can be done either in closed form or by a *Metropolis-Hastings algorithm*.]
+
+4. Sampling $\gamma$ by a *Metropolis Hastings Step*, explained in detail in section \@ref(mh).
+
+5. Sampling $\tau^2$ according to section \@ref(tau) using $\boldsymbol{R}_{\beta,m}$.
+
+6. Sampling $\xi^2$ according to section \@ref(xi) using $\boldsymbol{R}_{\gamma,m}$.
+
+7. A whole simulation step is closed. One sets $m_{new} = m_{old} + 1$ and starts by sampling $\beta$ (3.) again until the the maximal number of iterations is reached an the $\boldsymbol{R}_i$*'s* are updated in every row.
+
 
 ### Metropolis Hastings Step {#mh}
 
