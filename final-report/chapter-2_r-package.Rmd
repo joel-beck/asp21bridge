@@ -361,7 +361,7 @@ $$
 log\_acc\_prob = min(0, LFC_{prop} - LFC_{curr}).
 \end{aligned}
 $$
-The log-acceptance probability is restricted to be greater than zero to ensure that the acceptance probability does not exceed the value of 1.
+The log-acceptance probability is restricted to be smaller or equal to zero to ensure that the acceptance probability does not exceed the value of 1.
 
 3. The acceptance probability is simply computed as
 $$
