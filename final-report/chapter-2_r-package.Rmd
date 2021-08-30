@@ -330,13 +330,19 @@ To ensure the end-user inputs valid data for `m`, `X`, `Z`, `y`, `beta_start` an
 
 Having correct input data, the Gibbs Sampler itself starts to simulate data. Since this is the heart of `mcmc_ridge()` function, the manner of functioning is explained in the next subitem.
 
-As we distinguish between the data input types, we of course accomplish the output of the `mcmc_ridge()` function on that distinction. In any way, one list per parameter containing each iteration result as well as the overall acceptance probability of the parameters simulated by a *Metropolis-Hastings algorithm* is outputted in a parent-list. However, if data out of a model object is used in the simulation step, the iterations result lists contain names according to the model object like `location` and `scale`. Otherwise, the original namespace of the simulation step remains for the iterations result lists. In any event, these results can be used to calculate posterior means or the like of the parameters.
+As we distinguish between the data input types, we of course accomplish the output of the `mcmc_ridge()` function on that distinction. In any way, one matrix per parameter containing each iteration result as well as the overall acceptance probability of the parameters simulated by a *Metropolis-Hastings algorithm* is outputted in a parent-list. However, if data out of a model object is used in the simulation step, the iterations result matrices are named according to the model object (like `location` and `scale`). Otherwise, the original namespace of the simulation step remains for the iterations result matrices In any event, these results can be used to calculate posterior means or the like of the parameters.
 
 **Gibbs Sampler:**
 
-The main part of our `mcmc_ridge()` function, meaning the data simulation itself is covered in the following. It is intrinsically built on the full conditional distributions introduced in section \@ref(full-conditional). Since the *Metropolis Hastings step* is covered in section \@ref(mh), the focus of this section is on the simulation steps where the kernel of the full conditionals can be assigned to known types of distributions. These are simulating $\tau^2$ (section \@ref(tau)), $\xi^2$ (section \@ref(xi)) and $\boldsymbol{\beta}$ (section \@ref(beta)) in closed forms. The steps are as followed:
+The main part of our `mcmc_ridge()` function, meaning the data simulation itself is covered in the following. It is intrinsically built on the full conditional distributions introduced in section \@ref(full-conditional). Since the *Metropolis Hastings step* is covered in section \@ref(mh), the focus of the current section is on the simulation steps where the kernel of the full conditionals can be assigned to known types of distributions. These are simulating $\tau^2$ (section \@ref(tau)), $\xi^2$ (section \@ref(xi)) and $\boldsymbol{\beta}$ (section \@ref(beta)) in closed forms. The steps are as followed:
 
-1. 
+1. The parameters of the Full Conditionals of section \@ref(full-conditional) are calculated, depending on the inputted data.
+
+2. For each parameter to simulate $i$, a initial matrix $\boldsymbol{R}_i$, where $\boldsymbol{R}_i \in \mathbb{R}^{m+1 \, \times \, r}$ with the number of simulations $m$ and the dimension of the parameters $r$ is created. 
+The first entry of $\boldsymbol{R}_i$ is always the inputted starting value for the parameter (`beta_start`, `gamma_start`, `xi_start`, `tau_start`). 
+In each iteration of the simulation, the regarding column is overwritten by the simulated parameter values. The resulting output list of the `mcmc_ridge()` contains the single $\boldsymbol{R}_i$, once all iterations are passed through.
+
+3. 
 
 ### Metropolis Hastings Step {#mh}
 
