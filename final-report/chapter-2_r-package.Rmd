@@ -326,15 +326,21 @@ As broached in section \@ref(sampling), the `mcmc_ridge()` can take two differen
 - `prop_var_loc`: Variance of proposal distribution for $\beta$ sampling. Default: `200`.
 
 To ensure the end-user inputs valid data for `m`, `X`, `Z`, `y`, `beta_start` and `gamma_start`, the `mcmc_ridge()` function runs some input checks in first stage in the sense of *defensive programming*. The `validate_input()` helper function does not only check for missing input data and improper dimensions of the number of columns of `X` and the length of the `beta_start` vector (likewise for *scale* input data) and exhibits matching error messages (for more see \@ref(design)), but prefers manually specified input data `X`, `Z`, `y`, `beta_start` and `gamma_start` over a model object `m` containing these. In case some manually specified input data is missing, the missing data is replaced by the equivalent data out of the model object `m` and checked for proper dimensions. We were able to accomplish this replacement by conditional iterations over model and manually assigned list objects. In case neither of both is given, the function results in an appropriate error code.
+[Add Intercept?]
 
 Having correct input data, the Gibbs Sampler itself starts to simulate data. Since this is the heart of `mcmc_ridge()` function, the manner of functioning is explained in the next subitem.
 
 As we distinguish between the data input types, we of course accomplish the output of the `mcmc_ridge()` function on that distinction. In any way, one list per parameter containing each iteration result as well as the overall acceptance probability of the parameters simulated by a *Metropolis-Hastings algorithm* is outputted in a parent-list. However, if data out of a model object is used in the simulation step, the iterations result lists contain names according to the model object like `location` and `scale`. Otherwise, the original namespace of the simulation step remains for the iterations result lists. In any event, these results can be used to calculate posterior means or the like of the parameters.
 
+**Gibbs Sampler:**
+
+The main part of our `mcmc_ridge()` function, meaning the data simulation itself is covered in the following. It is intrinsically built on the full conditional distributions introduced in section \@ref(full-conditional). Since the *Metropolis Hastings step* is covered in section \@ref(mh), the focus of this section is on the simulation steps where the kernel of the full conditionals can be assigned to known types of distributions. These are simulating $\tau^2$ (section \@ref(tau)), $\xi^2$ (section \@ref(xi)) and $\boldsymbol{\beta}$ (section \@ref(beta)) in closed forms. The steps are as followed:
+
+1. 
 
 ### Metropolis Hastings Step {#mh}
 
-Because the Full Conditional of $\boldsymbol{\gamma}$ cannot be assigned to a known type of distribution (see section \@ref(gamma)), the MCMC update for $\boldsymbol{\gamma}$ cannot be sampled directly but requires an Metropolis Hastings step.   
+As the Full Conditional of $\boldsymbol{\gamma}$ cannot be assigned to a known type of distribution (see section \@ref(gamma)), the MCMC update for $\boldsymbol{\gamma}$ cannot be sampled directly but requires an Metropolis Hastings step.   
 Remind that the Full Conditional of $\boldsymbol{\gamma}$ is given by the following expression:
 $$
 \begin{aligned}
