@@ -16,7 +16,7 @@
 #'          Default: NULL
 #' @param Z Matrix containing the data according to the `gamma_start` coefficient, \cr
 #'          Default: NULL
-#' @param y Response vector; `y = X * beta + Z * gamma`,
+#' @param y Response vector, \cr
 #'          Default: NULL
 #' @param num_sim Number of simulations, \cr
 #'                Default: 1000
