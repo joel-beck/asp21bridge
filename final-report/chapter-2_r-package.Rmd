@@ -287,7 +287,7 @@ The `mcmc_ridge()` function is a Markov chain Monte Carlo (MCMC) algorithm allow
 ```{r, eval=FALSE}
 mcmc_ridge(m = m, X = X, Z = Z, y = y, num_sim = 1000,
            beta_start = 1, gamma_start = 1, tau_start = 1, xi_start = 1,
-           a_tau = 50, b_tau = 200, a_xi = 2, b_xi = 100,
+           a_tau = 100, b_tau = 50, a_xi = 2, b_xi = 200,
            prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200)
 ```
 
@@ -311,13 +311,13 @@ As broached in section \@ref(sampling), the `mcmc_ridge()` can take two differen
 
 - `xi_start`: Starting value for the variance of the normal distribution of the gamma parameter, where `xi_start` is inverse gamma (IG) distributed. Regularization parameter in a Bayesian ridge setting, Default: `1`.
 
-- `a_tau`: Fix shape parameter of the IG distribution of `tau_start`. Default: `50`.
+- `a_tau`: Fix shape parameter of the IG distribution of `tau_start`. Default: `100`.
 
-- `b_tau`: Fix scale parameter of the IG distribution of `tau_start`. Default: `200`.
+- `b_tau`: Fix scale parameter of the IG distribution of `tau_start`. Default: `50`.
 
 - `a_xi`: Fix shape parameter of the IG distribution of `xi_start`. Default: `2`.
 
-- `b_xi`: Fix scale parameter of the IG distribution of `xi_start`. Default: `100`.
+- `b_xi`: Fix scale parameter of the IG distribution of `xi_start`. Default: `200`.
 
 - `prop_var_scale`: Variance of proposal distribution for $\gamma$ sampling by a *Metropolis-Hastings algorithm*. Default: `3`.
 
