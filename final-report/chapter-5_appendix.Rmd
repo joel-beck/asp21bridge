@@ -100,7 +100,22 @@ The sample size is set to $n = 50$ and the result of both Bayesian samplers are 
 
 ### Section \@ref(hyper): Hyperparameters - Impact on Estimation Accuracy {.unlisted .unnumbered}
 
+The simulation study of the impact of the Hyperparameters on the coefficients is constructed as follows:
 
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ is simulated from a two dimensional normal distribution $\mathcal{N}_{2} \left( \boldsymbol{\mu}, \mathbf{\Sigma} \right)$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 1 & 2 \end{pmatrix}^T$ and identity covariance matrix $\mathbf{\Sigma} = \mathbf{I}_{2}$. 
+The same holds true for the design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ with mean vector $\boldsymbol{\mu} = \begin{pmatrix} 5 & 3 \end{pmatrix}^T$ and identity covariance matrix. However, after simulating $\mathbf{X}$ and $\mathbf{Z}$, both are standardized to a zero mean and a unit variance.
+
+- In both design matrices intercept columns are added for estimation purposes. 
+The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -2 & 1 \end{pmatrix}^T$.
+
+- The outcome variable $\mathbf{y}$ is generated according to the correctly specified location-scale model $y_i \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( \mathbf{x}_i^T \boldsymbol{\beta}, \exp \left( \mathbf{z}_i^T \boldsymbol{\gamma} \right)^2 \right)$ for $i = 1, \ldots, n$ with sample size $n = 50$ as well as standardized $\mathbf{X}$ and $\mathbf{Z}$.
+
+- For sampling the location parameter, the full conditional multivariate normal distribution of $\boldsymbol{\beta}$ is chosen, i.e. `mcmc_ridge(..., mh_location = FALSE)` is used. 
+Therefore, the location estimate is directly affected by the hyperparameters.
+
+- For simulating the influence of the hyperparameters, nine different values are chosen: $a_{\tau}, b_{\tau}, a_{\xi}, b_{\xi} \in \left\{ -1, 0, 0.5, 1, 2, 10, 50, 100, 200  \right\}$. 
+Since for statistical properties like the mean of an Inverse Gamma distribution $\frac{ b}{ a-1}$ the condition $a > 1$ is required, particular attention is given to larger values. 
+However, it is an aim to inspect the performance of the sampler for smaller hyperparameter values than $1$ as well.
 
 
 

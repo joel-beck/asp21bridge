@@ -23,6 +23,14 @@ z2 <- rnorm(n = 50, mean = 3, sd = 1)
 X <- cbind(x1, x2)
 Z <- cbind(z1, z2)
 
+# standardize columns in X and Z
+X <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+Z <- apply(Z, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+x1 <- X[, 1]
+x2 <- X[, 2]
+z1 <- Z[, 1]
+z2 <- Z[, 2]
+
 beta <- c(-1, 4) # True: beta_0 = 0, beta_1 = -1, beta_2 = 4,
 gamma <- c(-2, 1) # True: gamma_0 = 0, gamma_1 = -2, gamma_2 = 1
 
