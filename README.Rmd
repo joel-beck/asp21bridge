@@ -97,7 +97,7 @@ summary_complete(fit) %>%
 The estimates for $\beta_1$ up to $\beta_4$ are identical in the three models and almost coincide with the true data generating values.
 This behaviour is somewhat expected, since the $\beta$ vector is drawn from a closed form multivariate normal distribution with independent samples across iterations of the MCMC sampler.
 
-The results for the scale parameter $\gamma$ show a greater variation between the models and are therefore more interesting to analyze.
+The results for the scale parameter $\boldsymbol{\gamma}$ show a greater variation between the models and are therefore more interesting to analyze.
 The Maximum Likelihood approach is able to recover the true / data generating value of $\gamma_2$, while the MCMC sampler with Ridge penalty performs best for estimating $\gamma_1$.
 All three models fail to identify the correct intercept parameter $\gamma_0$, which, however, is often of minor interest.
 
@@ -105,7 +105,7 @@ Simulations across different data sets and sample sizes show similar patterns:
 If the data is generated according to the mathematical model introduced in the first section, i.e. the estimation model using Maximum Likelihood is correctly specified, the `mle` and the `mcmc_ridge` estimates tend to be closest to the true values.
 If, however, the underlying model used for simulation deviates from the Gaussian location-scale regression model, the `mle` results are, unsurprisingly, worse than both of the more flexible MCMC methods.
 
-The Markov Chain Monte Carlo samples for $\gamma$ based on the Metropolis - Hastings algorithm implemented in the `mcmc_ridge()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
+The Markov Chain Monte Carlo samples for $\boldsymbol{\gamma}$ based on the Metropolis - Hastings algorithm implemented in the `mcmc_ridge()` function are strongly correlated, even though the acceptance rate of the proposed values is reasonable:
 
 ```{r}
 fit$mcmc_ridge$acceptance_rate
@@ -117,13 +117,13 @@ This value of roughly `r 100 * round(fit$mcmc_ridge$acceptance_rate, 2)`% indica
 
 The building blocks for monitoring the convergence of the posterior chains as well as the autocorrelations are the functions `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for combining multiple chains.
 
-A quick overview can be gained by collecting the corresponding time plots for all posterior coefficients.
+A quick overview can be gained by collecting the corresponding trace plots for all posterior coefficients.
 
 ```{r}
-mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE)
+mult_plot(fit, type = "trace", free_scale = TRUE, latex = TRUE)
 ```
 
-The time plots for the $\beta$ coefficients indicate convergence and confirm the stable posterior estimates from the previous section.
+The trace plots for the $\boldsymbol{\beta}$ coefficients indicate convergence and confirm the stable posterior estimates from the previous section.
 
 The prior variance parameters $\tau^2$ and $\xi^2$ are strictly positive and thus more adequately displayed on the logarithmic scale:
 
@@ -135,15 +135,14 @@ mult_plot(
 )
 ```
 
-Just like the $\beta$ samples, these are drawn from closed form full conditional distributions.
+Just like the $\boldsymbol{\beta}$ samples, these are drawn from closed form full conditional distributions.
 
 Finally, we focus on the samples for the scale parameter $\gamma$.
-Here, the time plots do not indicate convergence to the posterior distribution.
+Here, the trace plots do not indicate convergence to the posterior distribution.
 Thus, we increase the number of simulations to $10000$, which also allows the inclusion of a Burn - In Phase as well as a thinning factor while still maintaining a sufficient sample size to estimate posterior quantities:
 
 ```{r}
 set.seed(4321)
-
 fit <- fit %>%
   mcmc_ridge(num_sim = 10000)
 ```
@@ -160,7 +159,7 @@ samples$scale[, 3, drop = FALSE] %>%
 ```
 
 Even a thinning factor of $30$, i.e. only every $30$th observation is kept in the sample, does not get rid of the autocorrelation.
-Yet, the posterior density seems to be approximately normal and the time plot indicates a decent exploration of the posterior space.
+Yet, the posterior density seems to be approximately normal and the trace plot indicates a decent exploration of the posterior space.
 
 These findings serve as a great starting point for a more in-depth analysis, which is beyond the scope of this brief introduction to the `asp21bridge` package.
 Full descriptions of all functions, their arguments and common applications can be found in the documentation.

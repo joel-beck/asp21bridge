@@ -354,11 +354,17 @@ In each iteration of the simulation, the regarding column is overwritten by the 
 7. A whole simulation step is closed. One sets $m_{new} = m_{old} + 1$ and starts by sampling $\beta$ (3.) again until the the maximal number of iterations is reached an the $\boldsymbol{R}_i$*'s* are updated in every row.
 
 
+
+
+
+
+
 ### Metropolis Hastings Step {#mh}
 
-As the Full Conditional of $\boldsymbol{\gamma}$ cannot be assigned to a known type of distribution (see section \@ref(gamma)), the MCMC update for $\boldsymbol{\gamma}$ cannot be sampled directly but requires an Metropolis Hastings step.   
+As the Full Conditional of $\boldsymbol{\gamma}$ cannot be assigned to a known type of distribution (see section \@ref(gamma)), the MCMC update for $\boldsymbol{\gamma}$ cannot be sampled directly, but requires an Metropolis Hastings step.  
+This step is implemented by the `mh_gamma()` function.
 
-Remind that the Full Conditional of $\boldsymbol{\gamma}$ is given by the following expression:
+Recall from chapter \@ref(math) that the Full Conditional of $\boldsymbol{\gamma}$ is given by the expression
 <!--  -->
 $$
 \begin{aligned}
@@ -367,51 +373,82 @@ f( \boldsymbol{\gamma} \mid \cdot )
 \end{aligned}
 $$
 <!--  -->
-For numerical reasons, we used the Log-Full Conditionals for the Metropolis Hastings algorithm. The algorithm can be summarized by the following steps:
+For numerical reasons, we used the Log - Full Conditionals for the Metropolis Hastings implementation. 
+Since some parts of the expression above are used for sampling $\boldsymbol{\beta}$ as well, we computed the relevant terms once only in the `mcmc_ridge()` function and handed them as input to `mh_gamma()`.
+Similarly, the current state of the Markov Chains for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$, required for evaluating the Full Conditionals, are provided by the `mcmc_ridge()` function in each iteration.
 
-1. Compute the covariance matrix 
+The implementation of the Metropolis-Hastings algorithm can be summarized by the following steps:
+
+1. Compute the covariance matrix for the proposal distribution
+
     ```{r, eval=FALSE}
     Sigma <- diag(1 / colMeans(Z^2)) * prop_var_scale / (n * length(gamma))
     ```
-<!-- $$ -->
-<!-- \begin{aligned} -->
-<!-- \boldsymbol{\Sigma} = diag(1 / colMeans(Z^2)) * prop\_var\_scale / (n * len(\gamma)). -->
-<!-- \end{aligned} -->
-<!-- $$ -->
-    and sample a proposal for $\boldsymbol{\gamma}$ as
+
+    and sample a proposed value for $\boldsymbol{\gamma}$ as
+<!--  -->
 $$
 \begin{aligned}
-\boldsymbol{\gamma}_{prop} \sim N(\boldsymbol{\gamma}_{curr}, \boldsymbol{\Sigma}).
+\boldsymbol{\gamma}_{prop} \sim \mathcal{N}(\boldsymbol{\gamma}_{curr}, \; \boldsymbol{\Sigma}).
 \end{aligned}
 $$
-    with $\boldsymbol{\gamma}_{curr}$ being the current $\boldsymbol{\gamma}$ in the Markov chain.
+<!--  -->
+    with $\boldsymbol{\gamma}_{curr}$ being the current state of $\boldsymbol{\gamma}$ in the Markov chain.
     
-    Note that the term $\boldsymbol{Z}^2$ squares all elements of $\boldsymbol{Z}$ elementwise, `n` denotes the length of the vector $\boldsymbol{y}$. 
-    Furthermore, the function `colMeans()` returns a vector with the column means of a matrix, and the function `length()` simply returns the length of a vector.
+    Note that the term `Z^2` squares all elements of `Z` elementwise and `n` denotes the length of the vector $\boldsymbol{y}$. 
+    Furthermore, the function `colMeans()` returns a vector with the column means of a matrix.
 
-2. Compute the Log-Full Conditionals for $\boldsymbol{\gamma}_{curr}$ and $\boldsymbol{\gamma}_{prop}$. 
-In the following, they are denoted as $LFC_{curr}$ and $LFC_{prop}$. 
-Then compute the log-acceptance probability as
-$$
-\begin{aligned}
-log\_acc\_prob = min(0, LFC_{prop} - LFC_{curr}).
-\end{aligned}
-$$
-The log-acceptance probability is restricted to be smaller or equal to zero to ensure that the acceptance probability does not exceed the value of 1.
+1. Compute the Log - Full Conditional distribution of $\boldsymbol{\gamma}$ at the states $\boldsymbol{\gamma}_{curr}$ and $\boldsymbol{\gamma}_{prop}$.
+    
+1. Since we used a (multivariate normal) random walk proposal, the acceptance probability $\alpha$ for the proposed value can be computed by evaluation of the Full Conditionals only.
+   Thus, we obtain
+    
+    ```{r, eval=FALSE}
+    log_acceptance_prob <- min(0, log_full_cond_proposal - log_full_cond_curr)
+    ```
+    
+    The log - acceptance probability is restricted to be smaller or equal to zero to ensure that the acceptance probability does not exceed the value of 1.
+    In order to compare the acceptance probability $\alpha$ with a standard uniform random variable $U \sim \mathcal{U}(0, 1)$, the exponential function is used for transforming $\alpha$ to the original scale:
+    
+    ```{r, eval=FALSE}
+    acceptance_prob <- exp(log_acceptance_prob)
+    ```
 
-3. The acceptance probability is simply computed as
-$$
-\begin{aligned}
-acc\_prob = \exp(log\_acc\_prob).
-\end{aligned}
-$$
-4. Simulate a uniform distribution on the interval (0,1). The outcome is denoted as $\boldsymbol{U}$. Now we consider two different cases: If $\boldsymbol{U} < acc\_prob$ is true, the Markov chain accepts the proposal and jumps to $\boldsymbol{\gamma}_{prop}$. Otherwise, the Markov chain stays at $\boldsymbol{\gamma}_{curr}$. 
+1. Finally, the magnitude of the acceptance probability $\alpha$ relative to the realized value of $U$ controls the new state of the chain.
+In addition, we kept track of the overall acceptance *rate* across all proposals by introducing boolean variables `accepted` in each iteration.
 
-The formula for $\boldsymbol{\Sigma}$ in step 1 was chosen after a lot simulations in order to make the acceptance probabilities as much independent from $\boldsymbol{Z}$, $\boldsymbol{y}$ and $\boldsymbol{n}$ as possible. The parameter `prop_var_scale` was created for the `mcmc_ridge()` function to control the magnitude of the acceptance probabilities. For the default of `prop_var_scale` = 3, the Metropolis Hastings algorithm should lead to acceptance probabilities between 25% and 50%. 
-If the parameter is increased, the magnitude of the jumps also increases, but the acceptance probability becomes reduced, such that the Markov chain for $\boldsymbol{\gamma}$ might stay at the same point for a very long time.
-If the parameter is decreased, the acceptance probability increases. But due to a small magnitude of the jumps within the Markov chain, the Markov chain might look like a random walk and does not fit the Posterior distribution of $\boldsymbol{\gamma}$ very well.
+    ```{r, eval=FALSE}
+    if (stats::runif(1) < acceptance_prob) {
+      new_gamma <- gamma_proposal
+      accepted <- TRUE
+    } else {
+      new_gamma <- gamma
+      accepted <- FALSE
+    }
+    ```
 
-The Metropolis Hastings algorithm for $\boldsymbol{\beta}$ works in a similar way but is of minor importance, since the $\boldsymbol{\beta}$ updates could be also sampled directly from a known distribution.
+The covariance matrix of the proposal distribution $\boldsymbol{\Sigma}$ in step $1$ was chosen by simulating various combinations of the remaining model parameters to keep the acceptance rates in recommended ranges for a random walk proposal. 
+The parameter `prop_var_scale` as a scaling factor of $\mathbf{\Sigma}$ has major impact on the acceptance rates and is included as an input parameter in the `mcmc_ridge()` function to provide manual control for the user. 
+
+The default value `prop_var_scale` $= 3$ was obtained from these simulations and serves as a solid benchmark that works well in many scenarios.
+Larger values lead to larger jumps from the current to the proposed state, such that the acceptance probability decreases and the Markov Chain for $\boldsymbol{\gamma}$ might stay at the same point for a long time.
+By similar logic, smaller values of `prop_var_scale` lead to larger acceptance probabilities. 
+Since the resulting steps will be small, the chain might converge to the Posterior Distribution very slowly and not explore the Posterior space sufficiently.
+Therefore both extremes will result in strongly correlated samples.
+
+The Metropolis Hastings algorithm for $\boldsymbol{\beta}$, implemented by the `mh_beta()` function, works in a similar way but is of minor importance, since the $\boldsymbol{\beta}$ updates can also be sampled directly from a multivariate normal distribution.
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Package Development {#development}
 
