@@ -503,6 +503,8 @@ As an example, the default starting values for $\boldsymbol{\beta}$ and $\boldsy
 This serves as guidance for users with little prior knowledge about their model.
 It is worth noting, however, that there are multiple input parameters which *can* be set manually if desired, enabling fine control over the sampling procedure.
 
+Moreover, the default values for the hyperparameters $a_\tau$, $b_\tau$, $a_\xi$ and $b_\xi$ are set according to the results of our conducted simulation study on estimation accuracy in section \@ref(fig:hyper) to provide optimal `mcmc_ridge()` sampling results to the end-user.
+
 **Input Flexibility / Defensive Programming:**
 
 As already mentioned in section \@ref(guide), all exported functions are designed to be as flexible as possible with respect to their input arguments.
