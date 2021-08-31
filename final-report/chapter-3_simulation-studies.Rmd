@@ -498,38 +498,32 @@ Anyway, our sampler produces the lowest deviation of ${\boldsymbol{\gamma}}$ est
 
 The lower panel of Figure \@ref(fig:hyppar) is constructed analogously, but showing the impact of $a_{\xi}$ and $b_{\xi}$ on the location and scale parameters respectively.
 Again, the overall absolute deviations for the $\boldsymbol{\beta}$ estimates from their true values are small, whereas the deviations for the $\boldsymbol{\gamma}$ estimates are considerably larger.
-Once again, the intercept estimates display the largest deviations from their true value.
 
 Arguing with the mean of the Inverse Gamma distribution of $\xi^2$ in a similar way, one obtains larger mean values for $b_{\xi}$, while $a_{\xi}$ lowers them. 
 The impact of $\xi^2$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \boldsymbol{\gamma} \mid \cdot )$ according to our underlying theoretical model. 
 This effect is indicated by the linear trend lines in the lower right part of Figure \@ref(fig:hyppar). 
 
-In general, one obtains smaller deviations for larger values of $b_{\xi}$ and lower ones of $a_{\xi}$, where especially lots of randomness occurs in the deviations of $\gamma_0$. Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the scale intercepts is overshadowed by the randomness induced by the Metropolis Hastings algorithm. 
-The same wide variations exclusively for $a_{\xi} \leq 1$ cannot be obtained in the same manner as for $a_{\tau}$.
+In general, one obtains no significant differences in deviations of $\gamma$ along $b_{\xi}$, but lower deviations for larger values of $a_{\xi}$, where especially lots of randomness occurs in the deviations of $\gamma_1$. Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the *scale* intercepts is overshadowed by the randomness induced by the *Metropolis-Hastings algorithm*. 
+The even wider variations exclusively for $a_{\xi} \leq 1$ can again be obtained.
 
-The sampler exhibits the best results for the *scale* estimates for $a_\xi = 2$ and $b_\xi = 100$. 
+The sampler exhibits the best results for the *scale* estimates for $a_\xi = 2$ and $b_\xi \in \left\{-1, 50\right\}$. 
 However, due to the wide overall variation, these results must be taken with care.
 
 The effect of $a_{\xi}$ and $b_{\xi}$ on ${\boldsymbol{\beta}}$ can be explained through the cross-effects of the matrix $\mathbf{ W}$ and the vector $\mathbf{ u}$ introduced at the beginning of this section, both containing ${\boldsymbol{\gamma}}$. 
 These diminish with increasing values of the ${\boldsymbol{\gamma}}$ entries. 
 
-The matrix $\mathbf{ W}$ affects the variance of the full conditional distribution of $\boldsymbol{\beta}$ negatively, while the mean is positively affected. 
+The matrix $\mathbf{W}$ affects the variance of the full conditional distribution of $\boldsymbol{\beta}$ negatively, while the mean is positively affected. 
 Hence, larger values of $a_{\xi}$ cause higher Posterior Means of the location parameters. 
-The positive linear trend in the lower left part of Figure \@ref(fig:hyppar) for values of $a_{\xi}$ is particularly interesting. 
-For values of $b_{\xi}$, the trend comes off inferior. 
-The wider variations of deviations for $a_{\xi} \leq 1$ is again not observable here. 
+The linear trends in the lower left part of Figure \@ref(fig:hyppar) for values of $a_{\xi}$ and $b_{\xi}$ coming off inferior. 
+The wider variations of deviations for $a_{\xi} \leq 1$ are once more observable here. 
 Nonetheless, the randomness observable for scale estimates does not show up for location estimates anymore.
 
 The smallest deviations of the *location* estimates can be detected for $a_\xi = 1$ and $b_\xi = 200$. 
 
-Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.31$ and $0.53$. 
-For the value range of $a_{\tau}$, $b_{\tau}$ and $a_{\xi}$, no distinct pattern is observable in this regard. 
-With growing values of $b_{\xi}$, however, acceptance rates are more likely to grow. 
+Shortly noted, the acceptance rates of the Metropolis Hastings algorithm for sampling ${\boldsymbol{\gamma}}$ are always between $0.21$ and $0.39$. 
+For the value range of $a_{\tau}$ and $b_{\tau}$, no distinct pattern is observable in this regard. 
+With growing values of $a_{\xi}$ however, acceptance rates are more likely to decrease. Whereas growing values of $b_{\xi}$ causes the opposite more likely. 
 Since the acceptance rates are in reasonable ranges enabling statistically valid estimation, these results are not further investigated here.
-
-
-
-
 
 
 
