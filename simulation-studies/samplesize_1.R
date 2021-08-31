@@ -39,7 +39,6 @@ absolute_error_array <- array(0, dim = c(6, number_of_n, rep))
 squared_error_array <- array(0, dim = c(6, number_of_n, rep))
 
 for (r in 1:rep) {
-  print(r)
   for (j in 1:number_of_n) {
     n <- n_data[j]
 
