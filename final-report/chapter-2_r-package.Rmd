@@ -219,7 +219,7 @@ The `asp21bridge` package offers two options to quickly access this information:
 If only a quick look at the numerical results without further investigation is desired, the `summary()` function can be used.
 The `lmls` package adapts this generic S3 method to the `lmls` class with an additional `type` argument.
 Specifying `mcmc_ridge` displays the estimates of the `mcmc_ridge()` function.
-Note, that this option is only applicable for the `toy_fit` model, which is based on the `lslm` class:
+Note, that this option is only applicable for the `toy_fit` model, which is based on the `lmls` class:
 
 ```{r}
 summary(toy_fit, type = "mcmc_ridge")
@@ -357,31 +357,41 @@ In each iteration of the simulation, the regarding column is overwritten by the 
 ### Metropolis Hastings Step {#mh}
 
 As the Full Conditional of $\boldsymbol{\gamma}$ cannot be assigned to a known type of distribution (see section \@ref(gamma)), the MCMC update for $\boldsymbol{\gamma}$ cannot be sampled directly but requires an Metropolis Hastings step.   
+
 Remind that the Full Conditional of $\boldsymbol{\gamma}$ is given by the following expression:
+<!--  -->
 $$
 \begin{aligned}
 f( \boldsymbol{\gamma} \mid \cdot )
 & \propto \exp \left( - \frac{ 1}{ 2} \cdot \left[ \frac{ 1}{ \xi^2} \tilde{\boldsymbol{\gamma}}^T \tilde{\boldsymbol{\gamma}} + 2 \cdot \mathbf{1}_{n}^T \mathbf{Z} \boldsymbol{\gamma} + \sum_{i=1}^{n} \left( \frac{ y_i - \mathbf{x}_i^T \boldsymbol{\beta}}{ \exp \left( \mathbf{ z}_i^T \boldsymbol{\gamma} \right)} \right)^2 \right] \right).
 \end{aligned}
 $$
+<!--  -->
 For numerical reasons, we used the Log-Full Conditionals for the Metropolis Hastings algorithm. The algorithm can be summarized by the following steps:
 
 1. Compute the covariance matrix 
-$$
-\begin{aligned}
-\boldsymbol{\Sigma} = diag(1 / colMeans(Z^2)) * prop\_var\_scale / (n * len(\gamma)).
-\end{aligned}
-$$
-   and sample a proposal for $\boldsymbol{\gamma}$ as
+    ```{r, eval=FALSE}
+    Sigma <- diag(1 / colMeans(Z^2)) * prop_var_scale / (n * length(gamma))
+    ```
+<!-- $$ -->
+<!-- \begin{aligned} -->
+<!-- \boldsymbol{\Sigma} = diag(1 / colMeans(Z^2)) * prop\_var\_scale / (n * len(\gamma)). -->
+<!-- \end{aligned} -->
+<!-- $$ -->
+    and sample a proposal for $\boldsymbol{\gamma}$ as
 $$
 \begin{aligned}
 \boldsymbol{\gamma}_{prop} \sim N(\boldsymbol{\gamma}_{curr}, \boldsymbol{\Sigma}).
 \end{aligned}
 $$
-   with $\boldsymbol{\gamma}_{curr}$ being the current $\boldsymbol{\gamma}$ in the Markov chain.
-   Note that the term $\boldsymbol{Z^2}$ squares all elements of $\boldsymbol{Z}$ elementwise, $\boldsymbol{n}$ denotes the length of the vector $\boldsymbol{y}$. Furthermore, the function $colMeans$ returns a vector with the column means of a matrix, and the function $len$ simply returns the length of a vector.
+    with $\boldsymbol{\gamma}_{curr}$ being the current $\boldsymbol{\gamma}$ in the Markov chain.
+    
+    Note that the term $\boldsymbol{Z}^2$ squares all elements of $\boldsymbol{Z}$ elementwise, `n` denotes the length of the vector $\boldsymbol{y}$. 
+    Furthermore, the function `colMeans()` returns a vector with the column means of a matrix, and the function `length()` simply returns the length of a vector.
 
-2. Compute the Log-Full Conditionals for $\boldsymbol{\gamma}_{curr}$ and $\boldsymbol{\gamma}_{prop}$. In the following, they are denoted as $LFC_{curr}$ and $LFC_{prop}$. Then compute the log-acceptance probability as
+2. Compute the Log-Full Conditionals for $\boldsymbol{\gamma}_{curr}$ and $\boldsymbol{\gamma}_{prop}$. 
+In the following, they are denoted as $LFC_{curr}$ and $LFC_{prop}$. 
+Then compute the log-acceptance probability as
 $$
 \begin{aligned}
 log\_acc\_prob = min(0, LFC_{prop} - LFC_{curr}).
