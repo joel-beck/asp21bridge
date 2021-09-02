@@ -159,6 +159,8 @@ This simulation study analyzes the effect of the sample size `n` on the means of
     + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
     + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
 
+- After sampling the matrices $\mathbf{X}$ and $\mathbf{Z}$, the columns of $\mathbf{x}_1, \mathbf{x}_2, \mathbf{z}_1$ and $\mathbf{z}_2$ became standardized to the results independent from parameter scaling.
+
 - The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
 
 - The posterior means are analyzed with respect to $6$ different sample sizes: `n` $\in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
@@ -198,16 +200,13 @@ par(mfrow = c(1, 1))
 ```
 
 The means of the Posterior Mean estimates are displayed in the left plot of Figure \@ref(fig:sample-size).
-For larger sample sizes (`n` $\geq 200$) none of the six parameters are extremely biased.
 
-Moreover, for `n` $= 30$, $\beta_0$ and $\beta_2$ are significantly biased, which might be caused by the high `mcmc_ridge()` penalty for $\beta_2 = 4$. The significant bias of $\beta_0$ might be explained by a counteract of the $\beta_2$ bias.  
+None of the parameters seems to be biased even for a sample size of `n` $= 30$.
 
 After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the *MAE* based on the results of the $100$ repetitions.
-The right plot of Figure \@ref(fig:sample-size) points out that the posterior means of $\beta_0$ have significantly larger errors than the posterior means of $\beta_2$ for `n` $= 30$. 
-However, this might also be explained by the fact that for `n` $= 30$, $\beta_0$ has a greater empirical bias than $\beta_2$ as could be observed in the left panel of Figure \@ref(fig:sample-size).
 
-In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
-Nevertheless, also the errors of $\beta_0$ seem to become smaller with increasing sample size. 
+The right plot of Figure \@ref(fig:sample-size) points out that the posterior means of all six coefficients have mean absolute errors of quite the same magnitude. In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
+
 
 
 
