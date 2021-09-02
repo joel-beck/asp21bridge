@@ -280,78 +280,82 @@ Section \@ref(mh) is dedicated to the integrated Metropolis-Hastings step, which
 
 ### Iterative Parameter Sampling {#mcmc-ridge}
 
-The `mcmc_ridge()` function is a Markov chain Monte Carlo (MCMC) algorithm allowing to simulate from parameters of a location scale regression model or from matrices and parameters that are assigned by hand. Since multiple input types are allowed, the `mcmc_ridge()` function does not only contain the simulation process itself, but also input and output modalities, especially in a sense of defensive programming.
+The `mcmc_ridge()` function implements a Markov chain Monte Carlo (MCMC) sampler that iteratively simulates from the full conditional distribution of each parameter of interest.
+Thus, the resulting values can be interpreted as samples from the joint Posterior Distribution (as described in chapter \@ref(math)), which cannot be obtained analytically.
 
 **Overall Structure:**
 
+The function signature shows all mandatory as well as optional input parameters and their default values:
+
 ```{r, eval=FALSE}
-mcmc_ridge(m = m, X = X, Z = Z, y = y, num_sim = 1000,
-           beta_start = 1, gamma_start = 1, tau_start = 1, xi_start = 1,
-           a_tau = 100, b_tau = 50, a_xi = 2, b_xi = 200,
-           prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200)
+mcmc_ridge(m, X, Z, y, num_sim = 1000,
+  beta_start = 1, gamma_start = 1, tau_start = 1, xi_start = 1,
+  a_tau = 100, b_tau = 50, a_xi = 2, b_xi = 200,
+  prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200
+)
 ```
 
-As broached in section \@ref(sampling), the `mcmc_ridge()` can take two different valid input types for simulating data. Next to these, however, input parameters for number of simulations, starting values for the simulation process, strengths of ridge penalties and allowance as well as proposal variances for simulating with a *Metropolis-Hastings algorithm* (see section \@ref(mh) for the latter). Their default settings are discussed in section \@ref(design). The following enumeration gives a detailed overview of each input parameter:
+Many of the inputs have already been introduced in section \@ref(sampling). 
+Explanations of each input can be found in the documentation, e.g. by calling `?mcmc_ridge()` after loading the `asp21bridge` package.
 
-- `m`: Model object containing a beta and gamma predictor, as well as the according model matrices. The model is used in second stage, if one of `X`, `Z`, `y`, `beta_start` or `gamma_start` is not given. A model object of the `S3` Class `lmls` from the `lmls()` can be used here smoothly. Default: `NULL`.
+The `mcmc_ridge()` function is structured in a modular manner; it contains various internal helper functions for different tasks that are collected in the `mcmc_ridge_helpers` file in order to maintain a concise and readable code structure.
 
-- `X`: Matrix containing the data according to the `beta_start` coefficient. Default: `NULL`.
+Valid inputs can be provided by a `lmls` model object or separate design matrices $\mathbf{ X}$ and $\mathbf{ Z}$ and observation vector $\mathbf{y}$.
+In case both are given, the function prioritizes the additional manually specified inputs, such that for instance a single covariate can be added for the Bayesian sampler while using all remaining components from the fitted `lmls` model.
 
-- `Z`: Matrix containing the data according to the `gamma_start` coefficient. Default: `NULL`.
+The `validate_input()` function handles these aspects and extracts all necessary input parameters that are required by the sampling process.
+Further, it checks for missing input data and improper dimensions of the input parameters, in which case it returns an informative error message with one example given in section \@ref(design).
+Next, the `includes_intercept()` function checks both design matrices for intercept columns, while the `add_intercept()` adds those for the sampling procedure, if necessary.
 
-- `y`: Response vector; $y = X * \beta + Z * \gamma$. Default: `NULL`.
+Now, that the raw input data is processed into a modified and convenient form, the Gibbs Sampler starts to iteratively simulate coefficient values. 
+Since this part lies right at the heart of the `mcmc_ridge()` function, it is explained in more detail below.
 
-- `num_sim`: Number of simulations. Default: `1000`.
+Whereas the simulation process itself is captured by a unified framework independent of the input type, the output type of the `mcmc_ridge()` function *does* depend on this distinction.
+If a `lmls` model is given as input, the sampling results are added to the existing model object in the new list entry `mcmc_ridge`.
+In this case, the sampling matrices for $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ are assigned the names `location` and `scale`, respectively, which plays nicely into the existing code base of the `lmls` package and in particular for adapting the `summary()` output to the `mcmc_ridge()` estimates.
 
-- `beta_start`: Starting vector for simulation, where $\beta$ is a linear predictor for the mean (i.e. the location), that is normally distributed. Default: `NULL`.
-
-- `gamma_start`: Starting vector for simulation, where $\gamma$ is a linear predictor for the standard deviation (i.e. the scale), that is normally distributed. Default: `NULL`.
-
-- `tau_start`: Starting value for the variance of the normal distribution of the beta parameter, where `tau_start` is inverse gamma (IG) distributed. Regularization parameter in a Bayesian ridge setting. Default: `1`.
-
-- `xi_start`: Starting value for the variance of the normal distribution of the gamma parameter, where `xi_start` is inverse gamma (IG) distributed. Regularization parameter in a Bayesian ridge setting, Default: `1`.
-
-- `a_tau`: Fix shape parameter of the IG distribution of `tau_start`. Default: `100`.
-
-- `b_tau`: Fix scale parameter of the IG distribution of `tau_start`. Default: `50`.
-
-- `a_xi`: Fix shape parameter of the IG distribution of `xi_start`. Default: `2`.
-
-- `b_xi`: Fix scale parameter of the IG distribution of `xi_start`. Default: `200`.
-
-- `prop_var_scale`: Variance of proposal distribution for $\gamma$ sampling by a *Metropolis-Hastings algorithm*. Default: `3`.
-
-- `mh_location`: If `TRUE`, location parameter $\beta$ is sampled with *Metropolis-Hastings algorithm*. Can be used with every kind of model input. Default: `FALSE`.
-
-- `prop_var_loc`: Variance of proposal distribution for $\beta$ sampling. Default: `200`.
-
-To ensure the end-user inputs valid data for `m`, `X`, `Z`, `y`, `beta_start` and `gamma_start`, the `mcmc_ridge()` function runs some input checks in first stage in the sense of *defensive programming*. The `validate_input()` helper function does not only check for missing input data and improper dimensions of the number of columns of `X` and the length of the `beta_start` vector (likewise for *scale* input data) and exhibits matching error messages (for more see \@ref(design)), but prefers manually specified input data `X`, `Z`, `y`, `beta_start` and `gamma_start` over a model object `m` containing these. In case some manually specified input data is missing, the missing data is replaced by the equivalent data out of the model object `m` and checked for proper dimensions. We were able to accomplish this replacement by conditional iterations over model and manually assigned list objects. In case neither of both is given, the function results in an appropriate error code.
-[Add Intercept?]
-
-Having correct input data, the Gibbs Sampler itself starts to simulate data. Since this is the heart of `mcmc_ridge()` function, the manner of functioning is explained in the next subitem.
-
-As we distinguish between the data input types, we of course accomplish the output of the `mcmc_ridge()` function on that distinction. In any way, one matrix per parameter containing each iteration result as well as the overall acceptance probability of the parameters simulated by a *Metropolis-Hastings algorithm* is outputted in a parent-list. However, if data out of a model object is used in the simulation step, the iterations result matrices are named according to the model object (like `location` and `scale`). Otherwise, the original namespace of the simulation step remains for the iterations result matrices In any event, these results can be used to calculate posterior means or the like of the parameters.
+In contrast, the output is structured in a list with the original names, if the inputs are specified manually without an existing model object.
+This conditional output type based upon the common sampling results is generated by the `create_output()` helper function.
 
 **Gibbs Sampler:**
 
-The main part of our `mcmc_ridge()` function, meaning the data simulation itself is covered in the following. It is intrinsically built on the full conditional distributions introduced in section \@ref(full-conditional). Since the *Metropolis Hastings step* is covered in section \@ref(mh), the focus of the current section is on the simulation steps where the kernel of the full conditionals can be assigned to known types of distributions. These are simulating $\tau^2$ (section \@ref(tau)), $\xi^2$ (section \@ref(xi)) and $\boldsymbol{\beta}$ (section \@ref(beta)) in closed forms. The steps are as followed:
+The following paragraph explains the iterative Gibbs updates of the `mcmc_ridge()` function in a stepwise fashion.
+The specific form of the updates are based on the conditional distributions, derived in section \@ref(full-conditional).
+The following code snippets intend to merely emphasize the most important steps from a conceptual perspective and are therefore not syntactically exact.
+If the specific components of each step are of interest, they can of course be examined in the `mcmc_ridge()` source code.
 
-1. The parameters of the Full Conditionals of section \@ref(full-conditional) are calculated, namely $K$, $J$, $\boldsymbol{W}$ and $\boldsymbol{u}$.
+1. Initialize matrices for collecting all simulations with the `init_sampling_matrix()` helper function.
+Start a counter `acc_count_scale` for calculating the acceptance rate of the Metropolis-Hastings step for $\boldsymbol{\gamma}$.
 
-2. For each parameter to simulate $i$, an initial matrix $\boldsymbol{R}_i$, where $\boldsymbol{R}_i \in \mathbb{R}^{s+1 \, \times \, r}$ with the number of simulations $m = 1,...,s$ and the dimension of the parameters $r$ is created. 
-The first entry of $\boldsymbol{R}_i$, $\boldsymbol{R}_{i,1}$ is always the inputted starting value for the parameter (`beta_start`, `gamma_start`, `xi_start`, `tau_start`). 
-In each iteration of the simulation, the regarding column is overwritten by the simulated parameter values. The resulting output list of the `mcmc_ridge()` contains the single $\boldsymbol{R}_i$, once all iterations are passed through.
+1. Repeat steps $3$ - $5$ for $i = 2, \ldots,$ `num_sim`:
 
-3. Starting a simulation ($m = 1$) by sampling $\beta$ according to section \@ref(beta), using $\boldsymbol{R}_{\gamma,m}$ in $\boldsymbol{W}$ and $\boldsymbol{u}$ as well as $\boldsymbol{R}_{\tau^2,m}$. 
-[This can be done either in closed form or by a *Metropolis-Hastings algorithm*.]
+1. Update $\boldsymbol{\beta}^{(i)}$ by sampling from a closed form multivariate normal distribution (see section \@ref(beta)), using values from the previous iteration for all remaining coefficients:
 
-4. Sampling $\gamma$ by a *Metropolis Hastings Step*, explained in detail in section \@ref(mh).
+    ```{r, eval=FALSE}
+    beta_samples[i, ] <- rmvnorm(1, mu = beta_mean, chol_sig_inv = chol(beta_var_inv))
+    ```
 
-5. Sampling $\tau^2$ according to section \@ref(tau) using $\boldsymbol{R}_{\beta,m}$.
+    This step can also be performed via an additional Metropolis-Hastings step analogous to sampling $\boldsymbol{\gamma}$ below.
+    
+1. Sample $\boldsymbol{\gamma}^{(i)}$ via an integrated Metropolis-Hastings step discussed in section \@ref(mh) with the inputs $\boldsymbol{\beta}^{(i)}$, $\boldsymbol{\gamma}^{(i-1)}$, $(\tau^2)^{(i-1)}$ and $(\xi^2)^{(i-1)}$.
+Update the value of `acc_count_scale` if the proposed value for $\boldsymbol{\gamma}$ was accepted:
 
-6. Sampling $\xi^2$ according to section \@ref(xi) using $\boldsymbol{R}_{\gamma,m}$.
+    ```{r, eval=FALSE}
+    gamma_list <- mh_gamma(
+      beta_samples[i, ], gamma_samples[i - 1, ],
+      xi_samples[i - 1, ], ...
+    )
+    gamma_samples[i, ] <- gamma_list$gamma
+    acc_count_scale <- acc_count_scale + gamma_list$accepted
+    ```
 
-7. A whole simulation step is closed. One sets $m_{new} = m_{old} + 1$ and starts by sampling $\beta$ (3.) again until the the maximal number of iterations is reached an the $\boldsymbol{R}_i$*'s* are updated in every row.
+1. Update the values for $\tau^2$ and $\xi^2$ with samples from Inverse-Gamma distributions (refer to sections \@ref(tau) and \@ref(xi)), using values $\boldsymbol{\beta}^{(i)}$ and $\boldsymbol{\gamma}^{(i)}$ from the current iteration:
+
+    ```{r, eval=FALSE}
+    tau_samples[i, ] <- invgamma::rinvgamma(...)
+    xi_samples[i, ] <- invgamma::rinvgamma(...)
+    ```
+
 
 
 
@@ -382,7 +386,7 @@ The implementation of the Metropolis-Hastings algorithm can be summarized by the
 1. Compute the covariance matrix for the proposal distribution
 
     ```{r, eval=FALSE}
-    Sigma <- diag(1 / colMeans(Z^2)) * prop_var_scale / (n * length(gamma))
+Sigma <- diag(1 / colMeans(Z^2)) * prop_var_scale / (n * length(gamma))
     ```
 
     and sample a proposed value for $\boldsymbol{\gamma}$ as
@@ -404,27 +408,27 @@ $$
    Thus, we obtain
     
     ```{r, eval=FALSE}
-    log_acceptance_prob <- min(0, log_full_cond_proposal - log_full_cond_curr)
+log_acceptance_prob <- min(0, log_full_cond_proposal - log_full_cond_curr)
     ```
     
     The log - acceptance probability is restricted to be smaller or equal to zero to ensure that the acceptance probability does not exceed the value of 1.
     In order to compare the acceptance probability $\alpha$ with a standard uniform random variable $U \sim \mathcal{U}(0, 1)$, the exponential function is used for transforming $\alpha$ to the original scale:
     
     ```{r, eval=FALSE}
-    acceptance_prob <- exp(log_acceptance_prob)
+acceptance_prob <- exp(log_acceptance_prob)
     ```
 
 1. Finally, the magnitude of the acceptance probability $\alpha$ relative to the realized value of $U$ controls the new state of the chain.
 In addition, we kept track of the overall acceptance *rate* across all proposals by introducing boolean variables `accepted` in each iteration.
 
     ```{r, eval=FALSE}
-    if (stats::runif(1) < acceptance_prob) {
-      new_gamma <- gamma_proposal
-      accepted <- TRUE
-    } else {
-      new_gamma <- gamma
-      accepted <- FALSE
-    }
+if (stats::runif(1) < acceptance_prob) {
+  new_gamma <- gamma_proposal
+  accepted <- TRUE
+} else {
+  new_gamma <- gamma
+  accepted <- FALSE
+}
     ```
 
 The covariance matrix of the proposal distribution $\boldsymbol{\Sigma}$ in step $1$ was chosen by simulating various combinations of the remaining model parameters to keep the acceptance rates in recommended ranges for a random walk proposal. 
