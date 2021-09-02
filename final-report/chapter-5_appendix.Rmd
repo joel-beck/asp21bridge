@@ -42,6 +42,26 @@ For each covariance structure the three models `mcmc_ridge()`, `mcmc()` and `lml
 
 ### Section \@ref(n): Sample Size {.unlisted .unnumbered}
 
+The simulation study is based on the following conditions:
+
+- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column:
+    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
+    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ is structured in the same way with the regressor variables:
+    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
+    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+
+- After sampling the matrices $\mathbf{X}$ and $\mathbf{Z}$, the columns of $\mathbf{x}_1, \mathbf{x}_2, \mathbf{z}_1$ and $\mathbf{z}_2$ became standardized to the results independent from parameter scaling.
+
+- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
+
+- The posterior means are analyzed with respect to $6$ different sample sizes: `n` $\in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
+
+- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with `nsim` $= 500$ simulations.
+
+- To make the results more stable, the above procedure is repeated $100$ times. 
+For each coefficient, the mean value of the Posterior Mean estimates of each coefficient is calculated as well as the Mean Absolute Error (*MAE*) with respect to the true values of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$.
 
 
 
