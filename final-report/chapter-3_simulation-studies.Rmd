@@ -151,24 +151,13 @@ This simulation study analyzes the effect of the sample size `n` on the means of
 
 ### Simulation Setting {.unlisted .unnumbered}
 
-- The design matrix $\mathbf{X} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{x}_1 & \mathbf{x}_2 \end{pmatrix}$ contains two independently sampled regressor variables plus one intercept column:
-    + $\mathbf{x}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
-    + $\mathbf{x}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+For the analysis purposes of this simulation study, the sample size `n` varies between 30 and 500. There are in total six different szenarios.
 
-- The design matrix $\mathbf{Z} = \begin{pmatrix} \mathbf{1}_{n} & \mathbf{z}_1 & \mathbf{z}_2 \end{pmatrix}$ is structured in the same way with the regressor variables:
-    + $\mathbf{z}_1 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 1, 1 \right)$,
-    + $\mathbf{z}_2 \stackrel{ iid}{ \sim} \mathcal{N}_{} \left( 2, 1 \right)$.
+In the first step, the `n`-dimensional covariates $x_1$, $x_2$, $z_1$ and $z_2$ are all sampled from a normal distribution with variance 1. After that, all of these four vectors are standardized to have zero mean and unit variance. Then the `n`-dimensional vector $y$ is sampled based on a linear model with an error term drawn from a standard normal distribution. The underlying true coefficients can be found in the appendix. The `mcmc_ridge()` function is applied afterwords and provides estimates for the Posterior Means of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$.
 
-- After sampling the matrices $\mathbf{X}$ and $\mathbf{Z}$, the columns of $\mathbf{x}_1, \mathbf{x}_2, \mathbf{z}_1$ and $\mathbf{z}_2$ became standardized to the results independent from parameter scaling.
+To make the results more reliable, above procedure is repeated 100 times for each of the six different sample sizes. The performance of the estimates is then measured for each of the $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ coefficients by the mean Posterior Mean and the *MAE* over the 100 repetitions.  
 
-- The true coefficient vectors are given by $\boldsymbol{\beta} = \begin{pmatrix} \beta_0 & \beta_1 & \beta_2 \end{pmatrix}^T = \begin{pmatrix} 1 & -1 & 4 \end{pmatrix}^T$ and $\boldsymbol{\gamma} = \begin{pmatrix} \gamma_0 & \gamma_1 & \gamma_2 \end{pmatrix}^T = \begin{pmatrix} 0 & -0.5 & 1 \end{pmatrix}^T$.
 
-- The posterior means are analyzed with respect to $6$ different sample sizes: `n` $\in \left\{ 0, 50, 100, 200, 300, 500 \right\}$.
-
-- In the next step, the outcome vector $y \in \mathbb{R}^n$ is simulated and passed to the `mcmc_ridge()` function with `nsim` $= 500$ simulations.
-
-- To make the results more stable, the above procedure is repeated $100$ times. 
-For each coefficient, the mean value of the Posterior Mean estimates of each coefficient is calculated as well as the Mean Absolute Error (*MAE*) with respect to the true values of $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$.
 
 ### Simulation Results {.unlisted .unnumbered}
 
@@ -205,7 +194,7 @@ None of the parameters seems to be biased even for a sample size of `n` $= 30$.
 
 After getting an impression about empirical biases of the coefficients, we now focus on the variability of the posterior means of the coefficients, which are measured by the *MAE* based on the results of the $100$ repetitions.
 
-The right plot of Figure \@ref(fig:sample-size) points out that the posterior means of all six coefficients have mean absolute errors of quite the same magnitude. In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients except $\beta_0$. 
+The right plot of Figure \@ref(fig:sample-size) points out that the posterior means of all six coefficients have mean absolute errors of quite the same magnitude. In addition, for increasing sample sizes, the *MAE* of the Posterior Means tend to zero for all coefficients. 
 
 
 
