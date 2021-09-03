@@ -15,10 +15,10 @@ linkcolor: blue
 
 # Mathematical Model {#math}
 
-This chapter focuses on the underlying theoretical model of Bayesian Ridge Regression in the context of the Gaussian Location-Scale Regression model considered in the `lmls` package.
-First, the distributional assumptions for the parameter vectors $\boldsymbol{\beta}$ and $\boldsymbol{\gamma}$ as well as the scalar quantities $\tau^2$ and $\xi^2$ are clearly stated.
+This chapter is dedicated to the underlying theoretical model of Bayesian Ridge Regression in the context of the Gaussian Location-Scale Regression model that the `lmls` package is based on.
+First, the distributional assumptions for the *location* parameter $\boldsymbol{\beta}$, the *scale* parameter $\boldsymbol{\gamma}$ and the prior variances $\tau^2$ and $\xi^2$, which are specific to Bayesian models, are clearly stated.
 Based on these prior distributions, the full conditional distributions of each parameter given all of the remaining model components are derived.
-Throughout this rather theoretical exposition we will build connections from the derived equations to practical consequences that have to be considered in the code implementation discussed in sections \@ref(mcmc-ridge) and \@ref(mh).
+Throughout this rather theoretical exposition we will build connections from the derived equations to practical consequences that have to be kept in mind for the code implementation discussed in sections \@ref(mcmc-ridge) and \@ref(mh).
 
 
 
@@ -150,7 +150,7 @@ f(\tau^2 \mid \cdot )
 \end{aligned}
 $$
 <!--  -->
-This is the kernel of an Inverse Gamma distribution parameterized by
+This is the kernel of an Inverse-Gamma distribution parameterized by
 <!--  -->
 $$
 \begin{aligned}
@@ -173,7 +173,7 @@ f(\xi^2 \mid \cdot )
 \end{aligned}
 $$
 <!--  -->
-Thus, the Full Conditional of $\xi^2$ follows an Inverse Gamma distribution as well:
+Thus, the Full Conditional of $\xi^2$ follows an Inverse-Gamma distribution as well:
 <!--  -->
 $$
 \begin{aligned}
@@ -284,4 +284,4 @@ In contrast to the Full Conditionals for $\boldsymbol{\beta}$, $\tau^2$ and $\xi
 Thus, for sampling from the Full Posterior distribution, it is not feasible to use a Gibbs Sampler in its purest form.
 More specifically, we will include a Metropolis Hastings step for sampling the $\boldsymbol{\gamma}$ parameter vector.
 
-Although this 'inconvenience' is not required for $\boldsymbol{\beta}$ (since we can use independent samples from a multivariate normal distribution), we will briefly explore and analyze the convergence properties of the modified version of sampling both $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$ via the Metropolis-Hastings procedure.
+Although this 'inconvenience' is not required for $\boldsymbol{\beta}$ (since we can use independent samples from a multivariate normal distribution), we have explored and analyzed the statistical properties of sampling both $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$ via the Metropolis-Hastings procedure, which will be briefly discussed in the following chapters.
