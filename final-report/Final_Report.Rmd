@@ -40,12 +40,6 @@ linkcolor: blue
 
 \newpage
 
-```{r child=here::here("final-report", "chapter-4_conclusion.Rmd")}
-
-```
-
-\newpage
-
-```{r child=here::here("final-report", "chapter-5_appendix.Rmd")}
+```{r child=here::here("final-report", "chapter-4_appendix.Rmd")}
 
 ```
