@@ -48,7 +48,7 @@ The simulation studies discussed in this chapter can be categorized into three g
     The effect of hyperparameters in a hierarchical Bayesian model can be difficult to predict based on pure logical reasoning.
     Therefore simulations are a useful tool to either confirm prior assumptions or discover unexpected behaviour.
 
-Since the resulting simulation studies serve such diverse purposes (e.g. diagnostic vs. explorative), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
+Since the resulting simulation studies serve such diverse purposes (e.g. diagnostic vs. exploratory), they demand for different approaches in the simulation settings, the implementation as well as the analysis and presentation of the results.
 For that reason, we decided against forcing all of the following sections into one common rigid framework.
 Instead, each section individually motivates, explains and interprets the methods chosen for its particular use case.
 
@@ -156,7 +156,7 @@ On the other hand, we want to analyze whether the `mcmc_ridge()` penalty affects
 ### Simulation Setting {.unlisted .unnumbered}
 
 For the analysis purposes of this simulation study, the sample size `n` varies between $30$ and $500$. 
-There are in total six different szenarios.
+There are in total six different scenarios.
 
 In the first step, the n-dimensional covariates $\mathbf{x}_1$, $\mathbf{x}_2$, $\mathbf{ z}_1$ and $\mathbf{ z}_2$ are all sampled from a normal distribution with variance $1$. 
 After that, all of these four vectors are standardized to have zero mean and unit variance. 
@@ -503,7 +503,7 @@ The impact of $\xi^2$ on ${\boldsymbol{\gamma}}$ is assumed to decrease $f( \bol
 This effect is indicated by the linear trend lines in the lower right part of Figure \@ref(fig:hyppar). 
 
 In general, one obtains no significant differences in deviations of $\boldsymbol{\gamma}$ along $b_{\xi}$, but lower deviations for larger values of $a_{\xi}$, where especially lots of randomness occurs in the deviations of $\gamma_1$. 
-Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the scale paremeter is overshadowed by the randomness induced by the Metropolis-Hastings algorithm. 
+Therefore, the impact of $a_{\xi}$ and $b_{\xi}$ on the scale parameter is overshadowed by the randomness induced by the Metropolis-Hastings algorithm. 
 The even wider variations exclusively for $a_{\xi} \leq 1$ can again be observed.
 
 The effect of $a_{\xi}$ and $b_{\xi}$ on ${\boldsymbol{\beta}}$ can be explained through the cross-effects of the matrix $\mathbf{ W}$ and the vector $\mathbf{ u}$ introduced at the beginning of this section, both containing ${\boldsymbol{\gamma}}$. 
@@ -575,10 +575,10 @@ While the left plot does not look incredibly informative at first sight, there i
 If $a_\xi$ is small and/or $b_\xi$ is large, larger norms (and thus a lower penalty effect) of the coefficient vectors tend to occur.
 Only if $a_\xi$ is large *and* $b_\xi$ is small at the same time, there might be a significant Penalty Effect.
 
-While the pattern of this reduction is not super clear in cae of $\boldsymbol{\beta}$ and could potentially be due to randomness, the values of $\left \Vert \boldsymbol{\gamma} \right \Vert^2$ are consistenly lower for $a_\xi \geq 64$ and $b_\xi \leq 4$.
+While the pattern of this reduction is not super clear in case of $\boldsymbol{\beta}$ and could potentially be due to randomness, the values of $\left \Vert \boldsymbol{\gamma} \right \Vert^2$ are consistently lower for $a_\xi \geq 64$ and $b_\xi \leq 4$.
 This combination leads to low Posterior Means for $\xi^2$, which again induces a lower / more informative prior variance $\tau^2$.
 
-The results from this simulation study are difficult to connect to their hypothesized immediate effect based on the underlying mathematical model and appear in some cases even counterintuitive.
+The results from this simulation study are difficult to connect to their hypothesized immediate effect based on the underlying mathematical model and appear in some cases even counter-intuitive.
 This clearly illustrates that tweaking parameters at one end in a Bayesian model of moderate complexity might not affect the model as intended originally.
 Indirect effects through the cross connections in the full Conditional Distributions might dominate the simple relations through the Prior distributions.
 This again emphasizes the value of simulation studies to validate or possibly change the statistical methodology in practice.
