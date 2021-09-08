@@ -163,7 +163,10 @@ test_that("Error Code of missing input data is thrown", {
       beta_start = beta, gamma_start = gamma,
       num_sim = 50
     ),
-    "At least either all model matrices (X, Z, y) and coefficients (beta_start, gamma_start) or a model object (m) must be given.",
+    paste(
+      "\nAt least either all model matrices (X, Z, y) and coefficients",
+      "\n(beta_start, gamma_start) or a model object (m) must be given."
+    ),
     fixed = TRUE
   )
 })
