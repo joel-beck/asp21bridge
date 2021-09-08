@@ -599,8 +599,26 @@ This again emphasizes the value of simulation studies to validate or possibly ch
 
 ## Conclusion {#conclusion}
 
+This final section briefly summarizes the results that were obtained in this chapter.
+Recall that we aimed to investigate two main aspects by means of the six simulation studies we analyzed and simultaneously provide some general guidance, in which cases the `asp21bridge` package can be a useful alternative to competing approaches.
 
+On the one hand the sampler's *performance* was examined in order to gain some basic credibility.
+As seen in sections \@ref(corr), \@ref(n) and \@ref(hyper), the `mcmc_ridge()` function provides solid estimates across a wide range of circumstances.
+If the data is standardized before fitting the model, the results are very robust towards various disadvantageous conditions of the collected data set, such as highly correlated covariates, a small sample size, non-normal response variables and even an uninformed choice of the hyperparameters of the underlying hierarchical Bayesian model.
 
+The location parameter $\boldsymbol{\beta}$ in particular is estimated with high precision throughout, with slightly more variability for the scale parameter estimates.
+One exception might be the lacking accuracy of the intercept estimates $\beta_0$ and $\gamma_0$.
+If, for some reason, estimation of the intercept terms is of primary interest, alternative estimation procedures should be considered.
+
+The second goal of this chapter was to explore the *penalty* effect that is induced by the Prior distributions in the Bayesian framework, which is likely the major reason why one might use the `asp21bridge` package in the first place.
+Sections \@ref(redundant) and \@ref(outcome) emphasized the shrinkage effect on all coefficients except the intercept terms in comparison with unpenalized models.
+There, the scenario of a high number of (potentially strongly correlated) predictor variables was covered, which is inherently prone to overfitting and, thus, a strong candidate for using regularized methods.
+Further, the effect of a Ridge (L2) penalty in contrast to a LASSO (L1) penalty was highlighted.
+
+Unlike in the standard linear model with Ridge penalty or in a non-hierarchical Bayesian model with Gaussian Prior distribution, there is unfortunately not a single parameter $\lambda$ nor a single prior variance parameter that we can choose, to manually control the *strength* of the Ridge penalty.
+The results of section \@ref(hyper-penalty) indicated that there indeed exists a connection from the hyperparameter choice to the penalty strength. 
+However, a significant impact could only be found for very specific combinations which, in addition, do not naturally arise from intuition about the model structure.
+Hence, most input choices of the `mcmc_ridge()` function lead to a moderate penalty effect and therefore a limited bias on the coefficient estimates as well as a moderate reduction in variance.
 
 
 
