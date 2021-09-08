@@ -29,13 +29,13 @@ model matrices. The model is used in second stage, if one of \code{X}, \code{Z},
 \code{beta_start} or \code{gamma_start} is not given, \cr
 Default: NULL}
 
-\item{X}{Matrix containing the data according to the beta_start coefficient, \cr
+\item{X}{Matrix containing the data according to the \code{beta_start} coefficient, \cr
 Default: NULL}
 
-\item{Z}{Matrix containing the data according to the gamma_start coefficient, \cr
+\item{Z}{Matrix containing the data according to the \code{gamma_start} coefficient, \cr
 Default: NULL}
 
-\item{y}{Response vector; \code{y = X * beta + Z * gamma},
+\item{y}{Response vector, \cr
 Default: NULL}
 
 \item{num_sim}{Number of simulations, \cr

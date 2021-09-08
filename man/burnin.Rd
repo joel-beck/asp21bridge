@@ -50,6 +50,6 @@ burnin(rnorm(50), num_burn = 1)
 samples$location \%>\%
   burnin(num_burn = 100) \%>\%
   thinning(freq = 5) \%>\%
-  mult_plot(type = "time", latex = TRUE, free_scale = TRUE)
+  mult_plot(type = "trace", latex = TRUE, free_scale = TRUE)
 
 }

@@ -12,11 +12,11 @@
 #'          model matrices. The model is used in second stage, if one of `X`, `Z`, `y`,
 #'          `beta_start` or `gamma_start` is not given, \cr
 #'          Default: NULL
-#' @param X Matrix containing the data according to the beta_start coefficient, \cr
+#' @param X Matrix containing the data according to the `beta_start` coefficient, \cr
 #'          Default: NULL
-#' @param Z Matrix containing the data according to the gamma_start coefficient, \cr
+#' @param Z Matrix containing the data according to the `gamma_start` coefficient, \cr
 #'          Default: NULL
-#' @param y Response vector; `y = X * beta + Z * gamma`,
+#' @param y Response vector, \cr
 #'          Default: NULL
 #' @param num_sim Number of simulations, \cr
 #'                Default: 1000
@@ -36,13 +36,13 @@
 #'                 Regularization parameter in a Bayesian ridge setting, \cr
 #'                 Default: 1
 #' @param a_tau Fix shape parameter of the IG distribution of `tau_start`, \cr
-#'              Default: 50
+#'              Default: 100
 #' @param b_tau Fix scale parameter of the IG distribution of `tau_start`, \cr
-#'              Default: 200
+#'              Default: 50
 #' @param a_xi Fix shape parameter of the IG distribution of `xi_start`, \cr
 #'             Default: 2
 #' @param b_xi Fix scale parameter of the IG distribution of `xi_start`, \cr
-#'             Default: 100
+#'             Default: 200
 #' @param prop_var_scale Variance of proposal distribution for `gamma` sampling, \cr
 #'                       Default: 3
 #' @param mh_location If TRUE, location parameter is sampled with
@@ -116,7 +116,7 @@
 
 mcmc_ridge <- function(m = NULL, X = NULL, Z = NULL, y = NULL, num_sim = 1000,
                        beta_start = NULL, gamma_start = NULL, tau_start = 1, xi_start = 1,
-                       a_tau = 50, b_tau = 200, a_xi = 2, b_xi = 100,
+                       a_tau = 100, b_tau = 50, a_xi = 2, b_xi = 200,
                        prop_var_scale = 3, mh_location = FALSE, prop_var_loc = 200) {
   mod <- FALSE
   mcmc_ridge_m <- m

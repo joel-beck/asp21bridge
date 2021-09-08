@@ -13,8 +13,8 @@ validate_input <- function(m, X, Z, y,
   if (is.null(m) &
     (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start))) {
     stop(paste(
-      "At least either all model matrices (X, Z, y) and coefficients",
-      "(beta_start, gamma_start) or a model object (m) must be given."
+      "\nAt least either all model matrices (X, Z, y) and coefficients",
+      "\n(beta_start, gamma_start) or a model object (m) must be given."
     ))
   } else if (is.null(X) | is.null(Z) | is.null(y) | is.null(beta_start) | is.null(gamma_start)) {
     mod_name_list <- list(

@@ -15,7 +15,47 @@ linkcolor: blue
 
 # Introduction {-}
 
-```{r}
-a <- 1
-```
+The [lmls](https://gitlab.gwdg.de/asp21/lslm) package generalizes the standard linear model to a location-scale regression model, which contains predictor variables for both the location parameter $\boldsymbol{\beta}$ and the scale parameter $\boldsymbol{\gamma}$.
+There are various extensions to this framework that allow for more complex modeling approaches and might be the right choice for specific applications.
+
+This document introduces the *Bayesian Ridge Regression* model as one such alternative.
+In contrast to the Frequentist approach to estimation that often requires strict assumptions to the underlying theoretical model and delivers primarily point estimates, a Bayesian model provides information about the complete Posterior distribution.
+In addition to point estimates such as the Posterior Mean or the Posterior Mode, further summary statistics such as quantile estimates can be easily obtained.
+Moreover, Markov Chain Monte Carlo sampling can be used in situations, when analytical solutions do not exist and standard numerical procedures fail to compute e.g. the Posterior Mean.
+
+Although the flexibility of the location-scale regression model is in some way restricted by its parametric form, a penalty on the coefficient vectors helps to avoid overfitting if a large number of covariates is included in the model.
+The L2-Penalty that is induced by Ridge Regression corresponds to (multivariate) normal Prior distributions in the Bayesian context and is therefore often convenient from a mathematical perspective as well as for interpretation.
+
+The following sections build upon this motivation:
+Chapter \@ref(math) explains the mathematical theory in more detail and provides a general overview of the hierarchical Bayesian structure.
+Chapter \@ref(package) introduces the `R` package `asp21bridge` that implements the statistical estimation and provides many more features in order to extract as much information as possible from the collected data.
+Finally, chapter \@ref(simulations) illustrates the effect of penalized Bayesian estimation across different scenarios and, thus, serves as first guidance in which cases the `asp21bridge` package can be a worthwhile alternative to well established estimation approaches.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

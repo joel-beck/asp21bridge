@@ -23,7 +23,7 @@ test_that("input is model object with arguments", {
     samples = fit, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
-    samples = fit, type = "time", free_scale = TRUE, latex = TRUE
+    samples = fit, type = "trace", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
     samples = fit, type = "both", free_scale = TRUE,
@@ -45,7 +45,7 @@ test_that("input is list with arguments, but not a model object", {
     samples = samples_list1, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
-    samples = samples_list1, type = "time", free_scale = TRUE, latex = TRUE
+    samples = samples_list1, type = "trace", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
     samples = samples_list1, type = "both", free_scale = TRUE,
@@ -55,7 +55,7 @@ test_that("input is list with arguments, but not a model object", {
     samples = samples_list2, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
-    samples = samples_list2, type = "time", free_scale = TRUE, latex = TRUE
+    samples = samples_list2, type = "trace", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
     samples = samples_list2, type = "both", free_scale = TRUE,
@@ -74,7 +74,7 @@ test_that("input is matrix with arguments", {
     samples = samples_matrix1, type = "density", latex = TRUE
   ), NA)
   expect_warning(mult_plot(
-    samples = samples_matrix1, type = "time", free_scale = TRUE, latex = TRUE
+    samples = samples_matrix1, type = "trace", free_scale = TRUE, latex = TRUE
   ), NA)
   expect_message(mult_plot(
     samples = samples_matrix2, type = "both", log = TRUE,
@@ -105,7 +105,7 @@ test_that("correct error messages are produced", {
 ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
 ### Tests for latex labels                                                  ####
 
-p1 <- mult_plot(samples = samples_list1, type = "time", latex = TRUE)
+p1 <- mult_plot(samples = samples_list1, type = "trace", latex = TRUE)
 
 p2 <- mult_plot(samples = samples_list2, type = "density", latex = TRUE)
 

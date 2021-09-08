@@ -6,7 +6,7 @@
 \usage{
 mult_plot(
   samples,
-  type = c("time", "density", "both"),
+  type = c("trace", "density", "both"),
   log = FALSE,
   free_scale = FALSE,
   latex = FALSE
@@ -16,20 +16,20 @@ mult_plot(
 \item{samples}{Model object of the class 'lmls', list or matrix
 containing samples of the MCMC sampler.}
 
-\item{type}{One of the values "time", "density" or "both". \cr
-Controls whether only time plots or only density plots should
+\item{type}{One of the values "trace", "density" or "both". \cr
+Controls whether only trace plots or only density plots should
 be included for all chains.
-The option "both" stacks time plots on top of the density plots.}
+The option "both" stacks trace plots on top of the density plots.}
 
-\item{log}{Logical. If TRUE, the y - axis in time plots and the x - axis in
+\item{log}{Logical. If TRUE, the y - axis in trace plots and the x - axis in
 density plots are transformed to the logarithmic scale. \cr
 Default: FALSE}
 
-\item{free_scale}{Logical. If TRUE, the y - axis scale in time plots is
+\item{free_scale}{Logical. If TRUE, the y - axis scale in trace plots is
 chosen differently for all facets. \cr
 Default: FALSE}
 
-\item{latex}{Logical. If TRUE, facets in time plots and ridgelines in density
+\item{latex}{Logical. If TRUE, facets in trace plots and ridgelines in density
 plots can be labeled by rendered mathematical symbols such as
 greek letters in combination with subscripts and superscripts.
 This option requires the columns of the input matrices to be
@@ -41,10 +41,10 @@ Default: FALSE}
 Plot object of the class "ggplot".
 }
 \description{
-The \code{mult_plot()} function allows to combine time and / or
+The \code{mult_plot()} function allows to combine trace and / or
 density plots of multiple Markov Chains into a single graphical
 illustration. \cr
-Time plots are displayed separately in facets, density plots
+Trace plots are displayed separately in facets, density plots
 are shown in a ridgeline plot.
 }
 \examples{
@@ -60,8 +60,8 @@ samples <- fit$mcmc_ridge$sampling_matrices
 # plots all output list elements together for quick overview
 mult_plot(samples, type = "both", free_scale = TRUE, latex = TRUE)
 
-# time plot of location coefficients
-mult_plot(samples$location, type = "time", free_scale = TRUE, latex = TRUE)
+# trace plot of location coefficients
+mult_plot(samples$location, type = "trace", free_scale = TRUE, latex = TRUE)
 
 # log argument often useful for strictly positive variance parameters
 mult_plot(

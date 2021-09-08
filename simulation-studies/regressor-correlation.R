@@ -1,8 +1,9 @@
-#   ____________________________________________________________________________
-#   Setup                                                                   ####
-
 pacman::p_load(dplyr, purrr, ggplot2, tidyr, forcats, furrr, latex2exp)
 library(asp21bridge)
+
+
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Functions to generate data                                              ####
 
 create_data <- function(rho, n) {
   X <- mvtnorm::rmvnorm(
@@ -18,23 +19,32 @@ create_data <- function(rho, n) {
   z1 <- 0.8 * X[, 1] + 0.2 * X[, 2]
   z2 <- X[, 2] - 0.5 * X[, 3]
   Z <- cbind(z1, z2)
-
   gamma <- c(2, 0)
+  
+  # standardize columns in X and Z
+  X_stand <- apply(X, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
+  Z_stand <- apply(Z, MARGIN = 2, FUN = function(x) (x - mean(x)) / sd(x))
 
   y <- vector(mode = "numeric", length = n)
 
+  # generate y with standardized data
   for (i in seq_along(y)) {
-    mu <- sum(X[i, ] * beta)
-    sigma <- exp(sum(Z[i] * gamma))
+    mu <- sum(X_stand[i, ] * beta)
+    sigma <- exp(sum(Z_stand[i, ] * gamma))
     y[i] <- rnorm(n = 1, mean = mu, sd = sigma)
   }
-
-  tibble(y = y, x1 = X[, 1], x2 = X[, 2], x3 = X[, 3], z1 = z1, z2 = z2)
+  
+  tibble(
+    y = y, x1_stand = X_stand[, 1], x2_stand = X_stand[, 2], 
+    x3_stand = X_stand[, 3], z1_stand = Z_stand[, 1], z2_stand = Z_stand[, 2]
+  )
 }
 
+# fit lmls(), mcmc() and mcmc_ridge() to standardized data
 create_fit <- function(data, mh_location, num_sim) {
   data %>%
-    lmls(location = y ~ x1 + x2 + x3, scale = ~ z1 + z2, light = FALSE) %>%
+    lmls(location = y ~ x1_stand + x2_stand + x3_stand, 
+         scale = ~ z1_stand + z2_stand, light = FALSE) %>%
     mcmc(nsim = num_sim) %>%
     mcmc_ridge(num_sim = num_sim, mh_location = mh_location)
 }
@@ -68,10 +78,11 @@ extract_accep_rate <- function(model) {
 
 
 
-#   ____________________________________________________________________________
-#   Data and Plot for Single Simulation                                     ####
 
-set.seed(111)
+### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
+### Actual Data Generation for Single Simulation                            ####
+
+set.seed(1)
 
 # Data
 full_data <- crossing(rho = c(-0.5, 0, 0.9), mh_loc = c(FALSE, TRUE)) %>%
@@ -79,7 +90,7 @@ full_data <- crossing(rho = c(-0.5, 0, 0.9), mh_loc = c(FALSE, TRUE)) %>%
   mutate(model = map2(
     .x = cor_data,
     .y = mh_loc,
-    .f = ~ create_fit(data = .x, mh_location = .y, num_sim = 1000)
+    .f = ~ create_fit(data = .x, mh_location = .y, num_sim = 10000)
   )) %>%
   mutate(coefs = map(.x = model, .f = extract_coefs)) %>%
   mutate(accep_rate = map(.x = model, .f = extract_accep_rate)) %>%
@@ -127,7 +138,7 @@ plot_single_sim <- plot_data_single_sim %>%
     size = 1
   ) +
   geom_label(
-    mapping = aes(label = acc_label), x = 20, y = 1.5, color = "grey50", size = 2
+    mapping = aes(label = acc_label), x = -2, y = 1.5, color = "grey50", size = 2
   ) +
   facet_grid(rows = vars(mh_loc), cols = vars(rho)) +
   labs(
@@ -159,7 +170,7 @@ plot_single_sim
 #   ____________________________________________________________________________
 #   Data and Plot for Many Simulations                                      ####
 
-SAVE_SIMS <- FALSE
+SAVE_SIMS <- TRUE
 
 if (SAVE_SIMS) {
   single_sim <- function(x) {
@@ -252,12 +263,11 @@ plot_many_sims <- plot_data %>%
   ) +
   geom_errorbar(
     mapping = aes(
-      # xmin = mean_estimate - 1.96 * se, xmax = mean_estimate + 1.96 * se
       xmin = lower, xmax = upper
     ),
-    color = "grey10", linetype = "dashed", width = 0.3
+    color = "grey10", linetype = "solid", width = 0.2, size = 0.5
   ) +
-  geom_point(mapping = aes(x = mean_estimate)) +
+  geom_point(mapping = aes(x = mean_estimate), size = 1) +
   facet_wrap(facets = vars(rho)) +
   scale_y_discrete(
     labels = parse(text = levels(plot_data$Parameter))

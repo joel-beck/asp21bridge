@@ -5,7 +5,7 @@ library(asp21bridge)
 
 ### Data generation
 
-set.seed(10)
+set.seed(1)
 
 rep <- 100
 
@@ -50,7 +50,22 @@ for (r in 1:rep) {
     z2 <- rnorm(n, mean = 2, sd = 1)
 
     X <- cbind(x0, x1, x2)
+    
+    # Standardization of x1 and x2
+    for (a in 1:n){
+      for (b in 2:3){
+        X[a,b] <- (X[a,b] - mean(X[,b])) / sd(X[,b])
+      }
+    }
+    
     Z <- cbind(z0, z1, z2)
+    
+    # Standardization of z1 and z2
+    for (a in 1:n){
+      for (b in 2:3){
+        Z[a,b] <- (Z[a,b] - mean(Z[,b])) / sd(Z[,b])
+      }
+    }
 
     beta <- c(1, -1, 4) # True: beta_0 = 1, beta_1 = -1, beta_2 = 4,
     gamma <- c(0, -0.5, 1) # True: gamma_0 = 0, gamma_1 = -0.5, gamma_2 = 1

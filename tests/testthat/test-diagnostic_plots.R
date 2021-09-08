@@ -18,34 +18,34 @@ samples_vector <- samples$location[, 2]
 ### No Errors                                                               ####
 
 test_that("no errors for list input", {
-  expect_error(time_plot(samples = samples_list), NA)
+  expect_error(trace_plot(samples = samples_list), NA)
   expect_error(density_plot(samples = samples_list), NA)
-  expect_error(acl_plot(samples = samples_list), NA)
+  expect_error(acf_plot(samples = samples_list), NA)
   expect_error(diagnostic_plots(samples = samples_list), NA)
 })
 
 test_that("no errors for matrix input", {
-  expect_error(time_plot(samples = samples_matrix), NA)
+  expect_error(trace_plot(samples = samples_matrix), NA)
   expect_error(density_plot(samples = samples_matrix), NA)
-  expect_error(acl_plot(samples = samples_matrix), NA)
+  expect_error(acf_plot(samples = samples_matrix), NA)
   expect_error(diagnostic_plots(samples = samples_matrix), NA)
 })
 
 test_that("no errors for vector input", {
-  expect_error(time_plot(samples = samples_vector), NA)
+  expect_error(trace_plot(samples = samples_vector), NA)
   expect_error(density_plot(samples = samples_vector), NA)
-  expect_error(acl_plot(samples = samples_vector), NA)
+  expect_error(acf_plot(samples = samples_vector), NA)
   expect_error(diagnostic_plots(samples = samples_vector), NA)
 })
 
 test_that("no errors for list input with arguments", {
-  expect_error(time_plot(
+  expect_error(trace_plot(
     samples = samples_list, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
   expect_error(density_plot(
     samples = samples_list, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
-  expect_error(acl_plot(
+  expect_error(acf_plot(
     samples = samples_list, lag_max = 100, latex = TRUE
   ), NA)
   expect_error(diagnostic_plots(
@@ -54,13 +54,13 @@ test_that("no errors for list input with arguments", {
 })
 
 test_that("no errors for matrix input with arguments", {
-  expect_error(time_plot(
+  expect_error(trace_plot(
     samples = samples_matrix, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
   expect_error(density_plot(
     samples = samples_matrix, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
-  expect_error(acl_plot(
+  expect_error(acf_plot(
     samples = samples_matrix, lag_max = 100, latex = TRUE
   ), NA)
   expect_error(diagnostic_plots(
@@ -69,13 +69,13 @@ test_that("no errors for matrix input with arguments", {
 })
 
 test_that("no errors for vector input with arguments", {
-  expect_error(time_plot(
+  expect_error(trace_plot(
     samples = samples_vector, log = TRUE, robust = TRUE
   ), NA)
   expect_error(density_plot(
     samples = samples_vector, log = TRUE, robust = TRUE
   ), NA)
-  expect_error(acl_plot(
+  expect_error(acf_plot(
     samples = samples_vector, lag_max = 100
   ), NA)
   expect_error(diagnostic_plots(
@@ -89,34 +89,34 @@ test_that("no errors for vector input with arguments", {
 ### No Warnings                                                             ####
 
 test_that("no warnings for list input", {
-  expect_warning(time_plot(samples = samples_list), NA)
+  expect_warning(trace_plot(samples = samples_list), NA)
   expect_warning(density_plot(samples = samples_list), NA)
-  expect_warning(acl_plot(samples = samples_list), NA)
+  expect_warning(acf_plot(samples = samples_list), NA)
   expect_warning(diagnostic_plots(samples = samples_list), NA)
 })
 
 test_that("no warnings for matrix input", {
-  expect_warning(time_plot(samples = samples_matrix), NA)
+  expect_warning(trace_plot(samples = samples_matrix), NA)
   expect_warning(density_plot(samples = samples_matrix), NA)
-  expect_warning(acl_plot(samples = samples_matrix), NA)
+  expect_warning(acf_plot(samples = samples_matrix), NA)
   expect_warning(diagnostic_plots(samples = samples_matrix), NA)
 })
 
 test_that("no warnings for vector input", {
-  expect_warning(time_plot(samples = samples_vector), NA)
+  expect_warning(trace_plot(samples = samples_vector), NA)
   expect_warning(density_plot(samples = samples_vector), NA)
-  expect_warning(acl_plot(samples = samples_vector), NA)
+  expect_warning(acf_plot(samples = samples_vector), NA)
   expect_warning(diagnostic_plots(samples = samples_vector), NA)
 })
 
 test_that("no warnings for list input with arguments", {
-  expect_warning(time_plot(
+  expect_warning(trace_plot(
     samples = samples_list, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
   expect_warning(density_plot(
     samples = samples_list, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
-  expect_warning(acl_plot(
+  expect_warning(acf_plot(
     samples = samples_list, lag_max = 100, latex = TRUE
   ), NA)
   expect_warning(diagnostic_plots(
@@ -125,13 +125,13 @@ test_that("no warnings for list input with arguments", {
 })
 
 test_that("no warnings for matrix input with arguments", {
-  expect_warning(time_plot(
+  expect_warning(trace_plot(
     samples = samples_matrix, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
   expect_warning(density_plot(
     samples = samples_matrix, log = TRUE, robust = TRUE, latex = TRUE
   ), NA)
-  expect_warning(acl_plot(
+  expect_warning(acf_plot(
     samples = samples_matrix, lag_max = 100, latex = TRUE
   ), NA)
   expect_warning(diagnostic_plots(
@@ -140,13 +140,13 @@ test_that("no warnings for matrix input with arguments", {
 })
 
 test_that("no warnings for vector input with arguments", {
-  expect_warning(time_plot(
+  expect_warning(trace_plot(
     samples = samples_vector, log = TRUE, robust = TRUE
   ), NA)
   expect_warning(density_plot(
     samples = samples_vector, log = TRUE, robust = TRUE
   ), NA)
-  expect_warning(acl_plot(
+  expect_warning(acf_plot(
     samples = samples_vector, lag_max = 100
   ), NA)
   expect_warning(diagnostic_plots(
@@ -165,9 +165,9 @@ input_message <- paste(
 )
 
 test_that("correct error message for invalid input", {
-  expect_error(time_plot(samples = fit$mcmc_ridge), input_message)
+  expect_error(trace_plot(samples = fit$mcmc_ridge), input_message)
   expect_error(density_plot(samples = samples), input_message)
-  expect_error(acl_plot(samples = samples$location), input_message)
+  expect_error(acf_plot(samples = samples$location), input_message)
   expect_error(diagnostic_plots(samples = samples$location[, 2:3], input_message))
 })
 
@@ -177,13 +177,13 @@ colnames(unnamed_matrix) <- NULL
 latex_message <- "Set 'latex = TRUE' only if column names are provided."
 
 test_that("latex = FALSE for missing column names", {
-  expect_error(time_plot(
+  expect_error(trace_plot(
     samples = samples_vector, latex = TRUE
   ), latex_message)
   expect_error(density_plot(
     samples = list(samples_vector), latex = TRUE
   ), latex_message)
-  expect_error(acl_plot(
+  expect_error(acf_plot(
     samples = unnamed_matrix, latex = TRUE
   ), latex_message)
   expect_error(diagnostic_plots(
@@ -196,9 +196,9 @@ test_that("latex = FALSE for missing column names", {
 ### . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . ..
 ### Plot Title                                                              ####
 
-t_plot <- time_plot(samples = samples_matrix, latex = TRUE)
+t_plot <- trace_plot(samples = samples_matrix, latex = TRUE)
 d_plot <- density_plot(samples = samples_list, latex = TRUE)
-a_plot <- acl_plot(samples = samples$location[, 2, drop = FALSE], latex = TRUE)
+a_plot <- acf_plot(samples = samples$location[, 2, drop = FALSE], latex = TRUE)
 diag_plot <- diagnostic_plots(samples = samples_matrix, latex = TRUE)
 
 test_that("latex symbols are included in plot title", {

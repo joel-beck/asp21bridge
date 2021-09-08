@@ -81,18 +81,18 @@ summary(fit, type = "mcmc_ridge")
 ## -3.29800 -0.38660  0.11770 -0.01354  0.57410  2.54600 
 ## 
 ## Location coefficients (identity link function):
-##            Mean     2.5%      50%  97.5%
-## beta_0 -0.01120 -0.14065 -0.01112  0.128
-## beta_1 -2.00116 -2.00687 -2.00117 -1.995
-## beta_2 -1.00388 -1.01704 -1.00368 -0.992
-## beta_3  1.00306  0.98431  1.00290  1.021
-## beta_4  2.00800  2.00261  2.00795  2.014
+##             Mean      2.5%       50%  97.5%
+## beta_0 -0.003064 -0.152295 -0.001275  0.132
+## beta_1 -2.001501 -2.007618 -2.001631 -1.995
+## beta_2 -1.004306 -1.017451 -1.004198 -0.991
+## beta_3  1.001918  0.984266  1.001849  1.022
+## beta_4  2.008085  2.002211  2.007997  2.014
 ## 
 ## Scale coefficients (log link function):
 ##            Mean    2.5%     50%  97.5%
-## gamma_0  1.1131 -0.1638  1.1506  2.021
-## gamma_1 -1.1902 -1.3266 -1.2032 -0.991
-## gamma_2  0.9449  0.7761  0.9413  1.158
+## gamma_0  0.9257 -0.1398  1.0384  1.982
+## gamma_1 -1.1528 -1.3285 -1.1598 -0.956
+## gamma_2  0.9403  0.7134  0.9438  1.185
 ## 
 ## Residual degrees of freedom: 42 
 ## Log-likelihood: 32.28 
@@ -108,16 +108,16 @@ summary_complete(fit)
 ## # A tibble: 10 x 6
 ##    Parameter `5% Quantile` `Posterior Mean` `Posterior Median` `95% Quantile`
 ##    <chr>             <dbl>            <dbl>              <dbl>          <dbl>
-##  1 beta_0          -0.120           -0.0112            -0.0111          0.103
-##  2 beta_1          -2.01            -2.00              -2.00           -2.00 
-##  3 beta_2          -1.01            -1.00              -1.00           -0.994
-##  4 beta_3           0.987            1.00               1.00            1.02 
-##  5 beta_4           2.00             2.01               2.01            2.01 
-##  6 gamma_0          0.0862           1.11               1.15            1.93 
-##  7 gamma_1         -1.31            -1.19              -1.20           -1.01 
-##  8 gamma_2          0.783            0.945              0.941           1.11 
-##  9 tau^2            0.967            3.13               2.21            7.93 
-## 10 xi^2             0.459            2.19               1.33            5.97 
+##  1 beta_0           -0.123         -0.00306           -0.00127          0.107
+##  2 beta_1           -2.01          -2.00              -2.00            -2.00 
+##  3 beta_2           -1.01          -1.00              -1.00            -0.994
+##  4 beta_3            0.987          1.00               1.00             1.02 
+##  5 beta_4            2.00           2.01               2.01             2.01 
+##  6 gamma_0          -0.106          0.926              1.04             1.84 
+##  7 gamma_1          -1.31          -1.15              -1.16            -0.984
+##  8 gamma_2           0.750          0.940              0.944            1.13 
+##  9 tau^2             3.14           4.01               3.94             5.09 
+## 10 xi^2             15.9           51.0               37.4            132.   
 ## # ... with 1 more variable: Standard Deviation <dbl>
 ```
 
@@ -151,14 +151,14 @@ summary_complete(fit) %>%
 ## # A tibble: 8 x 5
 ##   Parameter mcmc_ridge     mcmc     mle truth
 ##   <chr>          <dbl>    <dbl>   <dbl> <dbl>
-## 1 beta_0       -0.0112 -0.00762 -0.0217     0
-## 2 beta_1       -2.00   -2.00    -2.00      -2
-## 3 beta_2       -1.00   -1.00    -1.00      -1
-## 4 beta_3        1.00    1.00     1.00       1
-## 5 beta_4        2.01    2.01     2.01       2
-## 6 gamma_0       1.11    1.17     1.44       0
-## 7 gamma_1      -1.19   -1.18    -1.31      -1
-## 8 gamma_2       0.945   0.920    0.999      1
+## 1 beta_0      -0.00306 -0.00762 -0.0217     0
+## 2 beta_1      -2.00    -2.00    -2.00      -2
+## 3 beta_2      -1.00    -1.00    -1.00      -1
+## 4 beta_3       1.00     1.00     1.00       1
+## 5 beta_4       2.01     2.01     2.01       2
+## 6 gamma_0      0.926    1.17     1.44       0
+## 7 gamma_1     -1.15    -1.18    -1.31      -1
+## 8 gamma_2      0.940    0.920    0.999      1
 ```
 
 The estimates for *β*<sub>1</sub> up to *β*<sub>4</sub> are identical in
@@ -167,13 +167,13 @@ values. This behaviour is somewhat expected, since the *β* vector is
 drawn from a closed form multivariate normal distribution with
 independent samples across iterations of the MCMC sampler.
 
-The results for the scale parameter *γ* show a greater variation between
-the models and are therefore more interesting to analyze. The Maximum
-Likelihood approach is able to recover the true / data generating value
-of *γ*<sub>2</sub>, while the MCMC sampler with Ridge penalty performs
-best for estimating *γ*<sub>1</sub>. All three models fail to identify
-the correct intercept parameter *γ*<sub>0</sub>, which, however, is
-often of minor interest.
+The results for the scale parameter **γ** show a greater variation
+between the models and are therefore more interesting to analyze. The
+Maximum Likelihood approach is able to recover the true / data
+generating value of *γ*<sub>2</sub>, while the MCMC sampler with Ridge
+penalty performs best for estimating *γ*<sub>1</sub>. All three models
+fail to identify the correct intercept parameter *γ*<sub>0</sub>, which,
+however, is often of minor interest.
 
 Simulations across different data sets and sample sizes show similar
 patterns: If the data is generated according to the mathematical model
@@ -184,17 +184,17 @@ underlying model used for simulation deviates from the Gaussian
 location-scale regression model, the `mle` results are, unsurprisingly,
 worse than both of the more flexible MCMC methods.
 
-The Markov Chain Monte Carlo samples for *γ* based on the Metropolis -
+The Markov Chain Monte Carlo samples for **γ** based on the Metropolis -
 Hastings algorithm implemented in the `mcmc_ridge()` function are
 strongly correlated, even though the acceptance rate of the proposed
 values is reasonable:
 
 ``` r
 fit$mcmc_ridge$acceptance_rate
-## [1] 0.427
+## [1] 0.408
 ```
 
-This value of roughly 43% indicates that the variance of the proposal
+This value of roughly 41% indicates that the variance of the proposal
 distribution is chosen appropriately.
 
 ## Graphical Analysis
@@ -204,17 +204,17 @@ chains as well as the autocorrelations are the functions
 `diagnostic_plots()` for a single Markov Chain and `mult_plot()` for
 combining multiple chains.
 
-A quick overview can be gained by collecting the corresponding time
+A quick overview can be gained by collecting the corresponding trace
 plots for all posterior coefficients.
 
 ``` r
-mult_plot(fit, type = "time", free_scale = TRUE, latex = TRUE)
+mult_plot(fit, type = "trace", free_scale = TRUE, latex = TRUE)
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
-The time plots for the *β* coefficients indicate convergence and confirm
-the stable posterior estimates from the previous section.
+The trace plots for the **β** coefficients indicate convergence and
+confirm the stable posterior estimates from the previous section.
 
 The prior variance parameters *τ*<sup>2</sup> and *ξ*<sup>2</sup> are
 strictly positive and thus more adequately displayed on the logarithmic
@@ -230,11 +230,11 @@ mult_plot(
 
 <img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
-Just like the *β* samples, these are drawn from closed form full
+Just like the **β** samples, these are drawn from closed form full
 conditional distributions.
 
 Finally, we focus on the samples for the scale parameter *γ*. Here, the
-time plots do not indicate convergence to the posterior distribution.
+trace plots do not indicate convergence to the posterior distribution.
 Thus, we increase the number of simulations to 10000, which also allows
 the inclusion of a Burn - In Phase as well as a thinning factor while
 still maintaining a sufficient sample size to estimate posterior
@@ -242,7 +242,6 @@ quantities:
 
 ``` r
 set.seed(4321)
-
 fit <- fit %>%
   mcmc_ridge(num_sim = 10000)
 ```
@@ -263,7 +262,7 @@ samples$scale[, 3, drop = FALSE] %>%
 
 Even a thinning factor of 30, i.e. only every 30th observation is kept
 in the sample, does not get rid of the autocorrelation. Yet, the
-posterior density seems to be approximately normal and the time plot
+posterior density seems to be approximately normal and the trace plot
 indicates a decent exploration of the posterior space.
 
 These findings serve as a great starting point for a more in-depth
