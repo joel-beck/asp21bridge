@@ -613,7 +613,7 @@ If, for some reason, estimation of the intercept terms is of primary interest, a
 The second goal of this chapter was to explore the *penalty* effect that is induced by the Prior distributions in the Bayesian framework, which is likely the major reason why one might use the `asp21bridge` package in the first place.
 Sections \@ref(redundant) and \@ref(outcome) emphasized the shrinkage effect on all coefficients except the intercept terms in comparison with unpenalized models.
 There, the scenario of a high number of (potentially strongly correlated) predictor variables was covered, which is inherently prone to overfitting and, thus, a strong candidate for using regularized methods.
-Further, the effect of a Ridge (L2) penalty in contrast to a LASSO (L1) penalty was highlighted.
+Further, the effect of a Ridge ($L_2$) penalty in contrast to a LASSO ($L_1$) penalty was highlighted.
 
 Unlike in the standard linear model with Ridge penalty or in a non-hierarchical Bayesian model with Gaussian Prior distribution, there is unfortunately not a single parameter $\lambda$ nor a single prior variance parameter that we can choose, to manually control the *strength* of the Ridge penalty.
 The results of section \@ref(hyper-penalty) indicated that there indeed exists a connection from the hyperparameter choice to the penalty strength. 
